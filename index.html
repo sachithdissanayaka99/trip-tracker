@@ -1,677 +1,2867 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trip Expense Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --navy:    #0f172a;
-      --navy-2:  #1e293b;
-      --navy-3:  #334155;
-      --amber:   #f59e0b;
-      --amber-2: #fbbf24;
-      --teal:    #14b8a6;
-      --red:     #f43f5e;
-      --green:   #10b981;
-      --text:    #f1f5f9;
-      --muted:   #94a3b8;
-      --border:  rgba(255,255,255,0.08);
-      --radius:  14px;
-    }
+<meta charset="UTF-8">
 
-    html { font-size: 15px; }
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+>
 
-    body {
-      font-family: 'DM Sans', system-ui, sans-serif;
-      background: var(--navy);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 24px 20px 60px;
-    }
+<meta
+  name="apple-mobile-web-app-capable"
+  content="yes"
+>
 
-    /* ── Header ── */
-    .site-header {
-      max-width: 980px;
-      margin: 0 auto 32px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="black-translucent"
+>
 
-    .header-title { line-height: 1.2; }
+<title>Money Rush</title>
 
-    .eyebrow {
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--teal);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+<style>
 
-    .header-title h1 {
-      font-size: 1.9rem;
-      font-weight: 700;
-      color: var(--text);
-    }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-    .total-pill {
-      background: var(--navy-2);
-      border: 1px solid var(--border);
-      border-radius: 50px;
-      padding: 10px 20px;
-      font-size: 0.85rem;
-      color: var(--muted);
-      white-space: nowrap;
-    }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #10131a;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+  user-select: none;
+  touch-action: none;
+}
 
-    .total-pill strong { color: var(--amber); font-family: 'DM Mono', monospace; font-size: 1rem; }
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    /* ── Budget Split ── */
-    .budget-row {
-      max-width: 980px;
-      margin: 0 auto 28px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+.game {
+  width: 100%;
+  height: 100%;
+  max-width: 560px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      180deg,
+      #192231 0%,
+      #111722 60%,
+      #0d1118 100%
+    );
+}
 
-    .budget-card {
-      background: var(--navy-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px 24px;
-      position: relative;
-      overflow: hidden;
-    }
+/* ============================================================
+   TOP HUD
+   ============================================================ */
 
-    .budget-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
+.hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 
-    .budget-card.me::before   { background: var(--amber); }
-    .budget-card.gf::before   { background: var(--teal); }
+  z-index: 10;
 
-    .budget-card .label {
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+  padding:
+    calc(env(safe-area-inset-top) + 12px)
+    16px
+    10px;
 
-    .budget-amount {
-      font-family: 'DM Mono', monospace;
-      font-size: 2rem;
-      font-weight: 500;
-      color: var(--text);
-    }
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
 
-    .budget-amount .currency { font-size: 1rem; color: var(--muted); margin-right: 2px; }
+  pointer-events: none;
+}
 
-    .budget-spent-bar {
-      margin-top: 14px;
-      height: 4px;
-      border-radius: 4px;
-      background: var(--navy-3);
-      overflow: hidden;
-    }
+.hud-box {
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 7px 8px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
 
-    .budget-spent-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
+.hud-label {
+  color: rgba(255,255,255,0.55);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-    .me .budget-spent-fill   { background: var(--amber); }
-    .gf .budget-spent-fill   { background: var(--teal); }
+.hud-value {
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: 2px;
+}
 
-    .budget-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 6px;
-    }
+/* ============================================================
+   GAME CANVAS
+   ============================================================ */
 
-    /* ── Main Grid ── */
-    .main-grid {
-      max-width: 980px;
-      margin: 0 auto 24px;
-      display: grid;
-      grid-template-columns: 1fr 1.3fr;
-      gap: 20px;
-    }
+canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
 
-    /* ── Log Panel ── */
-    .log-panel {
-      background: var(--navy-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+/* ============================================================
+   START SCREEN
+   ============================================================ */
 
-    .panel-title {
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+.overlay {
+  position: absolute;
+  inset: 0;
 
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
+  z-index: 30;
 
-    select, input[type="number"] {
-      background: var(--navy-3);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      padding: 10px 14px;
-      width: 100%;
-      outline: none;
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
-      appearance: none;
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    select:focus, input[type="number"]:focus {
-      border-color: var(--amber);
-    }
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(38,52,73,0.94),
+      rgba(8,11,17,0.98)
+    );
 
-    select option { background: var(--navy-2); }
+  padding: 30px;
+}
 
-    .payer-toggle {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
+.panel {
+  width: 100%;
+  max-width: 400px;
 
-    .toggle-btn {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--navy-3);
-      color: var(--muted);
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-      user-select: none;
-    }
+  background: rgba(255,255,255,0.07);
 
-    .toggle-btn.active-me  { background: rgba(245,158,11,0.15); border-color: var(--amber); color: var(--amber); }
-    .toggle-btn.active-gf  { background: rgba(20,184,166,0.15); border-color: var(--teal);  color: var(--teal); }
+  border:
+    1px solid
+    rgba(255,255,255,0.12);
 
-    .btn-primary {
-      width: 100%;
-      padding: 13px;
-      border-radius: 8px;
-      border: none;
-      background: var(--amber);
-      color: var(--navy);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      letter-spacing: 0.01em;
-    }
+  border-radius: 24px;
 
-    .btn-primary:hover  { background: var(--amber-2); }
-    .btn-primary:active { transform: scale(0.98); }
+  padding: 30px 24px;
 
-    .btn-reset {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(244,63,94,0.3);
-      background: transparent;
-      color: var(--red);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+  text-align: center;
 
-    .btn-reset:hover { background: rgba(244,63,94,0.08); }
+  box-shadow:
+    0 20px 80px rgba(0,0,0,0.45);
 
-    /* ── Categories Panel ── */
-    .categories-panel {
-      background: var(--navy-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      overflow: hidden;
-    }
+  backdrop-filter: blur(18px);
+}
 
-    .cat-scroll {
-      max-height: 420px;
-      overflow-y: auto;
-      padding-right: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
-    }
+.logo {
+  font-size: 64px;
+  margin-bottom: 8px;
+}
 
-    .cat-scroll::-webkit-scrollbar { width: 4px; }
-    .cat-scroll::-webkit-scrollbar-track { background: transparent; }
-    .cat-scroll::-webkit-scrollbar-thumb { background: var(--navy-3); border-radius: 4px; }
+.title {
+  color: white;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin: 0;
+}
 
-    .cat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+.subtitle {
+  color: rgba(255,255,255,0.65);
+  font-size: 14px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
 
-    .cat-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
+.start-button {
+  width: 100%;
+  margin-top: 26px;
 
-    .cat-name { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+  padding: 16px;
 
-    .cat-amounts {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      white-space: nowrap;
-    }
+  border: none;
+  border-radius: 14px;
 
-    .cat-remaining-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.82rem;
-      font-weight: 500;
-    }
+  background: #ffffff;
+  color: #111722;
 
-    .bar-track {
-      height: 5px;
-      border-radius: 5px;
-      background: var(--navy-3);
-      overflow: hidden;
-    }
+  font-size: 17px;
+  font-weight: 800;
 
-    .bar-fill {
-      height: 100%;
-      border-radius: 5px;
-      transition: width 0.5s ease, background 0.3s;
-    }
+  cursor: pointer;
+}
 
-    /* ── History Panel ── */
-    .history-panel {
-      max-width: 980px;
-      margin: 0 auto;
-      background: var(--navy-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-    }
+.start-button:active {
+  transform: scale(0.97);
+}
 
-    .history-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      margin-top: 16px;
-      max-height: 220px;
-      overflow-y: auto;
-    }
+.instructions {
+  margin-top: 20px;
 
-    .history-list::-webkit-scrollbar { width: 4px; }
-    .history-list::-webkit-scrollbar-thumb { background: var(--navy-3); border-radius: 4px; }
+  color: rgba(255,255,255,0.6);
 
-    .history-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-      animation: slideIn 0.3s ease;
-    }
+  font-size: 12px;
 
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+  line-height: 1.7;
+}
 
-    .history-item:last-child { border-bottom: none; }
+.best-score {
+  margin-top: 18px;
 
-    .hist-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+  color: #ffd166;
 
-    .hist-dot.me  { background: var(--amber); }
-    .hist-dot.gf  { background: var(--teal); }
+  font-size: 13px;
+  font-weight: 700;
+}
 
-    .hist-body { flex: 1; color: var(--muted); }
-    .hist-body strong { color: var(--text); }
+/* ============================================================
+   PAUSE BUTTON
+   ============================================================ */
 
-    .hist-amount {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.82rem;
-      color: var(--text);
-      white-space: nowrap;
-    }
+.pause-button {
+  position: absolute;
 
-    .hist-time {
-      font-size: 0.72rem;
-      color: var(--navy-3);
-    }
+  z-index: 15;
 
-    .empty-state {
-      color: var(--muted);
-      font-size: 0.85rem;
-      padding: 20px 0;
-      text-align: center;
-    }
+  right: 16px;
 
-    /* ── Toast ── */
-    .toast {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--navy-3);
-      color: var(--text);
-      padding: 12px 22px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 999;
-      white-space: nowrap;
-      border: 1px solid var(--border);
-    }
+  top:
+    calc(env(safe-area-inset-top) + 82px);
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+  width: 38px;
+  height: 38px;
 
-    /* ── Responsive ── */
-    @media (max-width: 680px) {
-      .budget-row  { grid-template-columns: 1fr; }
-      .main-grid   { grid-template-columns: 1fr; }
-      .budget-amount { font-size: 1.5rem; }
-    }
-  </style>
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.15);
+
+  background:
+    rgba(255,255,255,0.08);
+
+  color: white;
+
+  font-size: 15px;
+
+  display: none;
+}
+
+/* ============================================================
+   GAME OVER
+   ============================================================ */
+
+.game-over {
+  display: none;
+}
+
+.game-over.show {
+  display: flex;
+}
+
+.final-score {
+  color: white;
+  font-size: 44px;
+  font-weight: 900;
+  margin-top: 10px;
+}
+
+.score-label {
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.new-record {
+  display: none;
+
+  margin-top: 8px;
+
+  color: #ffd166;
+
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.new-record.show {
+  display: block;
+}
+
+/* ============================================================
+   COMBO
+   ============================================================ */
+
+.combo {
+  position: absolute;
+
+  z-index: 12;
+
+  left: 50%;
+
+  top: 115px;
+
+  transform:
+    translateX(-50%)
+    scale(0.8);
+
+  color: #ffd166;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.combo.show {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    scale(1.15);
+}
+
+/* ============================================================
+   MESSAGE
+   ============================================================ */
+
+.message {
+  position: absolute;
+
+  z-index: 12;
+
+  left: 50%;
+
+  top: 150px;
+
+  transform: translateX(-50%);
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  white-space: nowrap;
+}
+
+.message.show {
+  animation: messagePop 0.8s ease;
+}
+
+@keyframes messagePop {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateX(-50%)
+      translateY(15px)
+      scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translateX(-50%)
+      translateY(-20px)
+      scale(1);
+  }
+
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer {
+  position: absolute;
+
+  bottom:
+    calc(env(safe-area-inset-bottom) + 8px);
+
+  left: 0;
+  right: 0;
+
+  text-align: center;
+
+  color:
+    rgba(255,255,255,0.25);
+
+  font-size: 9px;
+
+  z-index: 5;
+
+  pointer-events: none;
+}
+
+</style>
+
 </head>
+
+
 <body>
 
-<!-- Header -->
-<header class="site-header">
-  <div class="header-title">
-    <div class="eyebrow">Sri Lanka Trip</div>
-    <h1>Expense Tracker</h1>
-  </div>
-  <div class="total-pill">Total Budget &nbsp;<strong id="total-display">Rs. 153,500</strong></div>
-</header>
+<div class="game" id="game">
 
-<!-- Budget Split -->
-<div class="budget-row">
-  <div class="budget-card me">
-    <div class="label">Me — Remaining</div>
-    <div class="budget-amount"><span class="currency">Rs.</span><span id="me-amount">76,750</span></div>
-    <div class="budget-spent-bar"><div class="budget-spent-fill" id="me-bar" style="width:0%"></div></div>
-    <div class="budget-meta">
-      <span id="me-spent-label">Spent: Rs. 0</span>
-      <span id="me-pct">0% used</span>
-    </div>
-  </div>
-  <div class="budget-card gf">
-    <div class="label">Girlfriend — Remaining</div>
-    <div class="budget-amount"><span class="currency">Rs.</span><span id="gf-amount">76,750</span></div>
-    <div class="budget-spent-bar"><div class="budget-spent-fill" id="gf-bar" style="width:0%"></div></div>
-    <div class="budget-meta">
-      <span id="gf-spent-label">Spent: Rs. 0</span>
-      <span id="gf-pct">0% used</span>
-    </div>
-  </div>
-</div>
 
-<!-- Main Grid -->
-<div class="main-grid">
+<!-- HUD -->
 
-  <!-- Log Panel -->
-  <div class="log-panel">
-    <div class="panel-title">Log a Payment</div>
+<div class="hud">
 
-    <div class="form-group">
-      <label>Who paid?</label>
-      <div class="payer-toggle">
-        <div class="toggle-btn active-me" id="toggle-me" onclick="setPayer('me')">🧑 Me</div>
-        <div class="toggle-btn" id="toggle-gf" onclick="setPayer('gf')">💑 Girlfriend</div>
-      </div>
+  <div class="hud-box">
+
+    <div class="hud-label">
+      Money
     </div>
 
-    <div class="form-group">
-      <label for="category">Category</label>
-      <select id="category"></select>
+    <div
+      class="hud-value"
+      id="score"
+    >
+      Rs 0
     </div>
 
-    <div class="form-group">
-      <label for="amount">Amount (LKR)</label>
-      <input type="number" id="amount" placeholder="e.g. 1,500" min="1" />
-    </div>
-
-    <button class="btn-primary" onclick="addPayment()">→ Record Payment</button>
-    <button class="btn-reset" onclick="resetData()">Reset all data</button>
   </div>
 
-  <!-- Categories Panel -->
-  <div class="categories-panel">
-    <div class="panel-title">Category Breakdown</div>
-    <div class="cat-scroll" id="cat-container"></div>
+
+  <div class="hud-box">
+
+    <div class="hud-label">
+      Level
+    </div>
+
+    <div
+      class="hud-value"
+      id="level"
+    >
+      1
+    </div>
+
+  </div>
+
+
+  <div class="hud-box">
+
+    <div class="hud-label">
+      Lives
+    </div>
+
+    <div
+      class="hud-value"
+      id="lives"
+    >
+      ❤️❤️❤️
+    </div>
+
   </div>
 
 </div>
 
-<!-- History -->
-<div class="history-panel">
-  <div class="panel-title">Transaction History</div>
-  <ul class="history-list" id="history-list"></ul>
+
+<!-- PAUSE -->
+
+<button
+  class="pause-button"
+  id="pauseButton"
+>
+  ⏸
+</button>
+
+
+<!-- CANVAS -->
+
+<canvas id="canvas"></canvas>
+
+
+<!-- COMBO -->
+
+<div
+  class="combo"
+  id="combo"
+>
+  🔥 COMBO x2
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
+
+<!-- MESSAGE -->
+
+<div
+  class="message"
+  id="message"
+>
+  Nice!
+</div>
+
+
+<!-- START -->
+
+<div
+  class="overlay"
+  id="startScreen"
+>
+
+  <div class="panel">
+
+    <div class="logo">
+      💰
+    </div>
+
+    <h1 class="title">
+      Money Rush
+    </h1>
+
+    <div class="subtitle">
+
+      Get rich before your expenses
+      destroy you 😂
+
+    </div>
+
+
+    <button
+      class="start-button"
+      id="startButton"
+    >
+      🚀 START GAME
+    </button>
+
+
+    <div
+      class="best-score"
+      id="bestScore"
+    >
+      Best: Rs 0
+    </div>
+
+
+    <div class="instructions">
+
+      👆 Drag the character left/right<br>
+
+      💰 Collect money<br>
+
+      💎 Collect savings bonuses<br>
+
+      🧾 Avoid unnecessary expenses<br>
+
+      🔥 Build combos for extra points<br>
+
+      ❤️ You have 3 lives
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- GAME OVER -->
+
+<div
+  class="overlay game-over"
+  id="gameOver"
+>
+
+  <div class="panel">
+
+    <div class="logo">
+      💸
+    </div>
+
+    <h1 class="title">
+      Bankrupt! 😂
+    </h1>
+
+    <div class="score-label">
+      Final score
+    </div>
+
+    <div
+      class="final-score"
+      id="finalScore"
+    >
+      Rs 0
+    </div>
+
+
+    <div
+      class="new-record"
+      id="newRecord"
+    >
+      🏆 NEW HIGH SCORE!
+    </div>
+
+
+    <button
+      class="start-button"
+      id="restartButton"
+    >
+      🔄 PLAY AGAIN
+    </button>
+
+  </div>
+
+</div>
+
+
+<div class="footer">
+  Money Rush · Your money. Your rules. 😂
+</div>
+
+
+</div>
+
 
 <script>
-  const BASE = {
-    "Hotel (24)":             17500,
-    "Photo":                  19000,
-    "Food":                   20000,
-    "Fuel":                   25000,
-    "Extra":                   5000,
-    "Bus":                     2000,
-    "Conversation expenses":  10000,
-    "Podi un":                12000,
-    "Thursday":                8000,
-    "Friday":                  5000,
-    "Saturday":               10000,
-    "Sunday":                  5000,
-    "Couple meal":            15000,
-  };
 
-  const INITIAL = 76750;
+/* ============================================================
+   DATABASE
+   ============================================================ */
 
-  let payer = 'me';
+const DB_NAME =
+  'MoneyRushDB';
 
-  let state = JSON.parse(localStorage.getItem('tripData_v2')) || {
-    meRemaining: INITIAL,
-    gfRemaining: INITIAL,
-    categories: { ...BASE },
-    history: []
-  };
+const DB_VERSION =
+  1;
 
-  /* ── Payer Toggle ── */
-  function setPayer(p) {
-    payer = p;
-    document.getElementById('toggle-me').className = 'toggle-btn' + (p === 'me' ? ' active-me' : '');
-    document.getElementById('toggle-gf').className = 'toggle-btn' + (p === 'gf' ? ' active-gf' : '');
-  }
+const STORE_NAME =
+  'gameData';
 
-  /* ── Dropdown ── */
-  function buildDropdown() {
-    const sel = document.getElementById('category');
-    sel.innerHTML = '';
-    Object.keys(BASE).forEach(k => {
-      const o = document.createElement('option');
-      o.value = k; o.textContent = k;
-      sel.appendChild(o);
-    });
-  }
+let db = null;
 
-  /* ── Render ── */
-  function render() {
-    const meSpent = INITIAL - state.meRemaining;
-    const gfSpent = INITIAL - state.gfRemaining;
-    const mePct   = Math.min(100, (meSpent / INITIAL) * 100).toFixed(1);
-    const gfPct   = Math.min(100, (gfSpent / INITIAL) * 100).toFixed(1);
+let bestScore = 0;
 
-    document.getElementById('me-amount').textContent = state.meRemaining.toLocaleString();
-    document.getElementById('gf-amount').textContent = state.gfRemaining.toLocaleString();
-    document.getElementById('me-bar').style.width    = mePct + '%';
-    document.getElementById('gf-bar').style.width    = gfPct + '%';
-    document.getElementById('me-spent-label').textContent = `Spent: Rs. ${meSpent.toLocaleString()}`;
-    document.getElementById('gf-spent-label').textContent = `Spent: Rs. ${gfSpent.toLocaleString()}`;
-    document.getElementById('me-pct').textContent    = `${mePct}% used`;
-    document.getElementById('gf-pct').textContent    = `${gfPct}% used`;
 
-    /* categories */
-    const container = document.getElementById('cat-container');
-    container.innerHTML = '';
-    Object.entries(BASE).forEach(([name, total]) => {
-      const remaining = state.categories[name];
-      const spent = total - remaining;
-      const pct = Math.min(100, Math.max(0, (spent / total) * 100));
-      const over = remaining < 0;
-      const fillColor = over ? '#f43f5e' : pct > 75 ? '#f59e0b' : '#14b8a6';
+/* ============================================================
+   OPEN DATABASE
+   ============================================================ */
 
-      const div = document.createElement('div');
-      div.className = 'cat-item';
-      div.innerHTML = `
-        <div class="cat-row">
-          <span class="cat-name">${name}</span>
-          <span class="cat-amounts">
-            <span style="color:${fillColor};font-family:'DM Mono',monospace;font-weight:600;font-size:0.82rem">Rs. ${remaining.toLocaleString()}</span>
-            <span style="color:var(--navy-3)"> / ${total.toLocaleString()}</span>
-          </span>
-        </div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${pct}%;background:${fillColor}"></div>
-        </div>
-      `;
-      container.appendChild(div);
-    });
+function openDatabase() {
 
-    /* history */
-    const list = document.getElementById('history-list');
-    list.innerHTML = '';
-    if (!state.history.length) {
-      list.innerHTML = '<li class="empty-state">No payments recorded yet.</li>';
-      return;
+  return new Promise(
+    (resolve, reject) => {
+
+      const request =
+        indexedDB.open(
+          DB_NAME,
+          DB_VERSION
+        );
+
+
+      request.onupgradeneeded =
+        function(event) {
+
+          const database =
+            event.target.result;
+
+
+          if (
+            !database.objectStoreNames.contains(
+              STORE_NAME
+            )
+          ) {
+
+            database.createObjectStore(
+              STORE_NAME,
+              {
+                keyPath: 'id'
+              }
+            );
+
+          }
+
+        };
+
+
+      request.onsuccess =
+        function(event) {
+
+          db =
+            event.target.result;
+
+          resolve(db);
+
+        };
+
+
+      request.onerror =
+        function() {
+
+          reject(
+            request.error
+          );
+
+        };
+
     }
-    [...state.history].reverse().forEach(h => {
-      const li = document.createElement('li');
-      li.className = 'history-item';
-      li.innerHTML = `
-        <div class="hist-dot ${h.payer}"></div>
-        <div class="hist-body"><strong>${h.payerLabel}</strong> → ${h.category}</div>
-        <div class="hist-amount">Rs. ${h.amount.toLocaleString()}</div>
-        <div class="hist-time">${h.time}</div>
-      `;
-      list.appendChild(li);
-    });
+  );
+
+}
+
+
+/* ============================================================
+   LOAD BEST SCORE
+   ============================================================ */
+
+function loadBestScore() {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const transaction =
+        db.transaction(
+          STORE_NAME,
+          'readonly'
+        );
+
+
+      const store =
+        transaction.objectStore(
+          STORE_NAME
+        );
+
+
+      const request =
+        store.get(
+          'main'
+        );
+
+
+      request.onsuccess =
+        function() {
+
+          if (
+            request.result
+          ) {
+
+            resolve(
+              Number(
+                request.result.bestScore
+              ) || 0
+            );
+
+          }
+
+          else {
+
+            resolve(0);
+
+          }
+
+        };
+
+
+      request.onerror =
+        function() {
+
+          reject(
+            request.error
+          );
+
+        };
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   SAVE BEST SCORE
+   ============================================================ */
+
+function saveBestScore(score) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const transaction =
+        db.transaction(
+          STORE_NAME,
+          'readwrite'
+        );
+
+
+      const store =
+        transaction.objectStore(
+          STORE_NAME
+        );
+
+
+      const request =
+        store.put({
+
+          id:
+            'main',
+
+          bestScore:
+            score,
+
+          updatedAt:
+            new Date().toISOString()
+
+        });
+
+
+      request.onsuccess =
+        () => resolve();
+
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+
+const canvas =
+  document.getElementById(
+    'canvas'
+  );
+
+const ctx =
+  canvas.getContext(
+    '2d'
+  );
+
+
+let width = 0;
+
+let height = 0;
+
+let dpr = 1;
+
+
+function resizeCanvas() {
+
+  dpr =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+
+  width =
+    canvas.clientWidth;
+
+
+  height =
+    canvas.clientHeight;
+
+
+  canvas.width =
+    width * dpr;
+
+
+  canvas.height =
+    height * dpr;
+
+
+  ctx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+}
+
+
+window.addEventListener(
+  'resize',
+  resizeCanvas
+);
+
+
+resizeCanvas();
+
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+
+let running = false;
+
+let paused = false;
+
+let score = 0;
+
+let level = 1;
+
+let lives = 3;
+
+let combo = 0;
+
+let comboTimer = 0;
+
+let speed = 2.5;
+
+let spawnTimer = 0;
+
+let lastTime = 0;
+
+let animationId = null;
+
+
+/* ============================================================
+   PLAYER
+   ============================================================ */
+
+const player = {
+
+  x: 0,
+
+  y: 0,
+
+  width: 54,
+
+  height: 54,
+
+  targetX: 0,
+
+  hitFlash: 0
+
+};
+
+
+function resetPlayer() {
+
+  player.x =
+    width / 2;
+
+
+  player.targetX =
+    width / 2;
+
+
+  player.y =
+    height -
+    105;
+
+}
+
+
+/* ============================================================
+   OBJECTS
+   ============================================================ */
+
+let objects = [];
+
+
+/*
+  Types:
+
+  money
+  bonus
+  expense
+*/
+
+const objectTypes = [
+
+  {
+    type: 'money',
+    emoji: '💵',
+    value: 100
+  },
+
+  {
+    type: 'money',
+    emoji: '💵',
+    value: 250
+  },
+
+  {
+    type: 'money',
+    emoji: '💰',
+    value: 500
+  },
+
+  {
+    type: 'bonus',
+    emoji: '💎',
+    value: 1000
+  },
+
+  {
+    type: 'expense',
+    emoji: '🍕',
+    value: -250
+  },
+
+  {
+    type: 'expense',
+    emoji: '🛍️',
+    value: -500
+  },
+
+  {
+    type: 'expense',
+    emoji: '🎮',
+    value: -750
+  },
+
+  {
+    type: 'expense',
+    emoji: '💳',
+    value: -1000
   }
 
-  /* ── Add Payment ── */
-  function addPayment() {
-    const category = document.getElementById('category').value;
-    const amount   = parseFloat(document.getElementById('amount').value);
+];
 
-    if (!category) return showToast('Select a category.', 'warn');
-    if (isNaN(amount) || amount <= 0) return showToast('Enter a valid amount.', 'warn');
 
-    state.categories[category] -= amount;
-    if (payer === 'me') state.meRemaining -= amount;
-    else                state.gfRemaining -= amount;
+/* ============================================================
+   CREATE OBJECT
+   ============================================================ */
 
-    const now = new Date();
-    state.history.push({
-      payer,
-      payerLabel: payer === 'me' ? 'Me' : 'Girlfriend',
-      category,
-      amount,
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
+function spawnObject() {
 
-    document.getElementById('amount').value = '';
-    save();
-    showToast(`Rs. ${amount.toLocaleString()} logged for ${category}`);
+  /*
+    Increase difficulty gradually.
+  */
+
+  let random =
+    Math.random();
+
+
+  let type;
+
+
+  if (
+    random < 0.58
+  ) {
+
+    type =
+      objectTypes[
+        Math.floor(
+          Math.random() * 3
+        )
+      ];
+
   }
 
-  /* ── Reset ── */
-  function resetData() {
-    if (!confirm('Reset all tracking data back to defaults?')) return;
-    state = {
-      meRemaining: INITIAL,
-      gfRemaining: INITIAL,
-      categories: { ...BASE },
-      history: []
-    };
-    save();
-    showToast('Data reset.');
+  else if (
+    random < 0.72
+  ) {
+
+    type =
+      objectTypes[3];
+
   }
 
-  /* ── Persist ── */
-  function save() {
-    localStorage.setItem('tripData_v2', JSON.stringify(state));
-    render();
+  else {
+
+    type =
+      objectTypes[
+        4 +
+        Math.floor(
+          Math.random() * 4
+        )
+      ];
+
   }
 
-  /* ── Toast ── */
-  let toastTimer;
-  function showToast(msg) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-  }
 
-  /* ── Enter key shortcut ── */
-  document.getElementById('amount').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addPayment();
+  const size =
+    type.type === 'bonus'
+      ? 46
+      : 42;
+
+
+  objects.push({
+
+    x:
+      25 +
+      Math.random() *
+      (width - 50),
+
+    y:
+      -60,
+
+    size:
+
+      size,
+
+    speed:
+
+      speed *
+      (
+        0.8 +
+        Math.random() * 0.7
+      ),
+
+    type:
+
+      type.type,
+
+    emoji:
+
+      type.emoji,
+
+    value:
+
+      type.value,
+
+    rotation:
+
+      Math.random() *
+      Math.PI * 2,
+
+    rotationSpeed:
+
+      (
+        Math.random() -
+        0.5
+      ) * 0.04
+
   });
 
-  /* ── Boot ── */
-  buildDropdown();
-  render();
+}
+
+
+/* ============================================================
+   COLLISION
+   ============================================================ */
+
+function collision(a, b) {
+
+  return (
+
+    a.x - a.width / 2 <
+      b.x + b.size / 2 &&
+
+    a.x + a.width / 2 >
+      b.x - b.size / 2 &&
+
+    a.y - a.height / 2 <
+      b.y + b.size / 2 &&
+
+    a.y + a.height / 2 >
+      b.y - b.size / 2
+
+  );
+
+}
+
+
+/* ============================================================
+   FORMAT SCORE
+   ============================================================ */
+
+function formatMoney(value) {
+
+  return (
+    'Rs ' +
+    Math.round(
+      value
+    ).toLocaleString(
+      'en-US'
+    )
+  );
+
+}
+
+
+/* ============================================================
+   HUD
+   ============================================================ */
+
+function updateHUD() {
+
+  document.getElementById(
+    'score'
+  ).textContent =
+    formatMoney(
+      score
+    );
+
+
+  document.getElementById(
+    'level'
+  ).textContent =
+    level;
+
+
+  document.getElementById(
+    'lives'
+  ).textContent =
+    '❤️'.repeat(
+      Math.max(
+        0,
+        lives
+      )
+    ) ||
+    '💀';
+
+}
+
+
+/* ============================================================
+   MESSAGE
+   ============================================================ */
+
+function showMessage(text) {
+
+  const element =
+    document.getElementById(
+      'message'
+    );
+
+
+  element.textContent =
+    text;
+
+
+  element.classList.remove(
+    'show'
+  );
+
+
+  void element.offsetWidth;
+
+
+  element.classList.add(
+    'show'
+  );
+
+}
+
+
+/* ============================================================
+   COMBO
+   ============================================================ */
+
+function increaseCombo() {
+
+  combo++;
+
+  comboTimer =
+    2.0;
+
+
+  if (
+    combo >= 2
+  ) {
+
+    const element =
+      document.getElementById(
+        'combo'
+      );
+
+
+    element.textContent =
+      '🔥 COMBO x' +
+      combo;
+
+
+    element.classList.add(
+      'show'
+    );
+
+  }
+
+}
+
+
+function resetCombo() {
+
+  combo = 0;
+
+  comboTimer = 0;
+
+
+  document.getElementById(
+    'combo'
+  ).classList.remove(
+    'show'
+  );
+
+}
+
+
+/* ============================================================
+   HAPTIC
+   ============================================================ */
+
+function vibrate(pattern) {
+
+  if (
+    navigator.vibrate
+  ) {
+
+    navigator.vibrate(
+      pattern
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   SOUND
+   ============================================================ */
+
+let audioContext = null;
+
+
+function sound(
+  frequency,
+  duration,
+  type = 'sine'
+) {
+
+  try {
+
+    if (!audioContext) {
+
+      audioContext =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+
+    const oscillator =
+      audioContext.createOscillator();
+
+
+    const gain =
+      audioContext.createGain();
+
+
+    oscillator.type =
+      type;
+
+
+    oscillator.frequency.value =
+      frequency;
+
+
+    gain.gain.setValueAtTime(
+      0.08,
+      audioContext.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioContext.currentTime +
+      duration
+    );
+
+
+    oscillator.connect(
+      gain
+    );
+
+
+    gain.connect(
+      audioContext.destination
+    );
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+      audioContext.currentTime +
+      duration
+    );
+
+  }
+
+  catch (error) {
+
+    /* Sound is optional. */
+
+  }
+
+}
+
+
+/* ============================================================
+   COLLECT OBJECT
+   ============================================================ */
+
+function collectObject(
+  object
+) {
+
+  if (
+    object.type === 'expense'
+  ) {
+
+    lives--;
+
+    player.hitFlash =
+      0.4;
+
+
+    resetCombo();
+
+
+    showMessage(
+      '💸 Ouch! Unnecessary expense!'
+    );
+
+
+    sound(
+      120,
+      0.2,
+      'sawtooth'
+    );
+
+
+    vibrate(
+      [60, 40, 60]
+    );
+
+
+    if (
+      lives <= 0
+    ) {
+
+      endGame();
+
+    }
+
+
+    return;
+
+  }
+
+
+  increaseCombo();
+
+
+  const multiplier =
+    Math.max(
+      1,
+      combo
+    );
+
+
+  const gained =
+    object.value *
+    multiplier;
+
+
+  score +=
+    gained;
+
+
+  if (
+    object.type === 'bonus'
+  ) {
+
+    showMessage(
+      '💎 SAVINGS BONUS +' +
+      formatMoney(
+        gained
+      )
+    );
+
+
+    sound(
+      900,
+      0.15,
+      'sine'
+    );
+
+
+    vibrate(
+      25
+    );
+
+  }
+
+  else {
+
+    showMessage(
+      '+' +
+      formatMoney(
+        gained
+      )
+    );
+
+
+    sound(
+      600,
+      0.08,
+      'sine'
+    );
+
+
+    vibrate(
+      15
+    );
+
+  }
+
+
+  updateLevel();
+
+}
+
+
+/* ============================================================
+   LEVEL
+   ============================================================ */
+
+function updateLevel() {
+
+  const newLevel =
+    Math.floor(
+      score / 5000
+    ) + 1;
+
+
+  if (
+    newLevel > level
+  ) {
+
+    level =
+      newLevel;
+
+
+    speed =
+      2.5 +
+      (
+        level -
+        1
+      ) *
+      0.55;
+
+
+    showMessage(
+      '🚀 LEVEL ' +
+      level +
+      '!'
+    );
+
+
+    sound(
+      800,
+      0.12
+    );
+
+
+    setTimeout(
+      () =>
+        sound(
+          1100,
+          0.15
+        ),
+      100
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   UPDATE
+   ============================================================ */
+
+function update(delta) {
+
+  if (!running || paused) {
+
+    return;
+
+  }
+
+
+  /*
+    Smooth player movement.
+  */
+
+  player.x +=
+    (
+      player.targetX -
+      player.x
+    ) *
+    Math.min(
+      1,
+      delta * 12
+    );
+
+
+  /*
+    Keep player inside screen.
+  */
+
+  player.x =
+    Math.max(
+      player.width / 2,
+      Math.min(
+        width -
+        player.width / 2,
+        player.x
+      )
+    );
+
+
+  /*
+    Spawn objects.
+  */
+
+  spawnTimer -=
+    delta;
+
+
+  const spawnRate =
+    Math.max(
+      0.28,
+      0.72 -
+      (
+        level -
+        1
+      ) *
+      0.035
+    );
+
+
+  if (
+    spawnTimer <= 0
+  ) {
+
+    spawnObject();
+
+
+    /*
+      Sometimes spawn another
+      object at higher levels.
+    */
+
+    if (
+      level >= 5 &&
+      Math.random() < 0.18
+    ) {
+
+      spawnObject();
+
+    }
+
+
+    spawnTimer =
+      spawnRate;
+
+  }
+
+
+  /*
+    Move objects.
+  */
+
+  for (
+    let i =
+      objects.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const object =
+      objects[i];
+
+
+    object.y +=
+      object.speed *
+      60 *
+      delta;
+
+
+    object.rotation +=
+      object.rotationSpeed;
+
+
+    /*
+      Collision.
+    */
+
+    if (
+      collision(
+        player,
+        object
+      )
+    ) {
+
+      collectObject(
+        object
+      );
+
+
+      objects.splice(
+        i,
+        1
+      );
+
+
+      continue;
+
+    }
+
+
+    /*
+      Remove off-screen objects.
+    */
+
+    if (
+      object.y >
+      height + 80
+    ) {
+
+      objects.splice(
+        i,
+        1
+      );
+
+    }
+
+  }
+
+
+  /*
+    Combo timeout.
+  */
+
+  if (
+    combo > 0
+  ) {
+
+    comboTimer -=
+      delta;
+
+
+    if (
+      comboTimer <= 0
+    ) {
+
+      resetCombo();
+
+    }
+
+  }
+
+
+  if (
+    player.hitFlash > 0
+  ) {
+
+    player.hitFlash -=
+      delta;
+
+  }
+
+
+  updateHUD();
+
+}
+
+
+/* ============================================================
+   DRAW BACKGROUND
+   ============================================================ */
+
+function drawBackground() {
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  /*
+    Gradient.
+  */
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      height
+    );
+
+
+  gradient.addColorStop(
+    0,
+    '#192231'
+  );
+
+
+  gradient.addColorStop(
+    1,
+    '#0b1017'
+  );
+
+
+  ctx.fillStyle =
+    gradient;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  /*
+    Background buildings.
+  */
+
+  const buildingWidth =
+    55;
+
+
+  for (
+    let x = 0;
+    x < width;
+    x += buildingWidth
+  ) {
+
+    const buildingHeight =
+      70 +
+      (
+        (
+          x * 17
+        ) %
+        130
+      );
+
+
+    ctx.fillStyle =
+      'rgba(255,255,255,0.025)';
+
+
+    ctx.fillRect(
+      x,
+      height -
+        50 -
+        buildingHeight,
+      buildingWidth - 5,
+      buildingHeight
+    );
+
+
+    /*
+      Windows.
+    */
+
+    for (
+      let y =
+        height -
+        35 -
+        buildingHeight;
+
+      y <
+        height - 60;
+
+      y += 22
+    ) {
+
+      ctx.fillStyle =
+        'rgba(255,209,102,0.05)';
+
+
+      ctx.fillRect(
+        x + 10,
+        y,
+        5,
+        5
+      );
+
+
+      ctx.fillRect(
+        x + 28,
+        y,
+        5,
+        5
+      );
+
+    }
+
+  }
+
+
+  /*
+    Road / ground.
+  */
+
+  ctx.fillStyle =
+    'rgba(0,0,0,0.18)';
+
+
+  ctx.fillRect(
+    0,
+    height - 80,
+    width,
+    80
+  );
+
+
+  /*
+    Road lines.
+  */
+
+  ctx.strokeStyle =
+    'rgba(255,255,255,0.05)';
+
+
+  ctx.lineWidth =
+    2;
+
+
+  for (
+    let y =
+      height - 55;
+    y < height;
+    y += 25
+  ) {
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      y
+    );
+
+    ctx.lineTo(
+      width,
+      y
+    );
+
+    ctx.stroke();
+
+  }
+
+}
+
+
+/* ============================================================
+   DRAW PLAYER
+   ============================================================ */
+
+function drawPlayer() {
+
+  const x =
+    player.x;
+
+
+  const y =
+    player.y;
+
+
+  ctx.save();
+
+
+  /*
+    Hit flash.
+  */
+
+  if (
+    player.hitFlash > 0
+  ) {
+
+    ctx.globalAlpha =
+      0.5 +
+      Math.sin(
+        player.hitFlash * 30
+      ) *
+      0.3;
+
+  }
+
+
+  /*
+    Shadow.
+  */
+
+  ctx.fillStyle =
+    'rgba(0,0,0,0.35)';
+
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    x,
+    y + 29,
+    25,
+    7,
+    0,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  /*
+    Body.
+  */
+
+  ctx.fillStyle =
+    '#ffffff';
+
+
+  roundRect(
+    ctx,
+    x - 24,
+    y - 25,
+    48,
+    48,
+    14
+  );
+
+
+  ctx.fill();
+
+
+  /*
+    Suit.
+  */
+
+  ctx.fillStyle =
+    '#25354a';
+
+
+  roundRect(
+    ctx,
+    x - 20,
+    y - 5,
+    40,
+    27,
+    10
+  );
+
+
+  ctx.fill();
+
+
+  /*
+    Face.
+  */
+
+  ctx.fillStyle =
+    '#f2c7a5';
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y - 13,
+    14,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  /*
+    Hair.
+  */
+
+  ctx.fillStyle =
+    '#251c19';
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y - 18,
+    14,
+    Math.PI,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  /*
+    Eyes.
+  */
+
+  ctx.fillStyle =
+    '#111';
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x - 5,
+    y - 12,
+    1.5,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.arc(
+    x + 5,
+    y - 12,
+    1.5,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  /*
+    Smile.
+  */
+
+  ctx.strokeStyle =
+    '#111';
+
+  ctx.lineWidth =
+    1.5;
+
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y - 8,
+    5,
+    0,
+    Math.PI
+  );
+
+  ctx.stroke();
+
+
+  /*
+    Tie.
+  */
+
+  ctx.fillStyle =
+    '#d64a4a';
+
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    x,
+    y - 1
+  );
+
+  ctx.lineTo(
+    x - 4,
+    y + 10
+  );
+
+  ctx.lineTo(
+    x,
+    y + 16
+  );
+
+  ctx.lineTo(
+    x + 4,
+    y + 10
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  ctx.restore();
+
+}
+
+
+/* ============================================================
+   DRAW OBJECTS
+   ============================================================ */
+
+function drawObjects() {
+
+  for (
+    const object of objects
+  ) {
+
+    ctx.save();
+
+
+    ctx.translate(
+      object.x,
+      object.y
+    );
+
+
+    ctx.rotate(
+      object.rotation
+    );
+
+
+    /*
+      Glow for savings.
+    */
+
+    if (
+      object.type === 'bonus'
+    ) {
+
+      ctx.shadowColor =
+        'rgba(80,200,255,0.8)';
+
+
+      ctx.shadowBlur =
+        18;
+
+    }
+
+
+    ctx.font =
+      object.size +
+      'px Apple Color Emoji, Segoe UI Emoji, sans-serif';
+
+
+    ctx.textAlign =
+      'center';
+
+
+    ctx.textBaseline =
+      'middle';
+
+
+    ctx.fillText(
+      object.emoji,
+      0,
+      0
+    );
+
+
+    ctx.restore();
+
+  }
+
+}
+
+
+/* ============================================================
+   ROUNDED RECT
+   ============================================================ */
+
+function roundRect(
+  context,
+  x,
+  y,
+  w,
+  h,
+  r
+) {
+
+  context.beginPath();
+
+  context.moveTo(
+    x + r,
+    y
+  );
+
+  context.arcTo(
+    x + w,
+    y,
+    x + w,
+    y + h,
+    r
+  );
+
+  context.arcTo(
+    x + w,
+    y + h,
+    x,
+    y + h,
+    r
+  );
+
+  context.arcTo(
+    x,
+    y + h,
+    x,
+    y,
+    r
+  );
+
+  context.arcTo(
+    x,
+    y,
+    x + w,
+    y,
+    r
+  );
+
+  context.closePath();
+
+}
+
+
+/* ============================================================
+   DRAW
+   ============================================================ */
+
+function draw() {
+
+  drawBackground();
+
+  drawObjects();
+
+  drawPlayer();
+
+}
+
+
+/* ============================================================
+   GAME LOOP
+   ============================================================ */
+
+function gameLoop(timestamp) {
+
+  if (
+    !lastTime
+  ) {
+
+    lastTime =
+      timestamp;
+
+  }
+
+
+  const delta =
+    Math.min(
+      0.05,
+      (
+        timestamp -
+        lastTime
+      ) / 1000
+    );
+
+
+  lastTime =
+    timestamp;
+
+
+  update(
+    delta
+  );
+
+
+  draw();
+
+
+  animationId =
+    requestAnimationFrame(
+      gameLoop
+    );
+
+}
+
+
+/* ============================================================
+   START
+   ============================================================ */
+
+function startGame() {
+
+  score = 0;
+
+  level = 1;
+
+  lives = 3;
+
+  combo = 0;
+
+  comboTimer = 0;
+
+  speed = 2.5;
+
+  spawnTimer = 0;
+
+  objects = [];
+
+  paused = false;
+
+  running = true;
+
+
+  resetPlayer();
+
+  updateHUD();
+
+
+  document.getElementById(
+    'startScreen'
+  ).style.display =
+    'none';
+
+
+  document.getElementById(
+    'gameOver'
+  ).classList.remove(
+    'show'
+  );
+
+
+  document.getElementById(
+    'pauseButton'
+  ).style.display =
+    'block';
+
+
+  lastTime = 0;
+
+
+  if (
+    audioContext &&
+    audioContext.state ===
+      'suspended'
+  ) {
+
+    audioContext.resume();
+
+  }
+
+
+  vibrate(20);
+
+}
+
+
+/* ============================================================
+   END GAME
+   ============================================================ */
+
+async function endGame() {
+
+  running = false;
+
+
+  document.getElementById(
+    'pauseButton'
+  ).style.display =
+    'none';
+
+
+  document.getElementById(
+    'finalScore'
+  ).textContent =
+    formatMoney(
+      score
+    );
+
+
+  let record = false;
+
+
+  if (
+    score >
+    bestScore
+  ) {
+
+    bestScore =
+      score;
+
+
+    record = true;
+
+
+    try {
+
+      await saveBestScore(
+        bestScore
+      );
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        error
+      );
+
+    }
+
+  }
+
+
+  document.getElementById(
+    'newRecord'
+  ).classList.toggle(
+    'show',
+    record
+  );
+
+
+  document.getElementById(
+    'gameOver'
+  ).classList.add(
+    'show'
+  );
+
+
+  sound(
+    120,
+    0.4,
+    'sawtooth'
+  );
+
+
+  vibrate(
+    [100, 60, 100]
+  );
+
+}
+
+
+/* ============================================================
+   PAUSE
+   ============================================================ */
+
+function togglePause() {
+
+  if (
+    !running
+  ) {
+
+    return;
+
+  }
+
+
+  paused =
+    !paused;
+
+
+  document.getElementById(
+    'pauseButton'
+  ).textContent =
+    paused
+      ? '▶'
+      : '⏸';
+
+}
+
+
+/* ============================================================
+   TOUCH CONTROL
+   ============================================================ */
+
+let pointerActive = false;
+
+
+function movePlayer(
+  clientX
+) {
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+
+  const x =
+    clientX -
+    rect.left;
+
+
+  player.targetX =
+    Math.max(
+      player.width / 2,
+      Math.min(
+        width -
+        player.width / 2,
+        x
+      )
+    );
+
+}
+
+
+canvas.addEventListener(
+  'pointerdown',
+  function(event) {
+
+    pointerActive =
+      true;
+
+    movePlayer(
+      event.clientX
+    );
+
+  }
+);
+
+
+canvas.addEventListener(
+  'pointermove',
+  function(event) {
+
+    if (
+      pointerActive
+    ) {
+
+      movePlayer(
+        event.clientX
+      );
+
+    }
+
+  }
+);
+
+
+canvas.addEventListener(
+  'pointerup',
+  function() {
+
+    pointerActive =
+      false;
+
+  }
+);
+
+
+canvas.addEventListener(
+  'pointercancel',
+  function() {
+
+    pointerActive =
+      false;
+
+  }
+);
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+document.getElementById(
+  'startButton'
+).addEventListener(
+  'click',
+  function() {
+
+    /*
+      Create audio after user interaction.
+    */
+
+    try {
+
+      audioContext =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+    catch (
+      error
+    ) {}
+
+
+    startGame();
+
+  }
+);
+
+
+document.getElementById(
+  'restartButton'
+).addEventListener(
+  'click',
+  function() {
+
+    startGame();
+
+  }
+);
+
+
+document.getElementById(
+  'pauseButton'
+).addEventListener(
+  'click',
+  function() {
+
+    togglePause();
+
+  }
+);
+
+
+/* ============================================================
+   KEYBOARD SUPPORT
+   ============================================================ */
+
+window.addEventListener(
+  'keydown',
+  function(event) {
+
+    if (
+      !running
+    ) {
+
+      return;
+
+    }
+
+
+    const amount =
+      55;
+
+
+    if (
+      event.key ===
+      'ArrowLeft'
+    ) {
+
+      player.targetX -=
+        amount;
+
+    }
+
+
+    if (
+      event.key ===
+      'ArrowRight'
+    ) {
+
+      player.targetX +=
+        amount;
+
+    }
+
+
+    if (
+      event.key ===
+      ' '
+    ) {
+
+      togglePause();
+
+    }
+
+  }
+);
+
+
+/* ============================================================
+   INITIALIZE
+   ============================================================ */
+
+async function init() {
+
+  try {
+
+    await openDatabase();
+
+
+    bestScore =
+      await loadBestScore();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      'Database error:',
+      error
+    );
+
+    bestScore = 0;
+
+  }
+
+
+  document.getElementById(
+    'bestScore'
+  ).textContent =
+    'Best: ' +
+    formatMoney(
+      bestScore
+    );
+
+
+  resetPlayer();
+
+  updateHUD();
+
+
+  draw();
+
+
+  requestAnimationFrame(
+    gameLoop
+  );
+
+}
+
+
+init();
+
 </script>
+
 </body>
 </html>
