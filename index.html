@@ -1,650 +1,1502 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
->
-
-<meta
-  name="apple-mobile-web-app-capable"
-  content="yes"
->
-
-<meta
-  name="apple-mobile-web-app-status-bar-style"
-  content="black-translucent"
->
-
-<title>Money Rush</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tuition Manager Pro</title>
 
 <style>
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+:root{
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#172033;
+  --muted:#6d778a;
+  --line:#e7ebf2;
+  --primary:#2563eb;
+  --primary2:#1d4ed8;
+  --green:#16803c;
+  --red:#c62828;
+  --amber:#a16207;
+  --shadow:0 8px 28px rgba(30,45,70,.08);
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #10131a;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
-  user-select: none;
-  touch-action: none;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  color:var(--text);
 }
 
-.game {
-  width: 100%;
-  height: 100%;
-  max-width: 560px;
-  position: relative;
-  overflow: hidden;
-  background:
-    linear-gradient(
-      180deg,
-      #192231 0%,
-      #111722 60%,
-      #0d1118 100%
-    );
+body{
+  overflow-x:hidden;
 }
 
-/* ============================================================
-   TOP HUD
-   ============================================================ */
-
-.hud {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  z-index: 10;
-
-  padding:
-    calc(env(safe-area-inset-top) + 12px)
-    16px
-    10px;
-
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-
-  pointer-events: none;
+button,input,select,textarea{
+  font:inherit;
 }
 
-.hud-box {
-  background: rgba(255,255,255,0.09);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 12px;
-  padding: 7px 8px;
-  text-align: center;
-  backdrop-filter: blur(8px);
+button{
+  cursor:pointer;
 }
 
-.hud-label {
-  color: rgba(255,255,255,0.55);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.app{
+  min-height:100vh;
 }
 
-.hud-value {
-  color: white;
-  font-size: 16px;
-  font-weight: 800;
-  margin-top: 2px;
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:12px max(16px,env(safe-area-inset-left))
+           12px max(16px,env(safe-area-inset-right));
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-/* ============================================================
-   GAME CANVAS
-   ============================================================ */
-
-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.brand{
+  font-weight:900;
+  font-size:20px;
+  white-space:nowrap;
 }
 
-/* ============================================================
-   START SCREEN
-   ============================================================ */
-
-.overlay {
-  position: absolute;
-  inset: 0;
-
-  z-index: 30;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(38,52,73,0.94),
-      rgba(8,11,17,0.98)
-    );
-
-  padding: 30px;
+.brand span{
+  color:var(--primary);
 }
 
-.panel {
-  width: 100%;
-  max-width: 400px;
-
-  background: rgba(255,255,255,0.07);
-
-  border:
-    1px solid
-    rgba(255,255,255,0.12);
-
-  border-radius: 24px;
-
-  padding: 30px 24px;
-
-  text-align: center;
-
-  box-shadow:
-    0 20px 80px rgba(0,0,0,0.45);
-
-  backdrop-filter: blur(18px);
+.top-actions{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
 }
 
-.logo {
-  font-size: 64px;
-  margin-bottom: 8px;
+.iconbtn,
+.btn{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:10px;
+  padding:9px 12px;
+  color:var(--text);
+  font-weight:700;
 }
 
-.title {
-  color: white;
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: -1px;
-  margin: 0;
+.btn.primary{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
 }
 
-.subtitle {
-  color: rgba(255,255,255,0.65);
-  font-size: 14px;
-  margin-top: 8px;
-  line-height: 1.5;
+.btn.danger{
+  color:var(--red);
+  border-color:#f3c8c8;
 }
 
-.start-button {
-  width: 100%;
-  margin-top: 26px;
-
-  padding: 16px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #ffffff;
-  color: #111722;
-
-  font-size: 17px;
-  font-weight: 800;
-
-  cursor: pointer;
+.btn.small{
+  padding:7px 9px;
+  font-size:13px;
 }
 
-.start-button:active {
-  transform: scale(0.97);
+.layout{
+  display:flex;
+  max-width:1500px;
+  margin:auto;
 }
 
-.instructions {
-  margin-top: 20px;
-
-  color: rgba(255,255,255,0.6);
-
-  font-size: 12px;
-
-  line-height: 1.7;
+.sidebar{
+  width:235px;
+  flex:none;
+  padding:16px 12px;
+  position:sticky;
+  top:65px;
+  height:calc(100vh - 65px);
+  overflow:auto;
 }
 
-.best-score {
-  margin-top: 18px;
-
-  color: #ffd166;
-
-  font-size: 13px;
-  font-weight: 700;
+.nav{
+  display:grid;
+  gap:5px;
 }
 
-/* ============================================================
-   PAUSE BUTTON
-   ============================================================ */
-
-.pause-button {
-  position: absolute;
-
-  z-index: 15;
-
-  right: 16px;
-
-  top:
-    calc(env(safe-area-inset-top) + 82px);
-
-  width: 38px;
-  height: 38px;
-
-  border-radius: 50%;
-
-  border:
-    1px solid
-    rgba(255,255,255,0.15);
-
-  background:
-    rgba(255,255,255,0.08);
-
-  color: white;
-
-  font-size: 15px;
-
-  display: none;
+.nav button{
+  border:0;
+  background:transparent;
+  text-align:left;
+  padding:11px 12px;
+  border-radius:10px;
+  color:#4f5b70;
+  font-weight:700;
 }
 
-/* ============================================================
-   GAME OVER
-   ============================================================ */
-
-.game-over {
-  display: none;
+.nav button.active,
+.nav button:hover{
+  background:#eaf1ff;
+  color:var(--primary);
 }
 
-.game-over.show {
-  display: flex;
+.content{
+  padding:22px 18px 50px;
+  min-width:0;
+  flex:1;
 }
 
-.final-score {
-  color: white;
-  font-size: 44px;
-  font-weight: 900;
-  margin-top: 10px;
+.page{
+  display:none;
 }
 
-.score-label {
-  color: rgba(255,255,255,0.55);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.page.active{
+  display:block;
 }
 
-.new-record {
-  display: none;
-
-  margin-top: 8px;
-
-  color: #ffd166;
-
-  font-weight: 800;
-  font-size: 14px;
+.page-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
 }
 
-.new-record.show {
-  display: block;
+.page-head h1{
+  margin:0;
+  font-size:25px;
 }
 
-/* ============================================================
-   COMBO
-   ============================================================ */
-
-.combo {
-  position: absolute;
-
-  z-index: 12;
-
-  left: 50%;
-
-  top: 115px;
-
-  transform:
-    translateX(-50%)
-    scale(0.8);
-
-  color: #ffd166;
-
-  font-size: 20px;
-  font-weight: 900;
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
+.page-head p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px;
 }
 
-.combo.show {
-  opacity: 1;
-
-  transform:
-    translateX(-50%)
-    scale(1.15);
+.page-head .actions{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
-/* ============================================================
-   MESSAGE
-   ============================================================ */
-
-.message {
-  position: absolute;
-
-  z-index: 12;
-
-  left: 50%;
-
-  top: 150px;
-
-  transform: translateX(-50%);
-
-  color: white;
-
-  font-size: 14px;
-
-  font-weight: 700;
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  white-space: nowrap;
+.grid{
+  display:grid;
+  gap:14px;
 }
 
-.message.show {
-  animation: messagePop 0.8s ease;
+.stats{
+  grid-template-columns:repeat(5,minmax(130px,1fr));
+  margin-bottom:16px;
 }
 
-@keyframes messagePop {
+.cards4{
+  grid-template-columns:repeat(4,minmax(180px,1fr));
+}
 
-  0% {
-    opacity: 0;
-    transform:
-      translateX(-50%)
-      translateY(15px)
-      scale(0.8);
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:16px;
+}
+
+.card h3{
+  margin-top:0;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.stat-value{
+  font-size:24px;
+  font-weight:900;
+  margin-top:5px;
+}
+
+.green{
+  color:var(--green);
+}
+
+.red{
+  color:var(--red);
+}
+
+.amber{
+  color:var(--amber);
+}
+
+.blue{
+  color:var(--primary);
+}
+
+.table-wrap{
+  overflow:auto;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.table th,
+.table td{
+  padding:11px 10px;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  white-space:nowrap;
+}
+
+.table th{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  background:#fafbfc;
+}
+
+.table tr:last-child td{
+  border-bottom:0;
+}
+
+.badge{
+  display:inline-flex;
+  padding:4px 8px;
+  border-radius:99px;
+  font-size:11px;
+  font-weight:800;
+}
+
+.badge.paid{
+  background:#e8f7ee;
+  color:var(--green);
+}
+
+.badge.due{
+  background:#fff0f0;
+  color:var(--red);
+}
+
+.badge.partial{
+  background:#fff7df;
+  color:var(--amber);
+}
+
+.badge.active{
+  background:#eaf1ff;
+  color:var(--primary);
+}
+
+.badge.inactive{
+  background:#eef0f4;
+  color:#687386;
+}
+
+.toolbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.search{
+  flex:1;
+  min-width:180px;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  padding:10px 11px;
+  border:1px solid #dfe4ec;
+  border-radius:9px;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:#8bb0ff;
+  box-shadow:0 0 0 3px #eaf1ff;
+}
+
+.field{
+  display:grid;
+  gap:5px;
+}
+
+.field label{
+  font-size:12px;
+  font-weight:800;
+  color:#4f5b70;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:13px;
+}
+
+.form-grid .full{
+  grid-column:1/-1;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:100;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  background:#fff;
+  border-radius:16px;
+  width:min(680px,100%);
+  max-height:90vh;
+  overflow:auto;
+  box-shadow:0 24px 70px rgba(0,0,0,.25);
+}
+
+.modal-head{
+  padding:16px 18px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+}
+
+.modal-head h2{
+  margin:0;
+  font-size:19px;
+}
+
+.modal-head button{
+  margin-left:auto;
+  border:0;
+  background:transparent;
+  font-size:22px;
+}
+
+.modal-body{
+  padding:18px;
+}
+
+.modal-foot{
+  padding:14px 18px;
+  border-top:1px solid var(--line);
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.empty{
+  text-align:center;
+  padding:34px;
+  color:var(--muted);
+}
+
+.money{
+  font-variant-numeric:tabular-nums;
+}
+
+.mobile-nav{
+  display:none;
+}
+
+.notice{
+  padding:11px 13px;
+  border-radius:10px;
+  background:#eef5ff;
+  color:#2454a6;
+  font-size:12px;
+  margin-bottom:14px;
+}
+
+.kpi-line{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+
+.kpi-line:last-child{
+  border-bottom:0;
+}
+
+.checkrow{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  padding:10px;
+  border-bottom:1px solid var(--line);
+}
+
+.checkrow:last-child{
+  border-bottom:0;
+}
+
+.checkrow small{
+  display:block;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+.att-btn{
+  min-width:100px;
+}
+
+.att-btn.present{
+  background:#e8f7ee;
+  color:var(--green);
+  border-color:#bce5cb;
+}
+
+.att-btn.absent{
+  background:#fff0f0;
+  color:var(--red);
+  border-color:#efc3c3;
+}
+
+.att-btn.late{
+  background:#fff7df;
+  color:var(--amber);
+  border-color:#ead48b;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+    display:none;
   }
 
-  20% {
-    opacity: 1;
+  .content{
+    padding:16px 12px 78px;
   }
 
-  70% {
-    opacity: 1;
+  .stats{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  100% {
-    opacity: 0;
-    transform:
-      translateX(-50%)
-      translateY(-20px)
-      scale(1);
+  .cards4{
+    grid-template-columns:repeat(2,1fr);
   }
 
+  .mobile-nav{
+    position:fixed;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    bottom:0;
+    left:0;
+    right:0;
+    background:rgba(255,255,255,.97);
+    border-top:1px solid var(--line);
+    z-index:40;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  .mobile-nav button{
+    border:0;
+    background:none;
+    padding:8px 2px;
+    color:#6d778a;
+    font-size:10px;
+    font-weight:800;
+  }
+
+  .mobile-nav button.active{
+    color:var(--primary);
+  }
+
+  .mobile-nav b{
+    display:block;
+    font-size:17px;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
 }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
+@media(max-width:520px){
 
-.footer {
-  position: absolute;
+  .topbar{
+    padding-left:12px;
+    padding-right:12px;
+  }
 
-  bottom:
-    calc(env(safe-area-inset-bottom) + 8px);
+  .brand{
+    font-size:17px;
+  }
 
-  left: 0;
-  right: 0;
+  .top-actions .label{
+    display:none;
+  }
 
-  text-align: center;
+  .page-head{
+    align-items:flex-start;
+  }
 
-  color:
-    rgba(255,255,255,0.25);
+  .page-head h1{
+    font-size:21px;
+  }
 
-  font-size: 9px;
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
 
-  z-index: 5;
+  .stat-value{
+    font-size:19px;
+  }
 
-  pointer-events: none;
+  .cards4{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:13px;
+  }
+
+  .table th,
+  .table td{
+    padding:9px 7px;
+  }
 }
-
 </style>
-
 </head>
-
 
 <body>
 
-<div class="game" id="game">
+<div class="app">
 
+<header class="topbar">
 
-<!-- HUD -->
-
-<div class="hud">
-
-  <div class="hud-box">
-
-    <div class="hud-label">
-      Money
-    </div>
-
-    <div
-      class="hud-value"
-      id="score"
-    >
-      Rs 0
-    </div>
-
+  <div class="brand">
+    Tuition <span>Manager Pro</span>
   </div>
 
+  <div class="top-actions">
 
-  <div class="hud-box">
-
-    <div class="hud-label">
-      Level
-    </div>
-
-    <div
-      class="hud-value"
-      id="level"
-    >
-      1
-    </div>
-
-  </div>
-
-
-  <div class="hud-box">
-
-    <div class="hud-label">
-      Lives
-    </div>
-
-    <div
-      class="hud-value"
-      id="lives"
-    >
-      ❤️❤️❤️
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- PAUSE -->
-
-<button
-  class="pause-button"
-  id="pauseButton"
->
-  ⏸
-</button>
-
-
-<!-- CANVAS -->
-
-<canvas id="canvas"></canvas>
-
-
-<!-- COMBO -->
-
-<div
-  class="combo"
-  id="combo"
->
-  🔥 COMBO x2
-</div>
-
-
-<!-- MESSAGE -->
-
-<div
-  class="message"
-  id="message"
->
-  Nice!
-</div>
-
-
-<!-- START -->
-
-<div
-  class="overlay"
-  id="startScreen"
->
-
-  <div class="panel">
-
-    <div class="logo">
-      💰
-    </div>
-
-    <h1 class="title">
-      Money Rush
-    </h1>
-
-    <div class="subtitle">
-
-      Get rich before your expenses
-      destroy you 😂
-
-    </div>
-
-
-    <button
-      class="start-button"
-      id="startButton"
-    >
-      🚀 START GAME
+    <button class="iconbtn" onclick="backupData()">
+      ⬇️ <span class="label">Backup</span>
     </button>
 
-
-    <div
-      class="best-score"
-      id="bestScore"
-    >
-      Best: Rs 0
-    </div>
-
-
-    <div class="instructions">
-
-      👆 Drag the character left/right<br>
-
-      💰 Collect money<br>
-
-      💎 Collect savings bonuses<br>
-
-      🧾 Avoid unnecessary expenses<br>
-
-      🔥 Build combos for extra points<br>
-
-      ❤️ You have 3 lives
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- GAME OVER -->
-
-<div
-  class="overlay game-over"
-  id="gameOver"
->
-
-  <div class="panel">
-
-    <div class="logo">
-      💸
-    </div>
-
-    <h1 class="title">
-      Bankrupt! 😂
-    </h1>
-
-    <div class="score-label">
-      Final score
-    </div>
-
-    <div
-      class="final-score"
-      id="finalScore"
-    >
-      Rs 0
-    </div>
-
-
-    <div
-      class="new-record"
-      id="newRecord"
-    >
-      🏆 NEW HIGH SCORE!
-    </div>
-
-
     <button
-      class="start-button"
-      id="restartButton"
+      class="iconbtn"
+      onclick="document.getElementById('restoreFile').click()"
     >
-      🔄 PLAY AGAIN
+      ⬆️ <span class="label">Restore</span>
     </button>
 
+    <input
+      id="restoreFile"
+      type="file"
+      accept=".json,application/json"
+      hidden
+      onchange="restoreData(event)"
+    >
+
   </div>
 
+</header>
+
+
+<div class="layout">
+
+
+<aside class="sidebar">
+
+<nav class="nav">
+
+  <button data-page="dashboard" class="active">
+    📊 Dashboard
+  </button>
+
+  <button data-page="classes">
+    🏫 Classes
+  </button>
+
+  <button data-page="students">
+    👨‍🎓 Students
+  </button>
+
+  <button data-page="attendance">
+    ✅ Attendance
+  </button>
+
+  <button data-page="fees">
+    💰 Fees & Dues
+  </button>
+
+  <button data-page="payments">
+    🧾 Payments
+  </button>
+
+  <button data-page="reports">
+    📈 Reports
+  </button>
+
+  <button data-page="settings">
+    ⚙️ Settings & Data
+  </button>
+
+</nav>
+
+</aside>
+
+
+<main class="content">
+
+
+<!-- =========================================================
+     DASHBOARD
+========================================================= -->
+
+<section id="page-dashboard" class="page active">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Dashboard</h1>
+
+      <p>
+        Your classes, students and money at a glance.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="grid stats">
+
+    <div class="card">
+
+      <div class="stat-label">
+        ACTIVE STUDENTS
+      </div>
+
+      <div
+        class="stat-value blue"
+        id="dStudents"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="stat-label">
+        ACTIVE CLASSES
+      </div>
+
+      <div
+        class="stat-value"
+        id="dClasses"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="stat-label">
+        EXPECTED THIS MONTH
+      </div>
+
+      <div
+        class="stat-value money"
+        id="dExpected"
+      >
+        Rs 0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="stat-label">
+        COLLECTED THIS MONTH
+      </div>
+
+      <div
+        class="stat-value green money"
+        id="dCollected"
+      >
+        Rs 0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="stat-label">
+        OUTSTANDING
+      </div>
+
+      <div
+        class="stat-value red money"
+        id="dDue"
+      >
+        Rs 0
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="grid cards4">
+
+    <div class="card">
+
+      <h3>Today's Classes</h3>
+
+      <div id="todayClasses"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Fee Status</h3>
+
+      <div id="feeSummary"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Recent Payments</h3>
+
+      <div id="recentPayments"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Attention Needed</h3>
+
+      <div id="attention"></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     CLASSES
+========================================================= -->
+
+<section id="page-classes" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Classes</h1>
+
+      <p>
+        Manage group classes, halls, schedules and fees.
+      </p>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn primary"
+        onclick="openClassModal()"
+      >
+        ＋ Add Class
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="notice">
+
+    Each class has its own schedule and fee rules.
+    Students can belong to multiple classes.
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="toolbar">
+
+      <input
+        class="search"
+        id="classSearch"
+        placeholder="Search classes..."
+        oninput="renderClasses()"
+      >
+
+      <select
+        id="classFilter"
+        onchange="renderClasses()"
+      >
+
+        <option value="all">
+          All status
+        </option>
+
+        <option value="active">
+          Active
+        </option>
+
+        <option value="inactive">
+          Inactive
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            <th>Class</th>
+            <th>Type</th>
+            <th>Schedule</th>
+            <th>Fee / Person</th>
+            <th>Students</th>
+            <th>Status</th>
+            <th>Actions</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="classesTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     STUDENTS
+========================================================= -->
+
+<section id="page-students" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Students</h1>
+
+      <p>
+        Student profiles, class enrollment and balances.
+      </p>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn primary"
+        onclick="openStudentModal()"
+      >
+        ＋ Add Student
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="toolbar">
+
+      <input
+        class="search"
+        id="studentSearch"
+        placeholder="Search name, phone or ID..."
+        oninput="renderStudents()"
+      >
+
+      <select
+        id="studentFilter"
+        onchange="renderStudents()"
+      >
+
+        <option value="active">
+          Active
+        </option>
+
+        <option value="inactive">
+          Inactive
+        </option>
+
+        <option value="all">
+          All
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            <th>Student</th>
+            <th>Phone</th>
+            <th>Classes</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Actions</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="studentsTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     ATTENDANCE
+========================================================= -->
+
+<section id="page-attendance" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Attendance</h1>
+
+      <p>
+        Record individual attendance for every class date.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="toolbar">
+
+      <select
+        id="attClass"
+        onchange="renderAttendance()"
+      ></select>
+
+      <input
+        id="attDate"
+        type="date"
+        onchange="renderAttendance()"
+      >
+
+    </div>
+
+
+    <div id="attendanceList"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     FEES
+========================================================= -->
+
+<section id="page-fees" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Fees & Dues</h1>
+
+      <p>
+        Every expected fee and every balance is tracked separately.
+      </p>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn primary"
+        onclick="generateFeesForMonth()"
+      >
+        ＋ Generate Month Fees
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="notice">
+
+    Payments never overwrite old transactions.
+    Corrections use a reversal record, preserving the financial audit trail.
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="toolbar">
+
+      <input
+        id="feeMonth"
+        type="month"
+        onchange="renderFees()"
+      >
+
+      <select
+        id="feeStatus"
+        onchange="renderFees()"
+      >
+
+        <option value="all">
+          All statuses
+        </option>
+
+        <option value="due">
+          Due
+        </option>
+
+        <option value="partial">
+          Partially Paid
+        </option>
+
+        <option value="paid">
+          Paid
+        </option>
+
+      </select>
+
+      <input
+        class="search"
+        id="feeSearch"
+        placeholder="Search student/class..."
+        oninput="renderFees()"
+      >
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            <th>Student</th>
+            <th>Class</th>
+            <th>Month</th>
+            <th>Fee</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Action</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="feesTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     PAYMENTS
+========================================================= -->
+
+<section id="page-payments" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Payments</h1>
+
+      <p>
+        Immutable payment history and receipts.
+      </p>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn primary"
+        onclick="openPaymentModal()"
+      >
+        ＋ Record Payment
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="toolbar">
+
+      <input
+        class="search"
+        id="paymentSearch"
+        placeholder="Search receipt, student or class..."
+        oninput="renderPayments()"
+      >
+
+      <input
+        id="paymentMonth"
+        type="month"
+        onchange="renderPayments()"
+      >
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            <th>Receipt</th>
+            <th>Date</th>
+            <th>Student</th>
+            <th>Class</th>
+            <th>For Month</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Action</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="paymentsTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     REPORTS
+========================================================= -->
+
+<section id="page-reports" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Reports</h1>
+
+      <p>
+        Financial and attendance summaries.
+      </p>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn"
+        onclick="printReport()"
+      >
+        🖨️ Print
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="toolbar">
+
+      <input
+        id="reportMonth"
+        type="month"
+        onchange="renderReports()"
+      >
+
+    </div>
+
+
+    <div id="reportContent"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     SETTINGS
+========================================================= -->
+
+<section id="page-settings" class="page">
+
+  <div class="page-head">
+
+    <div>
+
+      <h1>Settings & Data</h1>
+
+      <p>
+        Protect your records with local backups and controlled data operations.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="grid cards4">
+
+
+    <div class="card">
+
+      <h3>Business</h3>
+
+      <div class="field">
+
+        <label>
+          Tuition / Institute Name
+        </label>
+
+        <input id="settingName">
+
+      </div>
+
+      <br>
+
+      <button
+        class="btn primary"
+        onclick="saveSettings()"
+      >
+        Save Settings
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Backup</h3>
+
+      <p style="color:var(--muted);font-size:13px">
+
+        Export the complete IndexedDB data to a JSON backup.
+        Keep backups in a safe location.
+
+      </p>
+
+      <button
+        class="btn"
+        onclick="backupData()"
+      >
+        Download Full Backup
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Restore</h3>
+
+      <p style="color:var(--muted);font-size:13px">
+
+        Restore a previous JSON backup.
+        Existing records are replaced after confirmation.
+
+      </p>
+
+      <button
+        class="btn"
+        onclick="document.getElementById('restoreFile').click()"
+      >
+        Restore Backup
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>Danger Zone</h3>
+
+      <p style="color:var(--muted);font-size:13px">
+
+        Permanently erase all local application records.
+
+      </p>
+
+      <button
+        class="btn danger"
+        onclick="clearAllData()"
+      >
+        Erase All Data
+      </button>
+
+    </div>
+
+
+  </div>
+
+</section>
+
+
+</main>
+
 </div>
 
 
-<div class="footer">
-  Money Rush · Your money. Your rules. 😂
+<!-- MOBILE NAVIGATION -->
+
+<nav class="mobile-nav">
+
+  <button data-page="dashboard" class="active">
+    <b>📊</b>
+    Home
+  </button>
+
+  <button data-page="classes">
+    <b>🏫</b>
+    Classes
+  </button>
+
+  <button data-page="students">
+    <b>👨‍🎓</b>
+    Students
+  </button>
+
+  <button data-page="fees">
+    <b>💰</b>
+    Fees
+  </button>
+
+  <button data-page="payments">
+    <b>🧾</b>
+    Payments
+  </button>
+
+</nav>
+
 </div>
 
+
+<!-- =========================================================
+     MODAL
+========================================================= -->
+
+<div class="modal" id="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2 id="modalTitle"></h2>
+
+      <button onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      class="modal-body"
+      id="modalBody"
+    ></div>
+
+
+    <div
+      class="modal-foot"
+      id="modalFoot"
+    ></div>
+
+  </div>
 
 </div>
 
@@ -653,30 +1505,105 @@ canvas {
 
 /* ============================================================
    DATABASE
-   ============================================================ */
+============================================================ */
 
 const DB_NAME =
-  'MoneyRushDB';
+  'TuitionManagerProDB';
 
 const DB_VERSION =
-  1;
+  2;
 
-const STORE_NAME =
-  'gameData';
+const STORES = [
+  'students',
+  'classes',
+  'enrollments',
+  'fees',
+  'payments',
+  'attendance',
+  'settings'
+];
 
 let db = null;
 
-let bestScore = 0;
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+const $ =
+  id =>
+    document.getElementById(id);
+
+
+const uid =
+  () =>
+    crypto.randomUUID
+      ? crypto.randomUUID()
+      : Date.now().toString(36) +
+        Math.random().toString(36).slice(2);
+
+
+const todayISO =
+  () =>
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
+
+const monthISO =
+  () =>
+    new Date()
+      .toISOString()
+      .slice(0,7);
+
+
+const money =
+  number =>
+    'Rs ' +
+    Number(number || 0)
+      .toLocaleString(
+        'en-US',
+        {
+          maximumFractionDigits:2
+        }
+      );
+
+
+const esc =
+  value =>
+    String(value ?? '')
+      .replace(
+        /[&<>"']/g,
+        match =>
+          ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#039;'
+          }[match])
+      );
+
+
+const days = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+];
 
 
 /* ============================================================
    OPEN DATABASE
-   ============================================================ */
+============================================================ */
 
-function openDatabase() {
+function openDB(){
 
   return new Promise(
-    (resolve, reject) => {
+    (resolve,reject)=>{
 
       const request =
         indexedDB.open(
@@ -686,24 +1613,64 @@ function openDatabase() {
 
 
       request.onupgradeneeded =
-        function(event) {
+        event => {
 
           const database =
             event.target.result;
 
 
-          if (
-            !database.objectStoreNames.contains(
-              STORE_NAME
-            )
-          ) {
+          const configs = {
 
-            database.createObjectStore(
-              STORE_NAME,
-              {
-                keyPath: 'id'
-              }
-            );
+            students:{
+              keyPath:'id'
+            },
+
+            classes:{
+              keyPath:'id'
+            },
+
+            enrollments:{
+              keyPath:'id'
+            },
+
+            fees:{
+              keyPath:'id'
+            },
+
+            payments:{
+              keyPath:'id'
+            },
+
+            attendance:{
+              keyPath:'id'
+            },
+
+            settings:{
+              keyPath:'id'
+            }
+
+          };
+
+
+          for(
+            const [
+              name,
+              config
+            ] of Object.entries(configs)
+          ){
+
+            if(
+              !database
+                .objectStoreNames
+                .contains(name)
+            ){
+
+              database.createObjectStore(
+                name,
+                config
+              );
+
+            }
 
           }
 
@@ -711,7 +1678,7 @@ function openDatabase() {
 
 
       request.onsuccess =
-        function(event) {
+        event => {
 
           db =
             event.target.result;
@@ -719,129 +1686,6 @@ function openDatabase() {
           resolve(db);
 
         };
-
-
-      request.onerror =
-        function() {
-
-          reject(
-            request.error
-          );
-
-        };
-
-    }
-  );
-
-}
-
-
-/* ============================================================
-   LOAD BEST SCORE
-   ============================================================ */
-
-function loadBestScore() {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const transaction =
-        db.transaction(
-          STORE_NAME,
-          'readonly'
-        );
-
-
-      const store =
-        transaction.objectStore(
-          STORE_NAME
-        );
-
-
-      const request =
-        store.get(
-          'main'
-        );
-
-
-      request.onsuccess =
-        function() {
-
-          if (
-            request.result
-          ) {
-
-            resolve(
-              Number(
-                request.result.bestScore
-              ) || 0
-            );
-
-          }
-
-          else {
-
-            resolve(0);
-
-          }
-
-        };
-
-
-      request.onerror =
-        function() {
-
-          reject(
-            request.error
-          );
-
-        };
-
-    }
-  );
-
-}
-
-
-/* ============================================================
-   SAVE BEST SCORE
-   ============================================================ */
-
-function saveBestScore(score) {
-
-  return new Promise(
-    (resolve, reject) => {
-
-      const transaction =
-        db.transaction(
-          STORE_NAME,
-          'readwrite'
-        );
-
-
-      const store =
-        transaction.objectStore(
-          STORE_NAME
-        );
-
-
-      const request =
-        store.put({
-
-          id:
-            'main',
-
-          bestScore:
-            score,
-
-          updatedAt:
-            new Date().toISOString()
-
-        });
-
-
-      request.onsuccess =
-        () => resolve();
 
 
       request.onerror =
@@ -857,2004 +1701,4721 @@ function saveBestScore(score) {
 
 
 /* ============================================================
-   CANVAS
-   ============================================================ */
+   DATABASE OPERATIONS
+============================================================ */
 
-const canvas =
-  document.getElementById(
-    'canvas'
+function all(store){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const request =
+        db
+          .transaction(
+            store,
+            'readonly'
+          )
+          .objectStore(store)
+          .getAll();
+
+
+      request.onsuccess =
+        () =>
+          resolve(
+            request.result
+          );
+
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
+
+    }
   );
 
-const ctx =
-  canvas.getContext(
-    '2d'
+}
+
+
+function get(
+  store,
+  id
+){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const request =
+        db
+          .transaction(
+            store,
+            'readonly'
+          )
+          .objectStore(store)
+          .get(id);
+
+
+      request.onsuccess =
+        () =>
+          resolve(
+            request.result
+          );
+
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
+
+    }
   );
 
-
-let width = 0;
-
-let height = 0;
-
-let dpr = 1;
+}
 
 
-function resizeCanvas() {
+function put(
+  store,
+  object
+){
 
-  dpr =
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
+  return new Promise(
+    (resolve,reject)=>{
+
+      const request =
+        db
+          .transaction(
+            store,
+            'readwrite'
+          )
+          .objectStore(store)
+          .put(object);
+
+
+      request.onsuccess =
+        () =>
+          resolve(object);
+
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
+
+    }
+  );
+
+}
+
+
+function del(
+  store,
+  id
+){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const request =
+        db
+          .transaction(
+            store,
+            'readwrite'
+          )
+          .objectStore(store)
+          .delete(id);
+
+
+      request.onsuccess =
+        () =>
+          resolve();
+
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
+
+    }
+  );
+
+}
+
+
+function txClear(store){
+
+  return new Promise(
+    (resolve,reject)=>{
+
+      const request =
+        db
+          .transaction(
+            store,
+            'readwrite'
+          )
+          .objectStore(store)
+          .clear();
+
+
+      request.onsuccess =
+        () =>
+          resolve();
+
+
+      request.onerror =
+        () =>
+          reject(
+            request.error
+          );
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   DEFAULT SETTINGS
+============================================================ */
+
+async function seed(){
+
+  const settings =
+    await all('settings');
+
+
+  if(
+    !settings.length
+  ){
+
+    await put(
+      'settings',
+      {
+        id:'main',
+        name:'My Tuition Class',
+        createdAt:
+          new Date().toISOString()
+      }
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function navigate(page){
+
+  document
+    .querySelectorAll('.page')
+    .forEach(
+      element =>
+        element.classList.toggle(
+          'active',
+          element.id ===
+            'page-' + page
+        )
     );
 
 
-  width =
-    canvas.clientWidth;
+  document
+    .querySelectorAll('[data-page]')
+    .forEach(
+      element =>
+        element.classList.toggle(
+          'active',
+          element.dataset.page === page
+        )
+    );
 
 
-  height =
-    canvas.clientHeight;
+  renderPage(page);
+
+}
 
 
-  canvas.width =
-    width * dpr;
+document
+  .querySelectorAll('[data-page]')
+  .forEach(
+    button =>
+      button.onclick =
+        () =>
+          navigate(
+            button.dataset.page
+          )
+  );
 
 
-  canvas.height =
-    height * dpr;
+async function renderPage(page){
+
+  if(
+    page === 'dashboard'
+  )
+    renderDashboard();
 
 
-  ctx.setTransform(
-    dpr,
-    0,
-    0,
-    dpr,
-    0,
-    0
+  if(
+    page === 'classes'
+  )
+    renderClasses();
+
+
+  if(
+    page === 'students'
+  )
+    renderStudents();
+
+
+  if(
+    page === 'attendance'
+  ){
+
+    await fillAttendanceClass();
+
+    renderAttendance();
+
+  }
+
+
+  if(
+    page === 'fees'
+  ){
+
+    if(
+      !$('feeMonth').value
+    )
+      $('feeMonth').value =
+        monthISO();
+
+
+    renderFees();
+
+  }
+
+
+  if(
+    page === 'payments'
+  ){
+
+    if(
+      !$('paymentMonth').value
+    )
+      $('paymentMonth').value =
+        monthISO();
+
+
+    renderPayments();
+
+  }
+
+
+  if(
+    page === 'reports'
+  ){
+
+    if(
+      !$('reportMonth').value
+    )
+      $('reportMonth').value =
+        monthISO();
+
+
+    renderReports();
+
+  }
+
+
+  if(
+    page === 'settings'
+  ){
+
+    const settings =
+      await get(
+        'settings',
+        'main'
+      );
+
+
+    $('settingName').value =
+      settings?.name || '';
+
+  }
+
+}
+
+
+/* ============================================================
+   MAP DATA
+============================================================ */
+
+async function maps(){
+
+  const [
+    students,
+    classes,
+    enrollments,
+    fees,
+    payments,
+    attendance
+  ] =
+    await Promise.all(
+      STORES
+        .slice(0,6)
+        .map(all)
+    );
+
+
+  return {
+    students,
+    classes,
+    enrollments,
+    fees,
+    payments,
+    attendance
+  };
+
+}
+
+
+function studentName(
+  id,
+  data
+){
+
+  return (
+    data.students.find(
+      student =>
+        student.id === id
+    )?.name ||
+    'Unknown'
   );
 
 }
 
 
-window.addEventListener(
-  'resize',
-  resizeCanvas
-);
+function className(
+  id,
+  data
+){
+
+  return (
+    data.classes.find(
+      classItem =>
+        classItem.id === id
+    )?.name ||
+    'Unknown'
+  );
+
+}
 
 
-resizeCanvas();
+function classStudents(
+  classId,
+  data
+){
+
+  return data
+    .enrollments
+    .filter(
+      enrollment =>
+        enrollment.classId === classId &&
+        enrollment.active !== false
+    )
+    .map(
+      enrollment =>
+        data.students.find(
+          student =>
+            student.id ===
+            enrollment.studentId
+        )
+    )
+    .filter(Boolean);
+
+}
 
 
-/* ============================================================
-   GAME STATE
-   ============================================================ */
+function balanceForStudent(
+  studentId,
+  data
+){
 
-let running = false;
+  return data
+    .fees
+    .filter(
+      fee =>
+        fee.studentId === studentId
+    )
+    .reduce(
+      (
+        sum,
+        fee
+      ) =>
+        sum +
+        Math.max(
+          0,
+          (
+            fee.amount || 0
+          ) -
+          (
+            fee.paid || 0
+          )
+        ),
+      0
+    );
 
-let paused = false;
-
-let score = 0;
-
-let level = 1;
-
-let lives = 3;
-
-let combo = 0;
-
-let comboTimer = 0;
-
-let speed = 2.5;
-
-let spawnTimer = 0;
-
-let lastTime = 0;
-
-let animationId = null;
-
-
-/* ============================================================
-   PLAYER
-   ============================================================ */
-
-const player = {
-
-  x: 0,
-
-  y: 0,
-
-  width: 54,
-
-  height: 54,
-
-  targetX: 0,
-
-  hitFlash: 0
-
-};
+}
 
 
-function resetPlayer() {
+function statusForFee(fee){
 
-  player.x =
-    width / 2;
+  const balance =
+    Math.max(
+      0,
+      (
+        fee.amount || 0
+      ) -
+      (
+        fee.paid || 0
+      )
+    );
 
 
-  player.targetX =
-    width / 2;
+  if(
+    balance <= 0
+  )
+    return 'paid';
 
 
-  player.y =
-    height -
-    105;
+  if(
+    fee.paid > 0
+  )
+    return 'partial';
+
+
+  return 'due';
 
 }
 
 
 /* ============================================================
-   OBJECTS
-   ============================================================ */
+   DASHBOARD
+============================================================ */
 
-let objects = [];
+async function renderDashboard(){
+
+  const data =
+    await maps();
 
 
-/*
-  Types:
+  const currentMonth =
+    monthISO();
 
-  money
-  bonus
-  expense
-*/
 
-const objectTypes = [
+  const activeStudents =
+    data.students
+      .filter(
+        student =>
+          student.active !== false
+      )
+      .length;
 
-  {
-    type: 'money',
-    emoji: '💵',
-    value: 100
-  },
 
-  {
-    type: 'money',
-    emoji: '💵',
-    value: 250
-  },
+  const activeClasses =
+    data.classes
+      .filter(
+        classItem =>
+          classItem.active !== false
+      )
+      .length;
 
-  {
-    type: 'money',
-    emoji: '💰',
-    value: 500
-  },
 
-  {
-    type: 'bonus',
-    emoji: '💎',
-    value: 1000
-  },
+  const monthlyFees =
+    data.fees
+      .filter(
+        fee =>
+          fee.month === currentMonth
+      );
 
-  {
-    type: 'expense',
-    emoji: '🍕',
-    value: -250
-  },
 
-  {
-    type: 'expense',
-    emoji: '🛍️',
-    value: -500
-  },
+  const monthlyPayments =
+    data.payments
+      .filter(
+        payment =>
+          payment.status !== 'reversed' &&
+          payment.date?.slice(0,7) ===
+            currentMonth
+      );
 
-  {
-    type: 'expense',
-    emoji: '🎮',
-    value: -750
-  },
 
-  {
-    type: 'expense',
-    emoji: '💳',
-    value: -1000
-  }
+  $('dStudents').textContent =
+    activeStudents;
 
-];
+
+  $('dClasses').textContent =
+    activeClasses;
+
+
+  $('dExpected').textContent =
+    money(
+      monthlyFees.reduce(
+        (
+          total,
+          fee
+        ) =>
+          total + fee.amount,
+        0
+      )
+    );
+
+
+  $('dCollected').textContent =
+    money(
+      monthlyPayments.reduce(
+        (
+          total,
+          payment
+        ) =>
+          total + payment.amount,
+        0
+      )
+    );
+
+
+  $('dDue').textContent =
+    money(
+      data.fees.reduce(
+        (
+          total,
+          fee
+        ) =>
+          total +
+          Math.max(
+            0,
+            fee.amount - fee.paid
+          ),
+        0
+      )
+    );
+
+
+  const day =
+    new Date().getDay();
+
+
+  const todayClasses =
+    data.classes.filter(
+      classItem =>
+        classItem.active !== false &&
+        (
+          classItem.days || []
+        ).includes(
+          days[day]
+        )
+    );
+
+
+  $('todayClasses').innerHTML =
+    todayClasses.length
+      ?
+
+        todayClasses
+          .map(
+            classItem =>
+              `
+              <div class="kpi-line">
+
+                <span>
+                  ${esc(classItem.name)}
+                </span>
+
+                <b>
+                  ${esc(classItem.time || '')}
+                </b>
+
+              </div>
+              `
+          )
+          .join('')
+
+      :
+
+        '<div class="empty">No classes today.</div>';
+
+
+  const paid =
+    monthlyFees.filter(
+      fee =>
+        statusForFee(fee) === 'paid'
+    ).length;
+
+
+  const partial =
+    monthlyFees.filter(
+      fee =>
+        statusForFee(fee) === 'partial'
+    ).length;
+
+
+  const due =
+    monthlyFees.filter(
+      fee =>
+        statusForFee(fee) === 'due'
+    ).length;
+
+
+  $('feeSummary').innerHTML =
+    `
+    <div class="kpi-line">
+      <span>Paid</span>
+      <b class="green">${paid}</b>
+    </div>
+
+    <div class="kpi-line">
+      <span>Partial</span>
+      <b class="amber">${partial}</b>
+    </div>
+
+    <div class="kpi-line">
+      <span>Due</span>
+      <b class="red">${due}</b>
+    </div>
+    `;
+
+
+  $('recentPayments').innerHTML =
+    data.payments
+      .filter(
+        payment =>
+          payment.status !== 'reversed'
+      )
+      .sort(
+        (
+          first,
+          second
+        ) =>
+          second.createdAt
+            .localeCompare(
+              first.createdAt
+            )
+      )
+      .slice(0,5)
+      .map(
+        payment =>
+          `
+          <div class="kpi-line">
+
+            <span>
+              ${esc(
+                studentName(
+                  payment.studentId,
+                  data
+                )
+              )}
+            </span>
+
+            <b class="green">
+              ${money(payment.amount)}
+            </b>
+
+          </div>
+          `
+      )
+      .join('') ||
+      '<div class="empty">No payments yet.</div>';
+
+
+  const overdue =
+    data.fees.filter(
+      fee =>
+        fee.month < currentMonth &&
+        (
+          fee.amount -
+          fee.paid
+        ) > 0
+    ).length;
+
+
+  const outstanding =
+    data.fees.filter(
+      fee =>
+        (
+          fee.amount -
+          fee.paid
+        ) > 0
+    ).length;
+
+
+  const missingFees =
+    data.enrollments
+      .filter(
+        enrollment =>
+          enrollment.active !== false &&
+          !data.fees.some(
+            fee =>
+              fee.studentId ===
+                enrollment.studentId &&
+              fee.classId ===
+                enrollment.classId &&
+              fee.month ===
+                currentMonth
+          )
+      )
+      .length;
+
+
+  $('attention').innerHTML =
+    `
+    <div class="kpi-line">
+
+      <span>
+        Outstanding records
+      </span>
+
+      <b class="red">
+        ${outstanding}
+      </b>
+
+    </div>
+
+    <div class="kpi-line">
+
+      <span>
+        Older overdue records
+      </span>
+
+      <b class="red">
+        ${overdue}
+      </b>
+
+    </div>
+
+    <div class="kpi-line">
+
+      <span>
+        Unrecorded active enrollments
+      </span>
+
+      <b>
+        ${missingFees}
+      </b>
+
+    </div>
+    `;
+
+}
 
 
 /* ============================================================
-   CREATE OBJECT
-   ============================================================ */
+   CLASS MANAGEMENT
+============================================================ */
 
-function spawnObject() {
+async function renderClasses(){
 
-  /*
-    Increase difficulty gradually.
-  */
-
-  let random =
-    Math.random();
+  const data =
+    await maps();
 
 
-  let type;
+  const search =
+    (
+      $('classSearch')?.value ||
+      ''
+    ).toLowerCase();
 
 
-  if (
-    random < 0.58
-  ) {
+  const filter =
+    $('classFilter')?.value ||
+    'all';
 
-    type =
-      objectTypes[
-        Math.floor(
-          Math.random() * 3
+
+  const rows =
+    data.classes.filter(
+      classItem =>
+
+        (
+          filter === 'all' ||
+
+          (
+            filter === 'active' &&
+            classItem.active !== false
+          ) ||
+
+          (
+            filter === 'inactive' &&
+            classItem.active === false
+          )
         )
-      ];
 
-  }
+        &&
 
-  else if (
-    random < 0.72
-  ) {
+        (
+          !search ||
 
-    type =
-      objectTypes[3];
-
-  }
-
-  else {
-
-    type =
-      objectTypes[
-        4 +
-        Math.floor(
-          Math.random() * 4
+          [
+            classItem.name,
+            classItem.subject,
+            classItem.type,
+            classItem.location
+          ]
+          .join(' ')
+          .toLowerCase()
+          .includes(search)
         )
-      ];
+    );
+
+
+  $('classesTable').innerHTML =
+    rows.length
+
+      ?
+
+        rows
+          .map(
+            classItem => {
+
+              const students =
+                classStudents(
+                  classItem.id,
+                  data
+                );
+
+
+              return `
+              <tr>
+
+                <td>
+
+                  <b>
+                    ${esc(classItem.name)}
+                  </b>
+
+                  <br>
+
+                  <small>
+                    ${esc(classItem.subject || '')}
+                  </small>
+
+                </td>
+
+                <td>
+                  ${esc(classItem.type)}
+                </td>
+
+                <td>
+
+                  ${esc(
+                    (
+                      classItem.days || []
+                    ).join(', ')
+                  )}
+
+                  <br>
+
+                  ${esc(classItem.time || '')}
+
+                  ${
+                    classItem.location
+                      ?
+
+                        ' · ' +
+                        esc(
+                          classItem.location
+                        )
+
+                      :
+
+                        ''
+                  }
+
+                </td>
+
+                <td>
+                  ${money(classItem.fee)}
+                </td>
+
+                <td>
+                  ${students.length}
+                </td>
+
+                <td>
+
+                  <span
+                    class="badge ${
+                      classItem.active !== false
+                        ? 'active'
+                        : 'inactive'
+                    }"
+                  >
+
+                    ${
+                      classItem.active !== false
+                        ? 'ACTIVE'
+                        : 'INACTIVE'
+                    }
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <button
+                    class="btn small"
+                    onclick="openClassModal('${classItem.id}')"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    class="btn small"
+                    onclick="toggleClass('${classItem.id}')"
+                  >
+                    ${
+                      classItem.active !== false
+                        ? 'Deactivate'
+                        : 'Activate'
+                    }
+                  </button>
+
+                </td>
+
+              </tr>
+              `;
+
+            }
+          )
+          .join('')
+
+      :
+
+        `
+        <tr>
+
+          <td colspan="7">
+
+            <div class="empty">
+              No classes found.
+            </div>
+
+          </td>
+
+        </tr>
+        `;
+
+}
+
+
+/* ============================================================
+   CLASS MODAL
+============================================================ */
+
+async function openClassModal(id){
+
+  const classItem =
+    id
+      ?
+
+        await get(
+          'classes',
+          id
+        )
+
+      :
+
+        {
+          name:'',
+          type:'Group Class',
+          subject:'',
+          days:[],
+          time:'',
+          location:'',
+          fee:'',
+          capacity:'',
+          active:true
+        };
+
+
+  const selectedDays =
+    selected =>
+      days
+        .map(
+          day =>
+            `
+            <label
+              style="
+                display:inline-flex;
+                gap:5px;
+                align-items:center;
+                margin:4px 8px 4px 0;
+                font-size:12px
+              "
+            >
+
+              <input
+                type="checkbox"
+                name="days"
+                value="${day}"
+                ${
+                  selected.includes(day)
+                    ? 'checked'
+                    : ''
+                }
+              >
+
+              ${day.slice(0,3)}
+
+            </label>
+            `
+        )
+        .join('');
+
+
+  openModal(
+
+    id
+      ? 'Edit Class'
+      : 'Add Class',
+
+    `
+    <div class="form-grid">
+
+      <div class="field">
+
+        <label>
+          Class Name *
+        </label>
+
+        <input
+          id="c_name"
+          value="${esc(classItem.name)}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Class Type *
+        </label>
+
+        <select id="c_type">
+
+          <option
+            ${
+              classItem.type === 'Group Class'
+                ? 'selected'
+                : ''
+            }
+          >
+            Group Class
+          </option>
+
+          <option
+            ${
+              classItem.type === 'Hall Class'
+                ? 'selected'
+                : ''
+            }
+          >
+            Hall Class
+          </option>
+
+          <option
+            ${
+              classItem.type === 'Individual'
+                ? 'selected'
+                : ''
+            }
+          >
+            Individual
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Subject
+        </label>
+
+        <input
+          id="c_subject"
+          value="${esc(
+            classItem.subject || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Fee Per Person / Month *
+        </label>
+
+        <input
+          id="c_fee"
+          type="number"
+          min="0"
+          step="0.01"
+          value="${classItem.fee ?? ''}"
+        >
+
+      </div>
+
+
+      <div class="field full">
+
+        <label>
+          Class Days
+        </label>
+
+        <div>
+          ${selectedDays(
+            classItem.days || []
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Time
+        </label>
+
+        <input
+          id="c_time"
+          placeholder="4:00 PM - 5:30 PM"
+          value="${esc(
+            classItem.time || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Hall / Location
+        </label>
+
+        <input
+          id="c_location"
+          value="${esc(
+            classItem.location || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Maximum Students
+        </label>
+
+        <input
+          id="c_capacity"
+          type="number"
+          min="0"
+          value="${classItem.capacity || ''}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Status
+        </label>
+
+        <select id="c_active">
+
+          <option
+            value="true"
+            ${
+              classItem.active !== false
+                ? 'selected'
+                : ''
+            }
+          >
+            Active
+          </option>
+
+          <option
+            value="false"
+            ${
+              classItem.active === false
+                ? 'selected'
+                : ''
+            }
+          >
+            Inactive
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+    `,
+
+    `
+    <button
+      class="btn"
+      onclick="closeModal()"
+    >
+      Cancel
+    </button>
+
+    <button
+      class="btn primary"
+      onclick="saveClass('${id || ''}')"
+    >
+      Save Class
+    </button>
+    `
+  );
+
+}
+
+
+async function saveClass(id){
+
+  const name =
+    $('c_name')
+      .value
+      .trim();
+
+
+  const fee =
+    Number(
+      $('c_fee').value
+    );
+
+
+  if(
+    !name ||
+    fee < 0
+  ){
+
+    alert(
+      'Class name and a valid fee are required.'
+    );
+
+    return;
 
   }
 
 
-  const size =
-    type.type === 'bonus'
-      ? 46
-      : 42;
+  const object = {
 
+    id:
+      id ||
+      uid(),
 
-  objects.push({
-
-    x:
-      25 +
-      Math.random() *
-      (width - 50),
-
-    y:
-      -60,
-
-    size:
-
-      size,
-
-    speed:
-
-      speed *
-      (
-        0.8 +
-        Math.random() * 0.7
-      ),
+    name,
 
     type:
+      $('c_type').value,
 
-      type.type,
+    subject:
+      $('c_subject')
+        .value
+        .trim(),
 
-    emoji:
+    fee,
 
-      type.emoji,
+    days:
+      [
+        ...document
+          .querySelectorAll(
+            'input[name="days"]:checked'
+          )
+      ]
+      .map(
+        checkbox =>
+          checkbox.value
+      ),
 
-    value:
+    time:
+      $('c_time')
+        .value
+        .trim(),
 
-      type.value,
+    location:
+      $('c_location')
+        .value
+        .trim(),
 
-    rotation:
+    capacity:
+      Number(
+        $('c_capacity').value
+      ) || 0,
 
-      Math.random() *
-      Math.PI * 2,
+    active:
+      $('c_active').value === 'true',
 
-    rotationSpeed:
+    updatedAt:
+      new Date().toISOString()
 
-      (
-        Math.random() -
-        0.5
-      ) * 0.04
-
-  });
-
-}
-
-
-/* ============================================================
-   COLLISION
-   ============================================================ */
-
-function collision(a, b) {
-
-  return (
-
-    a.x - a.width / 2 <
-      b.x + b.size / 2 &&
-
-    a.x + a.width / 2 >
-      b.x - b.size / 2 &&
-
-    a.y - a.height / 2 <
-      b.y + b.size / 2 &&
-
-    a.y + a.height / 2 >
-      b.y - b.size / 2
-
-  );
-
-}
+  };
 
 
-/* ============================================================
-   FORMAT SCORE
-   ============================================================ */
-
-function formatMoney(value) {
-
-  return (
-    'Rs ' +
-    Math.round(
-      value
-    ).toLocaleString(
-      'en-US'
-    )
-  );
-
-}
+  const old =
+    id
+      ?
+        await get(
+          'classes',
+          id
+        )
+      :
+        null;
 
 
-/* ============================================================
-   HUD
-   ============================================================ */
-
-function updateHUD() {
-
-  document.getElementById(
-    'score'
-  ).textContent =
-    formatMoney(
-      score
-    );
+  object.createdAt =
+    old?.createdAt ||
+    new Date().toISOString();
 
 
-  document.getElementById(
-    'level'
-  ).textContent =
-    level;
-
-
-  document.getElementById(
-    'lives'
-  ).textContent =
-    '❤️'.repeat(
-      Math.max(
-        0,
-        lives
-      )
-    ) ||
-    '💀';
-
-}
-
-
-/* ============================================================
-   MESSAGE
-   ============================================================ */
-
-function showMessage(text) {
-
-  const element =
-    document.getElementById(
-      'message'
-    );
-
-
-  element.textContent =
-    text;
-
-
-  element.classList.remove(
-    'show'
+  await put(
+    'classes',
+    object
   );
 
 
-  void element.offsetWidth;
+  closeModal();
+
+  renderClasses();
+
+  renderDashboard();
+
+}
 
 
-  element.classList.add(
-    'show'
+async function toggleClass(id){
+
+  const classItem =
+    await get(
+      'classes',
+      id
+    );
+
+
+  classItem.active =
+    classItem.active === false;
+
+
+  classItem.updatedAt =
+    new Date().toISOString();
+
+
+  await put(
+    'classes',
+    classItem
   );
 
-}
 
+  renderClasses();
 
-/* ============================================================
-   COMBO
-   ============================================================ */
-
-function increaseCombo() {
-
-  combo++;
-
-  comboTimer =
-    2.0;
-
-
-  if (
-    combo >= 2
-  ) {
-
-    const element =
-      document.getElementById(
-        'combo'
-      );
-
-
-    element.textContent =
-      '🔥 COMBO x' +
-      combo;
-
-
-    element.classList.add(
-      'show'
-    );
-
-  }
-
-}
-
-
-function resetCombo() {
-
-  combo = 0;
-
-  comboTimer = 0;
-
-
-  document.getElementById(
-    'combo'
-  ).classList.remove(
-    'show'
-  );
+  renderDashboard();
 
 }
 
 
 /* ============================================================
-   HAPTIC
-   ============================================================ */
+   STUDENTS
+============================================================ */
 
-function vibrate(pattern) {
+async function renderStudents(){
 
-  if (
-    navigator.vibrate
-  ) {
+  const data =
+    await maps();
 
-    navigator.vibrate(
-      pattern
-    );
 
-  }
-
-}
-
-
-/* ============================================================
-   SOUND
-   ============================================================ */
-
-let audioContext = null;
-
-
-function sound(
-  frequency,
-  duration,
-  type = 'sine'
-) {
-
-  try {
-
-    if (!audioContext) {
-
-      audioContext =
-        new (
-          window.AudioContext ||
-          window.webkitAudioContext
-        )();
-
-    }
-
-
-    const oscillator =
-      audioContext.createOscillator();
-
-
-    const gain =
-      audioContext.createGain();
-
-
-    oscillator.type =
-      type;
-
-
-    oscillator.frequency.value =
-      frequency;
-
-
-    gain.gain.setValueAtTime(
-      0.08,
-      audioContext.currentTime
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.001,
-      audioContext.currentTime +
-      duration
-    );
-
-
-    oscillator.connect(
-      gain
-    );
-
-
-    gain.connect(
-      audioContext.destination
-    );
-
-
-    oscillator.start();
-
-
-    oscillator.stop(
-      audioContext.currentTime +
-      duration
-    );
-
-  }
-
-  catch (error) {
-
-    /* Sound is optional. */
-
-  }
-
-}
-
-
-/* ============================================================
-   COLLECT OBJECT
-   ============================================================ */
-
-function collectObject(
-  object
-) {
-
-  if (
-    object.type === 'expense'
-  ) {
-
-    lives--;
-
-    player.hitFlash =
-      0.4;
-
-
-    resetCombo();
-
-
-    showMessage(
-      '💸 Ouch! Unnecessary expense!'
-    );
-
-
-    sound(
-      120,
-      0.2,
-      'sawtooth'
-    );
-
-
-    vibrate(
-      [60, 40, 60]
-    );
-
-
-    if (
-      lives <= 0
-    ) {
-
-      endGame();
-
-    }
-
-
-    return;
-
-  }
-
-
-  increaseCombo();
-
-
-  const multiplier =
-    Math.max(
-      1,
-      combo
-    );
-
-
-  const gained =
-    object.value *
-    multiplier;
-
-
-  score +=
-    gained;
-
-
-  if (
-    object.type === 'bonus'
-  ) {
-
-    showMessage(
-      '💎 SAVINGS BONUS +' +
-      formatMoney(
-        gained
-      )
-    );
-
-
-    sound(
-      900,
-      0.15,
-      'sine'
-    );
-
-
-    vibrate(
-      25
-    );
-
-  }
-
-  else {
-
-    showMessage(
-      '+' +
-      formatMoney(
-        gained
-      )
-    );
-
-
-    sound(
-      600,
-      0.08,
-      'sine'
-    );
-
-
-    vibrate(
-      15
-    );
-
-  }
-
-
-  updateLevel();
-
-}
-
-
-/* ============================================================
-   LEVEL
-   ============================================================ */
-
-function updateLevel() {
-
-  const newLevel =
-    Math.floor(
-      score / 5000
-    ) + 1;
-
-
-  if (
-    newLevel > level
-  ) {
-
-    level =
-      newLevel;
-
-
-    speed =
-      2.5 +
-      (
-        level -
-        1
-      ) *
-      0.55;
-
-
-    showMessage(
-      '🚀 LEVEL ' +
-      level +
-      '!'
-    );
-
-
-    sound(
-      800,
-      0.12
-    );
-
-
-    setTimeout(
-      () =>
-        sound(
-          1100,
-          0.15
-        ),
-      100
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   UPDATE
-   ============================================================ */
-
-function update(delta) {
-
-  if (!running || paused) {
-
-    return;
-
-  }
-
-
-  /*
-    Smooth player movement.
-  */
-
-  player.x +=
+  const search =
     (
-      player.targetX -
-      player.x
-    ) *
-    Math.min(
-      1,
-      delta * 12
+      $('studentSearch')?.value ||
+      ''
+    ).toLowerCase();
+
+
+  const filter =
+    $('studentFilter')?.value ||
+    'active';
+
+
+  const rows =
+    data.students.filter(
+      student =>
+
+        (
+          filter === 'all' ||
+
+          (
+            filter === 'active' &&
+            student.active !== false
+          ) ||
+
+          (
+            filter === 'inactive' &&
+            student.active === false
+          )
+        )
+
+        &&
+
+        (
+          !search ||
+
+          [
+            student.name,
+            student.phone,
+            student.guardian,
+            student.studentNo
+          ]
+          .join(' ')
+          .toLowerCase()
+          .includes(search)
+        )
     );
 
 
-  /*
-    Keep player inside screen.
-  */
+  $('studentsTable').innerHTML =
+    rows.length
 
-  player.x =
-    Math.max(
-      player.width / 2,
-      Math.min(
-        width -
-        player.width / 2,
-        player.x
+      ?
+
+        rows
+          .map(
+            student => {
+
+              const classes =
+                data
+                  .enrollments
+                  .filter(
+                    enrollment =>
+                      enrollment.studentId ===
+                        student.id &&
+                      enrollment.active !== false
+                  )
+                  .map(
+                    enrollment =>
+                      className(
+                        enrollment.classId,
+                        data
+                      )
+                  );
+
+
+              const balance =
+                balanceForStudent(
+                  student.id,
+                  data
+                );
+
+
+              return `
+              <tr>
+
+                <td>
+
+                  <b>
+                    ${esc(student.name)}
+                  </b>
+
+                  <br>
+
+                  <small>
+                    ${esc(
+                      student.studentNo || ''
+                    )}
+                  </small>
+
+                </td>
+
+                <td>
+                  ${esc(student.phone || '')}
+                </td>
+
+                <td>
+                  ${esc(
+                    classes.join(', ') ||
+                    '—'
+                  )}
+                </td>
+
+                <td
+                  class="money ${
+                    balance > 0
+                      ? 'red'
+                      : 'green'
+                  }"
+                >
+                  ${money(balance)}
+                </td>
+
+                <td>
+
+                  <span
+                    class="badge ${
+                      student.active !== false
+                        ? 'active'
+                        : 'inactive'
+                    }"
+                  >
+                    ${
+                      student.active !== false
+                        ? 'ACTIVE'
+                        : 'INACTIVE'
+                    }
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <button
+                    class="btn small"
+                    onclick="openStudentModal('${student.id}')"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    class="btn small"
+                    onclick="viewStudent('${student.id}')"
+                  >
+                    View
+                  </button>
+
+                </td>
+
+              </tr>
+              `;
+
+            }
+          )
+          .join('')
+
+      :
+
+        `
+        <tr>
+
+          <td colspan="6">
+
+            <div class="empty">
+              No students found.
+            </div>
+
+          </td>
+
+        </tr>
+        `;
+
+}
+
+
+/* ============================================================
+   STUDENT MODAL
+============================================================ */
+
+async function openStudentModal(id){
+
+  const student =
+    id
+      ?
+
+        await get(
+          'students',
+          id
+        )
+
+      :
+
+        {
+          name:'',
+          studentNo:'',
+          guardian:'',
+          phone:'',
+          address:'',
+          school:'',
+          grade:'',
+          joined:
+            todayISO(),
+          active:true
+        };
+
+
+  const classes =
+    await all('classes');
+
+
+  const enrollments =
+    await all('enrollments');
+
+
+  const enrolled =
+    enrollments
+      .filter(
+        enrollment =>
+          enrollment.studentId ===
+            student.id &&
+          enrollment.active !== false
       )
+      .map(
+        enrollment =>
+          enrollment.classId
+      );
+
+
+  openModal(
+
+    id
+      ? 'Edit Student'
+      : 'Add Student',
+
+    `
+    <div class="form-grid">
+
+      <div class="field">
+
+        <label>
+          Student Name *
+        </label>
+
+        <input
+          id="s_name"
+          value="${esc(student.name)}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Student ID / Admission No.
+        </label>
+
+        <input
+          id="s_no"
+          value="${esc(
+            student.studentNo || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Parent / Guardian
+        </label>
+
+        <input
+          id="s_guardian"
+          value="${esc(
+            student.guardian || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Phone
+        </label>
+
+        <input
+          id="s_phone"
+          value="${esc(
+            student.phone || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          School
+        </label>
+
+        <input
+          id="s_school"
+          value="${esc(
+            student.school || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Grade
+        </label>
+
+        <input
+          id="s_grade"
+          value="${esc(
+            student.grade || ''
+          )}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Joined Date
+        </label>
+
+        <input
+          id="s_joined"
+          type="date"
+          value="${
+            student.joined ||
+            todayISO()
+          }"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Status
+        </label>
+
+        <select id="s_active">
+
+          <option
+            value="true"
+            ${
+              student.active !== false
+                ? 'selected'
+                : ''
+            }
+          >
+            Active
+          </option>
+
+          <option
+            value="false"
+            ${
+              student.active === false
+                ? 'selected'
+                : ''
+            }
+          >
+            Inactive
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field full">
+
+        <label>
+          Address
+        </label>
+
+        <textarea id="s_address">${
+          esc(
+            student.address || ''
+          )
+        }</textarea>
+
+      </div>
+
+
+      <div class="field full">
+
+        <label>
+          Enroll in Classes
+        </label>
+
+        <div class="grid">
+
+          ${
+            classes
+              .filter(
+                classItem =>
+                  classItem.active !== false
+              )
+              .map(
+                classItem =>
+                  `
+                  <label
+                    style="
+                      padding:9px;
+                      border:1px solid var(--line);
+                      border-radius:9px
+                    "
+                  >
+
+                    <input
+                      type="checkbox"
+                      name="studentClass"
+                      value="${classItem.id}"
+                      ${
+                        enrolled.includes(
+                          classItem.id
+                        )
+                          ? 'checked'
+                          : ''
+                      }
+                    >
+
+                    ${esc(classItem.name)}
+
+                    —
+                    ${money(classItem.fee)}
+                    /month
+
+                  </label>
+                  `
+              )
+              .join('')
+
+              ||
+
+              'No active classes.'
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+    `,
+
+    `
+    <button
+      class="btn"
+      onclick="closeModal()"
+    >
+      Cancel
+    </button>
+
+    <button
+      class="btn primary"
+      onclick="saveStudent('${id || ''}')"
+    >
+      Save Student
+    </button>
+    `
+  );
+
+}
+
+
+async function saveStudent(id){
+
+  const name =
+    $('s_name')
+      .value
+      .trim();
+
+
+  if(!name){
+
+    alert(
+      'Student name is required.'
     );
 
-
-  /*
-    Spawn objects.
-  */
-
-  spawnTimer -=
-    delta;
-
-
-  const spawnRate =
-    Math.max(
-      0.28,
-      0.72 -
-      (
-        level -
-        1
-      ) *
-      0.035
-    );
-
-
-  if (
-    spawnTimer <= 0
-  ) {
-
-    spawnObject();
-
-
-    /*
-      Sometimes spawn another
-      object at higher levels.
-    */
-
-    if (
-      level >= 5 &&
-      Math.random() < 0.18
-    ) {
-
-      spawnObject();
-
-    }
-
-
-    spawnTimer =
-      spawnRate;
+    return;
 
   }
 
 
-  /*
-    Move objects.
-  */
-
-  for (
-    let i =
-      objects.length - 1;
-    i >= 0;
-    i--
-  ) {
-
-    const object =
-      objects[i];
+  const old =
+    id
+      ?
+        await get(
+          'students',
+          id
+        )
+      :
+        null;
 
 
-    object.y +=
-      object.speed *
-      60 *
-      delta;
+  const student = {
+
+    id:
+      id ||
+      uid(),
+
+    name,
+
+    studentNo:
+      $('s_no')
+        .value
+        .trim(),
+
+    guardian:
+      $('s_guardian')
+        .value
+        .trim(),
+
+    phone:
+      $('s_phone')
+        .value
+        .trim(),
+
+    school:
+      $('s_school')
+        .value
+        .trim(),
+
+    grade:
+      $('s_grade')
+        .value
+        .trim(),
+
+    joined:
+      $('s_joined').value,
+
+    address:
+      $('s_address').value,
+
+    active:
+      $('s_active').value === 'true',
+
+    createdAt:
+      old?.createdAt ||
+      new Date().toISOString(),
+
+    updatedAt:
+      new Date().toISOString()
+
+  };
 
 
-    object.rotation +=
-      object.rotationSpeed;
+  await put(
+    'students',
+    student
+  );
 
 
-    /*
-      Collision.
-    */
+  const selected =
+    [
+      ...document
+        .querySelectorAll(
+          'input[name="studentClass"]:checked'
+        )
+    ]
+    .map(
+      checkbox =>
+        checkbox.value
+    );
 
-    if (
-      collision(
-        player,
-        object
+
+  const allEnrollments =
+    await all('enrollments');
+
+
+  for(
+    const enrollment of
+      allEnrollments.filter(
+        item =>
+          item.studentId ===
+          student.id
       )
-    ) {
+  ){
 
-      collectObject(
-        object
+    enrollment.active =
+      selected.includes(
+        enrollment.classId
       );
 
 
-      objects.splice(
-        i,
-        1
+    enrollment.updatedAt =
+      new Date().toISOString();
+
+
+    await put(
+      'enrollments',
+      enrollment
+    );
+
+  }
+
+
+  for(
+    const classId of selected
+  ){
+
+    if(
+      !allEnrollments.some(
+        enrollment =>
+          enrollment.studentId ===
+            student.id &&
+          enrollment.classId ===
+            classId
+      )
+    ){
+
+      await put(
+        'enrollments',
+        {
+
+          id:uid(),
+
+          studentId:
+            student.id,
+
+          classId,
+
+          active:true,
+
+          joinedAt:
+            new Date().toISOString()
+
+        }
       );
 
+    }
+
+  }
+
+
+  closeModal();
+
+  renderStudents();
+
+  renderDashboard();
+
+}
+
+
+/* ============================================================
+   STUDENT DETAILS
+============================================================ */
+
+async function viewStudent(id){
+
+  const data =
+    await maps();
+
+
+  const student =
+    data.students.find(
+      item =>
+        item.id === id
+    );
+
+
+  const fees =
+    data.fees.filter(
+      fee =>
+        fee.studentId === id
+    );
+
+
+  const payments =
+    data.payments.filter(
+      payment =>
+        payment.studentId === id &&
+        payment.status !== 'reversed'
+    );
+
+
+  openModal(
+
+    'Student Details',
+
+    `
+    <div>
+
+      <h3>
+        ${esc(student.name)}
+      </h3>
+
+      <p>
+        ${esc(
+          student.studentNo || ''
+        )}
+
+        ·
+
+        ${esc(
+          student.phone || ''
+        )}
+      </p>
+
+
+      <div class="grid cards4">
+
+        <div class="card">
+
+          <div class="stat-label">
+            BALANCE
+          </div>
+
+          <div class="stat-value red">
+            ${money(
+              balanceForStudent(
+                id,
+                data
+              )
+            )}
+          </div>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="stat-label">
+            TOTAL PAID
+          </div>
+
+          <div class="stat-value green">
+            ${money(
+              payments.reduce(
+                (
+                  total,
+                  payment
+                ) =>
+                  total +
+                  payment.amount,
+                0
+              )
+            )}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <h3>
+        Classes
+      </h3>
+
+
+      ${
+        data.enrollments
+          .filter(
+            enrollment =>
+              enrollment.studentId === id &&
+              enrollment.active !== false
+          )
+          .map(
+            enrollment =>
+              `
+              <div class="kpi-line">
+
+                <span>
+                  ${esc(
+                    className(
+                      enrollment.classId,
+                      data
+                    )
+                  )}
+                </span>
+
+                <b>
+                  ${money(
+                    data.classes.find(
+                      classItem =>
+                        classItem.id ===
+                        enrollment.classId
+                    )?.fee
+                  )}
+                </b>
+
+              </div>
+              `
+          )
+          .join('')
+
+          ||
+
+          '<div class="empty">No active classes.</div>'
+      }
+
+
+      <h3>
+        Recent Fees
+      </h3>
+
+
+      ${
+        fees
+          .slice(-10)
+          .reverse()
+          .map(
+            fee =>
+              `
+              <div class="kpi-line">
+
+                <span>
+                  ${esc(
+                    className(
+                      fee.classId,
+                      data
+                    )
+                  )}
+
+                  ·
+
+                  ${fee.month}
+                </span>
+
+                <b>
+                  ${money(
+                    fee.amount -
+                    fee.paid
+                  )}
+                </b>
+
+              </div>
+              `
+          )
+          .join('')
+
+          ||
+
+          '<div class="empty">No fees.</div>'
+      }
+
+    </div>
+    `,
+
+    `
+    <button
+      class="btn"
+      onclick="closeModal()"
+    >
+      Close
+    </button>
+    `
+  );
+
+}
+
+
+/* ============================================================
+   ATTENDANCE
+============================================================ */
+
+async function fillAttendanceClass(){
+
+  const classes =
+    (
+      await all('classes')
+    )
+    .filter(
+      classItem =>
+        classItem.active !== false
+    );
+
+
+  const current =
+    $('attClass').value;
+
+
+  $('attClass').innerHTML =
+    classes
+      .map(
+        classItem =>
+          `
+          <option value="${classItem.id}">
+            ${esc(classItem.name)}
+          </option>
+          `
+      )
+      .join('');
+
+
+  if(
+    classes.some(
+      classItem =>
+        classItem.id === current
+    )
+  ){
+
+    $('attClass').value =
+      current;
+
+  }
+
+
+  if(
+    !$('attDate').value
+  ){
+
+    $('attDate').value =
+      todayISO();
+
+  }
+
+}
+
+
+async function renderAttendance(){
+
+  const data =
+    await maps();
+
+
+  const classId =
+    $('attClass').value;
+
+
+  const date =
+    $('attDate').value;
+
+
+  const students =
+    classStudents(
+      classId,
+      data
+    );
+
+
+  if(!classId){
+
+    $('attendanceList').innerHTML =
+      `
+      <div class="empty">
+        Create an active class first.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  const existing =
+    data.attendance.filter(
+      attendance =>
+        attendance.classId ===
+          classId &&
+        attendance.date ===
+          date
+    );
+
+
+  $('attendanceList').innerHTML =
+    students.length
+
+      ?
+
+        students
+          .map(
+            student => {
+
+              const record =
+                existing.find(
+                  item =>
+                    item.studentId ===
+                    student.id
+                );
+
+
+              const status =
+                record?.status ||
+                'present';
+
+
+              return `
+              <div class="checkrow">
+
+                <div>
+
+                  <b>
+                    ${esc(student.name)}
+                  </b>
+
+                  <small>
+                    ${esc(
+                      student.studentNo || ''
+                    )}
+                  </small>
+
+                </div>
+
+
+                <div>
+
+                  <select
+                    class="att-btn ${status}"
+                    onchange="
+                      saveAttendance(
+                        '${student.id}',
+                        '${classId}',
+                        '${date}',
+                        this.value
+                      )
+                    "
+                  >
+
+                    <option
+                      value="present"
+                      ${
+                        status === 'present'
+                          ? 'selected'
+                          : ''
+                      }
+                    >
+                      Present
+                    </option>
+
+                    <option
+                      value="absent"
+                      ${
+                        status === 'absent'
+                          ? 'selected'
+                          : ''
+                      }
+                    >
+                      Absent
+                    </option>
+
+                    <option
+                      value="late"
+                      ${
+                        status === 'late'
+                          ? 'selected'
+                          : ''
+                      }
+                    >
+                      Late
+                    </option>
+
+                    <option
+                      value="excused"
+                      ${
+                        status === 'excused'
+                          ? 'selected'
+                          : ''
+                      }
+                    >
+                      Excused
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+              `;
+
+            }
+          )
+          .join('')
+
+      :
+
+        `
+        <div class="empty">
+          No students are enrolled in this class.
+        </div>
+        `;
+
+}
+
+
+async function saveAttendance(
+  studentId,
+  classId,
+  date,
+  status
+){
+
+  await put(
+    'attendance',
+    {
+
+      id:
+        classId +
+        '_' +
+        studentId +
+        '_' +
+        date,
+
+      studentId,
+
+      classId,
+
+      date,
+
+      status,
+
+      updatedAt:
+        new Date().toISOString()
+
+    }
+  );
+
+
+  renderAttendance();
+
+}
+
+
+/* ============================================================
+   FEE GENERATION
+============================================================ */
+
+async function generateFeesForMonth(){
+
+  const month =
+    prompt(
+      'Enter month (YYYY-MM):',
+      monthISO()
+    );
+
+
+  if(
+    !month ||
+    !/^\d{4}-\d{2}$/.test(month)
+  ){
+
+    return;
+
+  }
+
+
+  const data =
+    await maps();
+
+
+  let created =
+    0;
+
+
+  for(
+    const enrollment of
+      data.enrollments.filter(
+        item =>
+          item.active !== false
+      )
+  ){
+
+    const classItem =
+      data.classes.find(
+        item =>
+          item.id ===
+          enrollment.classId
+      );
+
+
+    const student =
+      data.students.find(
+        item =>
+          item.id ===
+          enrollment.studentId
+      );
+
+
+    if(
+      !classItem ||
+      !student ||
+      student.active === false
+    ){
 
       continue;
 
     }
 
 
-    /*
-      Remove off-screen objects.
-    */
-
-    if (
-      object.y >
-      height + 80
-    ) {
-
-      objects.splice(
-        i,
-        1
+    const exists =
+      data.fees.some(
+        fee =>
+          fee.studentId ===
+            enrollment.studentId &&
+          fee.classId ===
+            enrollment.classId &&
+          fee.month ===
+            month
       );
 
+
+    if(!exists){
+
+      await put(
+        'fees',
+        {
+
+          id:uid(),
+
+          studentId:
+            enrollment.studentId,
+
+          classId:
+            enrollment.classId,
+
+          month,
+
+          amount:
+            Number(
+              classItem.fee
+            ) || 0,
+
+          paid:0,
+
+          createdAt:
+            new Date().toISOString()
+
+        }
+      );
+
+
+      created++;
+
     }
 
   }
 
 
-  /*
-    Combo timeout.
-  */
-
-  if (
-    combo > 0
-  ) {
-
-    comboTimer -=
-      delta;
+  alert(
+    `${created} new fee record(s) created for ${month}. Existing records were left untouched.`
+  );
 
 
-    if (
-      comboTimer <= 0
-    ) {
+  renderFees();
 
-      resetCombo();
-
-    }
-
-  }
-
-
-  if (
-    player.hitFlash > 0
-  ) {
-
-    player.hitFlash -=
-      delta;
-
-  }
-
-
-  updateHUD();
+  renderDashboard();
 
 }
 
 
 /* ============================================================
-   DRAW BACKGROUND
-   ============================================================ */
+   FEES
+============================================================ */
 
-function drawBackground() {
+async function renderFees(){
 
-  ctx.clearRect(
-    0,
-    0,
-    width,
-    height
-  );
+  const data =
+    await maps();
 
 
-  /*
-    Gradient.
-  */
-
-  const gradient =
-    ctx.createLinearGradient(
-      0,
-      0,
-      0,
-      height
-    );
+  const month =
+    $('feeMonth').value ||
+    monthISO();
 
 
-  gradient.addColorStop(
-    0,
-    '#192231'
-  );
+  const status =
+    $('feeStatus').value;
 
 
-  gradient.addColorStop(
-    1,
-    '#0b1017'
-  );
+  const search =
+    (
+      $('feeSearch').value ||
+      ''
+    ).toLowerCase();
 
 
-  ctx.fillStyle =
-    gradient;
+  const rows =
+    data.fees.filter(
+      fee =>
 
+        fee.month === month
 
-  ctx.fillRect(
-    0,
-    0,
-    width,
-    height
-  );
+        &&
 
-
-  /*
-    Background buildings.
-  */
-
-  const buildingWidth =
-    55;
-
-
-  for (
-    let x = 0;
-    x < width;
-    x += buildingWidth
-  ) {
-
-    const buildingHeight =
-      70 +
-      (
         (
-          x * 17
-        ) %
-        130
-      );
+          !search ||
 
+          (
+            studentName(
+              fee.studentId,
+              data
+            ) +
 
-    ctx.fillStyle =
-      'rgba(255,255,255,0.025)';
+            ' ' +
 
+            className(
+              fee.classId,
+              data
+            )
+          )
+          .toLowerCase()
+          .includes(search)
+        )
 
-    ctx.fillRect(
-      x,
-      height -
-        50 -
-        buildingHeight,
-      buildingWidth - 5,
-      buildingHeight
+        &&
+
+        (
+          status === 'all' ||
+
+          statusForFee(fee) ===
+            status
+        )
     );
 
 
-    /*
-      Windows.
-    */
+  $('feesTable').innerHTML =
+    rows.length
 
-    for (
-      let y =
-        height -
-        35 -
-        buildingHeight;
+      ?
 
-      y <
-        height - 60;
+        rows
+          .sort(
+            (
+              first,
+              second
+            ) =>
+              studentName(
+                first.studentId,
+                data
+              )
+              .localeCompare(
+                studentName(
+                  second.studentId,
+                  data
+                )
+              )
+          )
+          .map(
+            fee => {
 
-      y += 22
-    ) {
-
-      ctx.fillStyle =
-        'rgba(255,209,102,0.05)';
-
-
-      ctx.fillRect(
-        x + 10,
-        y,
-        5,
-        5
-      );
-
-
-      ctx.fillRect(
-        x + 28,
-        y,
-        5,
-        5
-      );
-
-    }
-
-  }
+              const balance =
+                Math.max(
+                  0,
+                  fee.amount -
+                  fee.paid
+                );
 
 
-  /*
-    Road / ground.
-  */
-
-  ctx.fillStyle =
-    'rgba(0,0,0,0.18)';
+              const statusValue =
+                statusForFee(fee);
 
 
-  ctx.fillRect(
-    0,
-    height - 80,
-    width,
-    80
-  );
+              return `
+              <tr>
 
+                <td>
+                  ${esc(
+                    studentName(
+                      fee.studentId,
+                      data
+                    )
+                  )}
+                </td>
 
-  /*
-    Road lines.
-  */
+                <td>
+                  ${esc(
+                    className(
+                      fee.classId,
+                      data
+                    )
+                  )}
+                </td>
 
-  ctx.strokeStyle =
-    'rgba(255,255,255,0.05)';
+                <td>
+                  ${fee.month}
+                </td>
 
+                <td>
+                  ${money(fee.amount)}
+                </td>
 
-  ctx.lineWidth =
-    2;
+                <td>
+                  ${money(fee.paid)}
+                </td>
 
+                <td
+                  class="${
+                    balance > 0
+                      ? 'red'
+                      : 'green'
+                  }"
+                >
+                  ${money(balance)}
+                </td>
 
-  for (
-    let y =
-      height - 55;
-    y < height;
-    y += 25
-  ) {
+                <td>
 
-    ctx.beginPath();
+                  <span
+                    class="badge ${statusValue}"
+                  >
+                    ${statusValue.toUpperCase()}
+                  </span>
 
-    ctx.moveTo(
-      0,
-      y
-    );
+                </td>
 
-    ctx.lineTo(
-      width,
-      y
-    );
+                <td>
 
-    ctx.stroke();
+                  ${
+                    balance > 0
 
-  }
+                      ?
+
+                        `
+                        <button
+                          class="btn small primary"
+                          onclick="
+                            openPaymentModal(
+                              '${fee.id}'
+                            )
+                          "
+                        >
+                          Pay
+                        </button>
+                        `
+
+                      :
+
+                        `
+                        <span
+                          style="
+                            color:var(--green);
+                            font-weight:800
+                          "
+                        >
+                          Complete
+                        </span>
+                        `
+                  }
+
+                </td>
+
+              </tr>
+              `;
+
+            }
+          )
+          .join('')
+
+      :
+
+        `
+        <tr>
+
+          <td colspan="8">
+
+            <div class="empty">
+
+              No fee records for this month.
+              Use “Generate Month Fees”.
+
+            </div>
+
+          </td>
+
+        </tr>
+        `;
 
 }
 
 
 /* ============================================================
-   DRAW PLAYER
-   ============================================================ */
-
-function drawPlayer() {
-
-  const x =
-    player.x;
-
-
-  const y =
-    player.y;
-
-
-  ctx.save();
-
-
-  /*
-    Hit flash.
-  */
-
-  if (
-    player.hitFlash > 0
-  ) {
-
-    ctx.globalAlpha =
-      0.5 +
-      Math.sin(
-        player.hitFlash * 30
-      ) *
-      0.3;
-
-  }
-
-
-  /*
-    Shadow.
-  */
-
-  ctx.fillStyle =
-    'rgba(0,0,0,0.35)';
-
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    x,
-    y + 29,
-    25,
-    7,
-    0,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /*
-    Body.
-  */
-
-  ctx.fillStyle =
-    '#ffffff';
-
-
-  roundRect(
-    ctx,
-    x - 24,
-    y - 25,
-    48,
-    48,
-    14
-  );
-
-
-  ctx.fill();
-
-
-  /*
-    Suit.
-  */
-
-  ctx.fillStyle =
-    '#25354a';
-
-
-  roundRect(
-    ctx,
-    x - 20,
-    y - 5,
-    40,
-    27,
-    10
-  );
-
-
-  ctx.fill();
-
-
-  /*
-    Face.
-  */
-
-  ctx.fillStyle =
-    '#f2c7a5';
-
-
-  ctx.beginPath();
-
-  ctx.arc(
-    x,
-    y - 13,
-    14,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /*
-    Hair.
-  */
-
-  ctx.fillStyle =
-    '#251c19';
-
-
-  ctx.beginPath();
-
-  ctx.arc(
-    x,
-    y - 18,
-    14,
-    Math.PI,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /*
-    Eyes.
-  */
-
-  ctx.fillStyle =
-    '#111';
-
-
-  ctx.beginPath();
-
-  ctx.arc(
-    x - 5,
-    y - 12,
-    1.5,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.arc(
-    x + 5,
-    y - 12,
-    1.5,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /*
-    Smile.
-  */
-
-  ctx.strokeStyle =
-    '#111';
-
-  ctx.lineWidth =
-    1.5;
-
-
-  ctx.beginPath();
-
-  ctx.arc(
-    x,
-    y - 8,
-    5,
-    0,
-    Math.PI
-  );
-
-  ctx.stroke();
-
-
-  /*
-    Tie.
-  */
-
-  ctx.fillStyle =
-    '#d64a4a';
-
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    x,
-    y - 1
-  );
-
-  ctx.lineTo(
-    x - 4,
-    y + 10
-  );
-
-  ctx.lineTo(
-    x,
-    y + 16
-  );
-
-  ctx.lineTo(
-    x + 4,
-    y + 10
-  );
-
-  ctx.closePath();
-
-  ctx.fill();
-
-
-  ctx.restore();
-
-}
-
-
-/* ============================================================
-   DRAW OBJECTS
-   ============================================================ */
-
-function drawObjects() {
-
-  for (
-    const object of objects
-  ) {
-
-    ctx.save();
-
-
-    ctx.translate(
-      object.x,
-      object.y
+   PAYMENT MODAL
+============================================================ */
+
+async function openPaymentModal(
+  feeId
+){
+
+  const data =
+    await maps();
+
+
+  const fees =
+    data.fees.filter(
+      fee =>
+        Math.max(
+          0,
+          fee.amount -
+          fee.paid
+        ) > 0
     );
 
 
-    ctx.rotate(
-      object.rotation
+  const fee =
+    feeId
+      ?
+
+        await get(
+          'fees',
+          feeId
+        )
+
+      :
+
+        fees[0];
+
+
+  if(!fee){
+
+    alert(
+      'There are no outstanding fees.'
     );
-
-
-    /*
-      Glow for savings.
-    */
-
-    if (
-      object.type === 'bonus'
-    ) {
-
-      ctx.shadowColor =
-        'rgba(80,200,255,0.8)';
-
-
-      ctx.shadowBlur =
-        18;
-
-    }
-
-
-    ctx.font =
-      object.size +
-      'px Apple Color Emoji, Segoe UI Emoji, sans-serif';
-
-
-    ctx.textAlign =
-      'center';
-
-
-    ctx.textBaseline =
-      'middle';
-
-
-    ctx.fillText(
-      object.emoji,
-      0,
-      0
-    );
-
-
-    ctx.restore();
-
-  }
-
-}
-
-
-/* ============================================================
-   ROUNDED RECT
-   ============================================================ */
-
-function roundRect(
-  context,
-  x,
-  y,
-  w,
-  h,
-  r
-) {
-
-  context.beginPath();
-
-  context.moveTo(
-    x + r,
-    y
-  );
-
-  context.arcTo(
-    x + w,
-    y,
-    x + w,
-    y + h,
-    r
-  );
-
-  context.arcTo(
-    x + w,
-    y + h,
-    x,
-    y + h,
-    r
-  );
-
-  context.arcTo(
-    x,
-    y + h,
-    x,
-    y,
-    r
-  );
-
-  context.arcTo(
-    x,
-    y,
-    x + w,
-    y,
-    r
-  );
-
-  context.closePath();
-
-}
-
-
-/* ============================================================
-   DRAW
-   ============================================================ */
-
-function draw() {
-
-  drawBackground();
-
-  drawObjects();
-
-  drawPlayer();
-
-}
-
-
-/* ============================================================
-   GAME LOOP
-   ============================================================ */
-
-function gameLoop(timestamp) {
-
-  if (
-    !lastTime
-  ) {
-
-    lastTime =
-      timestamp;
-
-  }
-
-
-  const delta =
-    Math.min(
-      0.05,
-      (
-        timestamp -
-        lastTime
-      ) / 1000
-    );
-
-
-  lastTime =
-    timestamp;
-
-
-  update(
-    delta
-  );
-
-
-  draw();
-
-
-  animationId =
-    requestAnimationFrame(
-      gameLoop
-    );
-
-}
-
-
-/* ============================================================
-   START
-   ============================================================ */
-
-function startGame() {
-
-  score = 0;
-
-  level = 1;
-
-  lives = 3;
-
-  combo = 0;
-
-  comboTimer = 0;
-
-  speed = 2.5;
-
-  spawnTimer = 0;
-
-  objects = [];
-
-  paused = false;
-
-  running = true;
-
-
-  resetPlayer();
-
-  updateHUD();
-
-
-  document.getElementById(
-    'startScreen'
-  ).style.display =
-    'none';
-
-
-  document.getElementById(
-    'gameOver'
-  ).classList.remove(
-    'show'
-  );
-
-
-  document.getElementById(
-    'pauseButton'
-  ).style.display =
-    'block';
-
-
-  lastTime = 0;
-
-
-  if (
-    audioContext &&
-    audioContext.state ===
-      'suspended'
-  ) {
-
-    audioContext.resume();
-
-  }
-
-
-  vibrate(20);
-
-}
-
-
-/* ============================================================
-   END GAME
-   ============================================================ */
-
-async function endGame() {
-
-  running = false;
-
-
-  document.getElementById(
-    'pauseButton'
-  ).style.display =
-    'none';
-
-
-  document.getElementById(
-    'finalScore'
-  ).textContent =
-    formatMoney(
-      score
-    );
-
-
-  let record = false;
-
-
-  if (
-    score >
-    bestScore
-  ) {
-
-    bestScore =
-      score;
-
-
-    record = true;
-
-
-    try {
-
-      await saveBestScore(
-        bestScore
-      );
-
-    }
-
-    catch (
-      error
-    ) {
-
-      console.error(
-        error
-      );
-
-    }
-
-  }
-
-
-  document.getElementById(
-    'newRecord'
-  ).classList.toggle(
-    'show',
-    record
-  );
-
-
-  document.getElementById(
-    'gameOver'
-  ).classList.add(
-    'show'
-  );
-
-
-  sound(
-    120,
-    0.4,
-    'sawtooth'
-  );
-
-
-  vibrate(
-    [100, 60, 100]
-  );
-
-}
-
-
-/* ============================================================
-   PAUSE
-   ============================================================ */
-
-function togglePause() {
-
-  if (
-    !running
-  ) {
 
     return;
 
   }
 
 
-  paused =
-    !paused;
+  const student =
+    data.students.find(
+      item =>
+        item.id ===
+        fee.studentId
+    );
 
 
-  document.getElementById(
-    'pauseButton'
-  ).textContent =
-    paused
-      ? '▶'
-      : '⏸';
+  const classItem =
+    data.classes.find(
+      item =>
+        item.id ===
+        fee.classId
+    );
+
+
+  openModal(
+
+    'Record Payment',
+
+    `
+    <div class="form-grid">
+
+      <div class="field full">
+
+        <label>
+          Student
+        </label>
+
+        <input
+          value="${esc(student.name)}"
+          disabled
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Class
+        </label>
+
+        <input
+          value="${esc(classItem.name)}"
+          disabled
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          For Month
+        </label>
+
+        <input
+          value="${fee.month}"
+          disabled
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Outstanding Before Payment
+        </label>
+
+        <input
+          value="${money(
+            fee.amount -
+            fee.paid
+          )}"
+          disabled
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Amount *
+        </label>
+
+        <input
+          id="p_amount"
+          type="number"
+          min="0.01"
+          max="${
+            fee.amount -
+            fee.paid
+          }"
+          step="0.01"
+          value="${
+            fee.amount -
+            fee.paid
+          }"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Payment Date *
+        </label>
+
+        <input
+          id="p_date"
+          type="date"
+          value="${todayISO()}"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Payment Method
+        </label>
+
+        <select id="p_method">
+
+          <option>
+            Cash
+          </option>
+
+          <option>
+            Bank Transfer
+          </option>
+
+          <option>
+            Card
+          </option>
+
+          <option>
+            Online
+          </option>
+
+          <option>
+            Other
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Reference / Note
+        </label>
+
+        <input
+          id="p_ref"
+          placeholder="Optional reference"
+        >
+
+      </div>
+
+    </div>
+    `,
+
+    `
+    <button
+      class="btn"
+      onclick="closeModal()"
+    >
+      Cancel
+    </button>
+
+    <button
+      class="btn primary"
+      onclick="savePayment('${fee.id}')"
+    >
+      Save & Receipt
+    </button>
+    `
+  );
 
 }
 
 
 /* ============================================================
-   TOUCH CONTROL
-   ============================================================ */
+   SAVE PAYMENT
+============================================================ */
 
-let pointerActive = false;
+async function savePayment(
+  feeId
+){
 
-
-function movePlayer(
-  clientX
-) {
-
-  const rect =
-    canvas.getBoundingClientRect();
-
-
-  const x =
-    clientX -
-    rect.left;
-
-
-  player.targetX =
-    Math.max(
-      player.width / 2,
-      Math.min(
-        width -
-        player.width / 2,
-        x
-      )
+  const fee =
+    await get(
+      'fees',
+      feeId
     );
+
+
+  const amount =
+    Number(
+      $('p_amount').value
+    );
+
+
+  const outstanding =
+    fee.amount -
+    fee.paid;
+
+
+  if(
+    !fee ||
+    amount <= 0 ||
+    amount >
+      outstanding +
+      0.0001
+  ){
+
+    alert(
+      'Enter an amount within the outstanding balance.'
+    );
+
+    return;
+
+  }
+
+
+  const receipt =
+    'REC-' +
+
+    new Date()
+      .toISOString()
+      .slice(0,10)
+      .replaceAll('-','') +
+
+    '-' +
+
+    Math.random()
+      .toString(36)
+      .slice(2,7)
+      .toUpperCase();
+
+
+  const payment = {
+
+    id:
+      uid(),
+
+    receiptNo:
+      receipt,
+
+    feeId,
+
+    studentId:
+      fee.studentId,
+
+    classId:
+      fee.classId,
+
+    month:
+      fee.month,
+
+    amount,
+
+    date:
+      $('p_date').value,
+
+    method:
+      $('p_method').value,
+
+    reference:
+      $('p_ref')
+        .value
+        .trim(),
+
+    status:
+      'posted',
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  await put(
+    'payments',
+    payment
+  );
+
+
+  fee.paid =
+    Number(
+      fee.paid || 0
+    ) +
+    amount;
+
+
+  fee.updatedAt =
+    new Date().toISOString();
+
+
+  await put(
+    'fees',
+    fee
+  );
+
+
+  closeModal();
+
+
+  alert(
+    `Payment saved.
+
+Receipt: ${receipt}
+Amount: ${money(amount)}
+Remaining: ${money(
+  Math.max(
+    0,
+    fee.amount -
+    fee.paid
+  )
+)}`
+  );
+
+
+  renderFees();
+
+  renderPayments();
+
+  renderDashboard();
 
 }
 
 
-canvas.addEventListener(
-  'pointerdown',
-  function(event) {
+/* ============================================================
+   PAYMENTS
+============================================================ */
 
-    pointerActive =
-      true;
+async function renderPayments(){
 
-    movePlayer(
-      event.clientX
+  const data =
+    await maps();
+
+
+  const search =
+    (
+      $('paymentSearch').value ||
+      ''
+    ).toLowerCase();
+
+
+  const month =
+    $('paymentMonth').value;
+
+
+  const rows =
+    data.payments.filter(
+      payment =>
+
+        payment.status !==
+          'reversed'
+
+        &&
+
+        (
+          !month ||
+
+          payment.date?.slice(0,7) ===
+            month
+        )
+
+        &&
+
+        (
+          !search ||
+
+          [
+            payment.receiptNo,
+
+            studentName(
+              payment.studentId,
+              data
+            ),
+
+            className(
+              payment.classId,
+              data
+            ),
+
+            payment.reference
+          ]
+          .join(' ')
+          .toLowerCase()
+          .includes(search)
+        )
     );
+
+
+  $('paymentsTable').innerHTML =
+    rows.length
+
+      ?
+
+        rows
+          .sort(
+            (
+              first,
+              second
+            ) =>
+
+              second.date
+                .localeCompare(
+                  first.date
+                )
+
+              ||
+
+              second.createdAt
+                .localeCompare(
+                  first.createdAt
+                )
+          )
+          .map(
+            payment =>
+              `
+              <tr>
+
+                <td>
+                  <b>
+                    ${esc(
+                      payment.receiptNo
+                    )}
+                  </b>
+                </td>
+
+                <td>
+                  ${payment.date}
+                </td>
+
+                <td>
+                  ${esc(
+                    studentName(
+                      payment.studentId,
+                      data
+                    )
+                  )}
+                </td>
+
+                <td>
+                  ${esc(
+                    className(
+                      payment.classId,
+                      data
+                    )
+                  )}
+                </td>
+
+                <td>
+                  ${payment.month}
+                </td>
+
+                <td class="green">
+                  ${money(payment.amount)}
+                </td>
+
+                <td>
+                  ${esc(payment.method)}
+                </td>
+
+                <td>
+
+                  <span class="badge paid">
+                    POSTED
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <button
+                    class="btn small"
+                    onclick="
+                      printReceipt(
+                        '${payment.id}'
+                      )
+                    "
+                  >
+                    Receipt
+                  </button>
+
+                  <button
+                    class="btn small danger"
+                    onclick="
+                      reversePayment(
+                        '${payment.id}'
+                      )
+                    "
+                  >
+                    Reverse
+                  </button>
+
+                </td>
+
+              </tr>
+              `
+          )
+          .join('')
+
+      :
+
+        `
+        <tr>
+
+          <td colspan="9">
+
+            <div class="empty">
+              No payments found.
+            </div>
+
+          </td>
+
+        </tr>
+        `;
+
+}
+
+
+/* ============================================================
+   PAYMENT REVERSAL
+============================================================ */
+
+async function reversePayment(id){
+
+  const payment =
+    await get(
+      'payments',
+      id
+    );
+
+
+  if(
+    !payment ||
+    payment.status === 'reversed'
+  ){
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      `Reverse ${money(payment.amount)} from receipt ${payment.receiptNo}?
+
+This will create a reversal and restore the fee balance.`
+    );
+
+
+  if(!confirmed)
+    return;
+
+
+  const fee =
+    await get(
+      'fees',
+      payment.feeId
+    );
+
+
+  if(!fee){
+
+    alert(
+      'The related fee record could not be found.'
+    );
+
+    return;
+
+  }
+
+
+  fee.paid =
+    Math.max(
+      0,
+      fee.paid -
+      payment.amount
+    );
+
+
+  fee.updatedAt =
+    new Date().toISOString();
+
+
+  await put(
+    'fees',
+    fee
+  );
+
+
+  payment.status =
+    'reversed';
+
+
+  payment.reversedAt =
+    new Date().toISOString();
+
+
+  await put(
+    'payments',
+    payment
+  );
+
+
+  await put(
+    'payments',
+    {
+
+      id:uid(),
+
+      receiptNo:
+        'REV-' +
+        payment.receiptNo,
+
+      feeId:
+        payment.feeId,
+
+      studentId:
+        payment.studentId,
+
+      classId:
+        payment.classId,
+
+      month:
+        payment.month,
+
+      amount:
+        -payment.amount,
+
+      date:
+        todayISO(),
+
+      method:
+        payment.method,
+
+      reference:
+        'Reversal of ' +
+        payment.receiptNo,
+
+      status:
+        'reversal',
+
+      createdAt:
+        new Date().toISOString()
+
+    }
+  );
+
+
+  renderPayments();
+
+  renderFees();
+
+  renderDashboard();
+
+}
+
+
+/* ============================================================
+   REPORTS
+============================================================ */
+
+async function renderReports(){
+
+  const data =
+    await maps();
+
+
+  const month =
+    $('reportMonth').value ||
+    monthISO();
+
+
+  const fees =
+    data.fees.filter(
+      fee =>
+        fee.month === month
+    );
+
+
+  const payments =
+    data.payments.filter(
+      payment =>
+        payment.status === 'posted' &&
+        payment.date?.slice(0,7) ===
+          month
+    );
+
+
+  const expected =
+    fees.reduce(
+      (
+        total,
+        fee
+      ) =>
+        total +
+        fee.amount,
+      0
+    );
+
+
+  const collected =
+    payments.reduce(
+      (
+        total,
+        payment
+      ) =>
+        total +
+        payment.amount,
+      0
+    );
+
+
+  const outstanding =
+    fees.reduce(
+      (
+        total,
+        fee
+      ) =>
+        total +
+        Math.max(
+          0,
+          fee.amount -
+          fee.paid
+        ),
+      0
+    );
+
+
+  const byClass =
+    data.classes
+      .map(
+        classItem => ({
+
+          classItem,
+
+          fees:
+            fees.filter(
+              fee =>
+                fee.classId ===
+                classItem.id
+            ),
+
+          paid:
+            payments
+              .filter(
+                payment =>
+                  payment.classId ===
+                  classItem.id
+              )
+              .reduce(
+                (
+                  total,
+                  payment
+                ) =>
+                  total +
+                  payment.amount,
+                0
+              )
+
+        })
+      )
+      .filter(
+        item =>
+          item.fees.length
+      );
+
+
+  $('reportContent').innerHTML =
+
+    `
+    <div class="grid stats">
+
+      <div class="card">
+
+        <div class="stat-label">
+          EXPECTED
+        </div>
+
+        <div class="stat-value">
+          ${money(expected)}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="stat-label">
+          COLLECTED IN ${month}
+        </div>
+
+        <div class="stat-value green">
+          ${money(collected)}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="stat-label">
+          REMAINING
+        </div>
+
+        <div class="stat-value red">
+          ${money(outstanding)}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="stat-label">
+          COLLECTION RATE
+        </div>
+
+        <div class="stat-value">
+
+          ${
+            expected
+              ? (
+                  (
+                    collected /
+                    expected
+                  ) *
+                  100
+                ).toFixed(1)
+              : 0
+          }%
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <h3>
+      Class-wise Collection
+    </h3>
+
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Class
+            </th>
+
+            <th>
+              Expected
+            </th>
+
+            <th>
+              Paid During Month
+            </th>
+
+            <th>
+              Outstanding
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${
+            byClass
+              .map(
+                item =>
+                  `
+                  <tr>
+
+                    <td>
+                      ${esc(
+                        item.classItem.name
+                      )}
+                    </td>
+
+                    <td>
+                      ${money(
+                        item.fees.reduce(
+                          (
+                            total,
+                            fee
+                          ) =>
+                            total +
+                            fee.amount,
+                          0
+                        )
+                      )}
+                    </td>
+
+                    <td class="green">
+                      ${money(item.paid)}
+                    </td>
+
+                    <td class="red">
+                      ${money(
+                        item.fees.reduce(
+                          (
+                            total,
+                            fee
+                          ) =>
+                            total +
+                            Math.max(
+                              0,
+                              fee.amount -
+                              fee.paid
+                            ),
+                          0
+                        )
+                      )}
+                    </td>
+
+                  </tr>
+                  `
+              )
+              .join('')
+
+              ||
+
+              `
+              <tr>
+                <td colspan="4">
+                  No records.
+                </td>
+              </tr>
+              `
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <h3>
+      Outstanding Students
+    </h3>
+
+
+    <div class="table-wrap">
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Student
+            </th>
+
+            <th>
+              Outstanding
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${
+            data.students
+              .map(
+                student => ({
+
+                  student,
+
+                  balance:
+                    balanceForStudent(
+                      student.id,
+                      data
+                    )
+
+                })
+              )
+              .filter(
+                item =>
+                  item.balance > 0
+              )
+              .sort(
+                (
+                  first,
+                  second
+                ) =>
+                  second.balance -
+                  first.balance
+              )
+              .map(
+                item =>
+                  `
+                  <tr>
+
+                    <td>
+                      ${esc(
+                        item.student.name
+                      )}
+                    </td>
+
+                    <td class="red">
+                      ${money(
+                        item.balance
+                      )}
+                    </td>
+
+                  </tr>
+                  `
+              )
+              .join('')
+
+              ||
+
+              `
+              <tr>
+
+                <td colspan="2">
+                  No outstanding balance.
+                </td>
+
+              </tr>
+              `
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+    `;
+
+}
+
+
+/* ============================================================
+   PRINT REPORT
+============================================================ */
+
+function printReport(){
+
+  const content =
+    $('reportContent').innerHTML;
+
+
+  const windowObject =
+    window.open(
+      '',
+      '_blank'
+    );
+
+
+  if(!windowObject)
+    return;
+
+
+  windowObject.document.write(
+    `
+    <html>
+
+    <head>
+
+      <title>
+        Tuition Report
+      </title>
+
+      <style>
+
+        body{
+          font-family:Arial;
+          padding:30px;
+          color:#222;
+        }
+
+        .card{
+          display:inline-block;
+          padding:15px;
+          border:1px solid #ddd;
+          margin:5px;
+          min-width:180px;
+        }
+
+        table{
+          width:100%;
+          border-collapse:collapse;
+        }
+
+        td,
+        th{
+          padding:8px;
+          border-bottom:1px solid #ddd;
+          text-align:left;
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      <h1>
+        Tuition Manager Report
+      </h1>
+
+      <p>
+        Month:
+        ${esc(
+          $('reportMonth').value
+        )}
+      </p>
+
+      ${content}
+
+    </body>
+
+    </html>
+    `
+  );
+
+
+  windowObject.document.close();
+
+  windowObject.print();
+
+}
+
+
+/* ============================================================
+   PRINT RECEIPT
+============================================================ */
+
+async function printReceipt(id){
+
+  const data =
+    await maps();
+
+
+  const payment =
+    await get(
+      'payments',
+      id
+    );
+
+
+  if(!payment)
+    return;
+
+
+  const windowObject =
+    window.open(
+      '',
+      '_blank'
+    );
+
+
+  windowObject.document.write(
+    `
+    <html>
+
+    <head>
+
+      <title>
+        ${esc(payment.receiptNo)}
+      </title>
+
+      <style>
+
+        body{
+          font-family:Arial;
+          padding:30px;
+          max-width:500px;
+          margin:auto;
+        }
+
+        .line{
+          display:flex;
+          justify-content:space-between;
+          padding:8px 0;
+          border-bottom:1px solid #ddd;
+        }
+
+        .total{
+          font-size:22px;
+          font-weight:bold;
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      <h2>
+        PAYMENT RECEIPT
+      </h2>
+
+      <p>
+        ${esc(payment.receiptNo)}
+      </p>
+
+
+      <div class="line">
+
+        <span>
+          Date
+        </span>
+
+        <b>
+          ${payment.date}
+        </b>
+
+      </div>
+
+
+      <div class="line">
+
+        <span>
+          Student
+        </span>
+
+        <b>
+          ${esc(
+            studentName(
+              payment.studentId,
+              data
+            )
+          )}
+        </b>
+
+      </div>
+
+
+      <div class="line">
+
+        <span>
+          Class
+        </span>
+
+        <b>
+          ${esc(
+            className(
+              payment.classId,
+              data
+            )
+          )}
+        </b>
+
+      </div>
+
+
+      <div class="line">
+
+        <span>
+          For Month
+        </span>
+
+        <b>
+          ${payment.month}
+        </b>
+
+      </div>
+
+
+      <div class="line">
+
+        <span>
+          Method
+        </span>
+
+        <b>
+          ${esc(payment.method)}
+        </b>
+
+      </div>
+
+
+      <div class="line total">
+
+        <span>
+          Amount Paid
+        </span>
+
+        <span>
+          ${money(payment.amount)}
+        </span>
+
+      </div>
+
+
+      <p>
+        Thank you.
+      </p>
+
+    </body>
+
+    </html>
+    `
+  );
+
+
+  windowObject.document.close();
+
+  windowObject.print();
+
+}
+
+
+/* ============================================================
+   MODAL
+============================================================ */
+
+function openModal(
+  title,
+  body,
+  footer
+){
+
+  $('modalTitle')
+    .textContent =
+      title;
+
+
+  $('modalBody')
+    .innerHTML =
+      body;
+
+
+  $('modalFoot')
+    .innerHTML =
+      footer;
+
+
+  $('modal')
+    .classList
+    .add('show');
+
+}
+
+
+function closeModal(){
+
+  $('modal')
+    .classList
+    .remove('show');
+
+}
+
+
+$('modal').addEventListener(
+  'click',
+  event => {
+
+    if(
+      event.target.id ===
+      'modal'
+    ){
+
+      closeModal();
+
+    }
 
   }
 );
 
 
-canvas.addEventListener(
-  'pointermove',
-  function(event) {
+/* ============================================================
+   BACKUP
+============================================================ */
 
-    if (
-      pointerActive
-    ) {
+async function backupData(){
 
-      movePlayer(
-        event.clientX
+  const data = {
+
+    app:
+      'Tuition Manager Pro',
+
+    version:
+      DB_VERSION,
+
+    exportedAt:
+      new Date().toISOString()
+
+  };
+
+
+  for(
+    const store of STORES
+  ){
+
+    data[store] =
+      await all(store);
+
+  }
+
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          data,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+          'application/json'
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const anchor =
+    document.createElement(
+      'a'
+    );
+
+
+  anchor.href =
+    url;
+
+
+  anchor.download =
+    'tuition-manager-backup-' +
+    todayISO() +
+    '.json';
+
+
+  anchor.click();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* ============================================================
+   RESTORE
+============================================================ */
+
+async function restoreData(event){
+
+  const file =
+    event.target.files[0];
+
+
+  if(!file)
+    return;
+
+
+  try{
+
+    const data =
+      JSON.parse(
+        await file.text()
+      );
+
+
+    if(
+      !data.app ||
+      !Array.isArray(
+        data.students
+      )
+    ){
+
+      throw new Error(
+        'Invalid backup'
       );
 
     }
 
-  }
-);
+
+    const confirmed =
+      confirm(
+        'Restore this backup? Existing application data will be replaced.'
+      );
 
 
-canvas.addEventListener(
-  'pointerup',
-  function() {
-
-    pointerActive =
-      false;
-
-  }
-);
-
-
-canvas.addEventListener(
-  'pointercancel',
-  function() {
-
-    pointerActive =
-      false;
-
-  }
-);
-
-
-/* ============================================================
-   BUTTONS
-   ============================================================ */
-
-document.getElementById(
-  'startButton'
-).addEventListener(
-  'click',
-  function() {
-
-    /*
-      Create audio after user interaction.
-    */
-
-    try {
-
-      audioContext =
-        new (
-          window.AudioContext ||
-          window.webkitAudioContext
-        )();
-
-    }
-
-    catch (
-      error
-    ) {}
-
-
-    startGame();
-
-  }
-);
-
-
-document.getElementById(
-  'restartButton'
-).addEventListener(
-  'click',
-  function() {
-
-    startGame();
-
-  }
-);
-
-
-document.getElementById(
-  'pauseButton'
-).addEventListener(
-  'click',
-  function() {
-
-    togglePause();
-
-  }
-);
-
-
-/* ============================================================
-   KEYBOARD SUPPORT
-   ============================================================ */
-
-window.addEventListener(
-  'keydown',
-  function(event) {
-
-    if (
-      !running
-    ) {
-
+    if(!confirmed)
       return;
 
-    }
 
+    for(
+      const store of STORES
+    ){
 
-    const amount =
-      55;
-
-
-    if (
-      event.key ===
-      'ArrowLeft'
-    ) {
-
-      player.targetX -=
-        amount;
+      await txClear(
+        store
+      );
 
     }
 
 
-    if (
-      event.key ===
-      'ArrowRight'
-    ) {
+    for(
+      const store of STORES
+    ){
 
-      player.targetX +=
-        amount;
+      for(
+        const record of
+          (
+            data[store] ||
+            []
+          )
+      ){
+
+        await put(
+          store,
+          record
+        );
+
+      }
 
     }
 
 
-    if (
-      event.key ===
-      ' '
-    ) {
+    alert(
+      'Backup restored successfully.'
+    );
 
-      togglePause();
 
-    }
+    location.reload();
 
   }
-);
+
+  catch(error){
+
+    alert(
+      'Restore failed: ' +
+      error.message
+    );
+
+  }
+
+  finally{
+
+    event.target.value =
+      '';
+
+  }
+
+}
 
 
 /* ============================================================
-   INITIALIZE
-   ============================================================ */
+   SETTINGS
+============================================================ */
 
-async function init() {
+async function saveSettings(){
 
-  try {
+  const settings =
+    await get(
+      'settings',
+      'main'
+    ) ||
+    {
+      id:'main'
+    };
 
-    await openDatabase();
+
+  settings.name =
+    $('settingName')
+      .value
+      .trim() ||
+    'My Tuition Class';
 
 
-    bestScore =
-      await loadBestScore();
+  settings.updatedAt =
+    new Date().toISOString();
+
+
+  await put(
+    'settings',
+    settings
+  );
+
+
+  alert(
+    'Settings saved.'
+  );
+
+}
+
+
+/* ============================================================
+   CLEAR ALL DATA
+============================================================ */
+
+async function clearAllData(){
+
+  const first =
+    confirm(
+      'This permanently deletes ALL students, classes, attendance, fees and payment records. Continue?'
+    );
+
+
+  if(!first)
+    return;
+
+
+  const second =
+    confirm(
+      'Final confirmation: erase all data? A backup should be taken first.'
+    );
+
+
+  if(!second)
+    return;
+
+
+  for(
+    const store of STORES
+  ){
+
+    await txClear(
+      store
+    );
 
   }
 
-  catch (
-    error
-  ) {
+
+  await seed();
+
+
+  alert(
+    'All data erased.'
+  );
+
+
+  location.reload();
+
+}
+
+
+/* ============================================================
+   INITIALIZATION
+============================================================ */
+
+async function init(){
+
+  try{
+
+    await openDB();
+
+    await seed();
+
+
+    if(
+      !$('attDate').value
+    ){
+
+      $('attDate').value =
+        todayISO();
+
+    }
+
+
+    if(
+      !$('feeMonth').value
+    ){
+
+      $('feeMonth').value =
+        monthISO();
+
+    }
+
+
+    if(
+      !$('paymentMonth').value
+    ){
+
+      $('paymentMonth').value =
+        monthISO();
+
+    }
+
+
+    if(
+      !$('reportMonth').value
+    ){
+
+      $('reportMonth').value =
+        monthISO();
+
+    }
+
+
+    await renderDashboard();
+
+  }
+
+  catch(error){
 
     console.error(
-      'Database error:',
+      'Database initialization error:',
       error
     );
 
-    bestScore = 0;
 
-  }
-
-
-  document.getElementById(
-    'bestScore'
-  ).textContent =
-    'Best: ' +
-    formatMoney(
-      bestScore
+    alert(
+      'Unable to initialize the local database.'
     );
 
-
-  resetPlayer();
-
-  updateHUD();
-
-
-  draw();
-
-
-  requestAnimationFrame(
-    gameLoop
-  );
+  }
 
 }
 
