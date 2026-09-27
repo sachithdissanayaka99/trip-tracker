@@ -3,200 +3,1520 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Diagnostic Dashboard</title>
+
+    <title>My Gmail Dashboard</title>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: #f4f4f9;
             margin: 0;
-            padding: 20px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f4f6f8;
+            color: #202124;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 9px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #1557b0;
+        }
+
+        .danger {
+            background: #d93025;
+            color: white;
+        }
+
+        .secondary {
+            background: #eee;
             color: #333;
         }
-        h1 {
+
+        /* Login */
+        #loginSection {
+            max-width: 500px;
+            margin: 100px auto;
             text-align: center;
-            color: #2c3e50;
-        }
-        .warning {
-            background: #e2f0fb;
-            color: #0b5b9e;
-            padding: 15px;
-            border-radius: 8px;
-            max-width: 960px;
-            margin: 0 auto 20px auto;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .card {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.08);
         }
-        .card h2 {
+
+        #loginSection h2 {
             margin-top: 0;
-            font-size: 1.2rem;
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 15px;
+        }
+
+        /* Email list */
+        .email-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .email-list-header {
+            padding: 15px;
             border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            color: #1a1a1a;
+            font-weight: bold;
         }
-        .data-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .data-list li {
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            word-wrap: break-word;
-        }
-        .data-list span {
-            font-weight: 600;
-            color: #555;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+
+        .email-item {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
             cursor: pointer;
-            font-size: 1rem;
-            width: 100%;
-            margin-top: 15px;
-            transition: background 0.2s;
+            transition: background .15s;
         }
-        button:hover {
-            background: #0056b3;
+
+        .email-item:hover {
+            background: #f5f7f9;
+        }
+
+        .email-item.unread {
+            background: #eef5ff;
+            font-weight: 600;
+        }
+
+        .sender {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .subject {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .snippet {
+            color: #777;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .date {
+            color: #777;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* Email viewer */
+        .email-viewer {
+            background: white;
+            border-radius: 10px;
+            min-height: 500px;
+            padding: 25px;
+        }
+
+        .empty {
+            color: #888;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .email-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .email-subject {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .email-from {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .email-date {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .email-body {
+            line-height: 1.6;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .status {
+            margin: 10px 0;
+            color: #555;
+            font-size: 13px;
+        }
+
+        @media (max-width: 800px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .email-viewer {
+                min-height: 400px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <div class="warning">
-        <strong>Note:</strong> Browsers sandbox web pages for security. This dashboard can only display information exposed via standard Web APIs. Deep system details (IMEI, contacts, storage) cannot be accessed via plain HTML/JS.
+<header>
+    <h1>📧 My Gmail Dashboard</h1>
+
+    <div class="header-buttons">
+        <button id="authorizeButton"
+                class="primary"
+                onclick="handleAuthClick()">
+            Sign in with Google
+        </button>
+
+        <button id="signoutButton"
+                class="secondary"
+                onclick="handleSignoutClick()"
+                style="display:none;">
+            Sign Out
+        </button>
+    </div>
+</header>
+
+
+<!-- LOGIN -->
+<section id="loginSection">
+
+    <h2>Gmail Dashboard</h2>
+
+    <p>
+        Connect your Gmail account to manage your emails.
+    </p>
+
+    <button class="primary"
+            onclick="handleAuthClick()">
+        🔐 Connect Gmail
+    </button>
+
+    <p style="font-size:13px;color:#777;margin-top:20px;">
+        You control the permissions granted to this application.
+    </p>
+
+</section>
+
+
+<!-- DASHBOARD -->
+<main id="dashboard">
+
+    <!-- Search / toolbar -->
+
+    <div class="toolbar">
+
+        <input
+            id="searchInput"
+            class="search"
+            type="text"
+            placeholder="Search Gmail... e.g. from:john is:unread"
+        >
+
+        <button class="primary"
+                onclick="searchEmails()">
+            🔍 Search
+        </button>
+
+        <button class="secondary"
+                onclick="loadInbox()">
+            🔄 Refresh
+        </button>
+
     </div>
 
-    <h1>Device Dashboard</h1>
 
-    <div class="dashboard">
-        <!-- Browser & System Info -->
-        <div class="card">
-            <h2>System Profile</h2>
-            <ul class="data-list">
-                <li><span>Platform:</span> <span id="platform" style="font-weight: normal;">Loading...</span></li>
-                <li><span>Language:</span> <span id="language" style="font-weight: normal;">Loading...</span></li>
-                <li><span>Logical Cores:</span> <span id="logicalProcessors" style="font-weight: normal;">Loading...</span></li>
-                <li><span>Device Memory (RAM):</span> <span id="deviceMemory" style="font-weight: normal;">Loading...</span></li>
-                <li><span>User Agent:</span> <span id="userAgent" style="font-weight: normal;">Loading...</span></li>
-            </ul>
-        </div>
+    <div class="status" id="status"></div>
 
-        <!-- Display & Screen -->
-        <div class="card">
-            <h2>Display Details</h2>
-            <ul class="data-list">
-                <li><span>Screen Resolution:</span> <span id="screenRes" style="font-weight: normal;">Loading...</span></li>
-                <li><span>Color Depth:</span> <span id="colorDepth" style="font-weight: normal;">Loading...</span></li>
-                <li><span>Pixel Ratio:</span> <span id="pixelRatio" style="font-weight: normal;">Loading...</span></li>
-            </ul>
-        </div>
 
-        <!-- Battery Status -->
-        <div class="card">
-            <h2>Battery API</h2>
-            <ul class="data-list">
-                <li><span>Level:</span> <span id="batteryLevel" style="font-weight: normal;">Detecting...</span></li>
-                <li><span>Charging:</span> <span id="batteryCharging" style="font-weight: normal;">Detecting...</span></li>
-            </ul>
-        </div>
+    <div class="layout">
 
-        <!-- Geolocation -->
-        <div class="card">
-            <h2>Location (Requires Prompt)</h2>
-            <ul class="data-list">
-                <li><span>Latitude:</span> <span id="lat" style="font-weight: normal;">N/A</span></li>
-                <li><span>Longitude:</span> <span id="lon" style="font-weight: normal;">N/A</span></li>
-            </ul>
-            <button id="btnLocation">Request Location Access</button>
-        </div>
+        <!-- EMAIL LIST -->
 
-        <!-- Media Permissions -->
-        <div class="card">
-            <h2>Hardware Access (Requires Prompt)</h2>
-            <ul class="data-list">
-                <li><span>Camera & Mic Access:</span> <span id="camStatus" style="font-weight: normal;">Not requested</span></li>
-            </ul>
-            <button id="btnCamera">Request Media Access</button>
-        </div>
+        <section class="email-list">
+
+            <div class="email-list-header">
+                📥 Inbox
+            </div>
+
+            <div id="emailList">
+                <div class="empty">
+                    Loading emails...
+                </div>
+            </div>
+
+            <div style="padding:15px;">
+                <button
+                    class="secondary"
+                    style="width:100%;"
+                    onclick="loadMore()">
+                    Load More
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- EMAIL VIEWER -->
+
+        <section class="email-viewer">
+
+            <div id="emailViewer">
+
+                <div class="empty">
+                    Select an email to read it.
+                </div>
+
+            </div>
+
+        </section>
+
     </div>
 
-    <script>
-        // 1. Load System & Browser Info
-        document.getElementById('userAgent').textContent = navigator.userAgent;
-        document.getElementById('platform').textContent = navigator.platform || 'Unknown';
-        document.getElementById('language').textContent = navigator.language;
-        document.getElementById('logicalProcessors').textContent = navigator.hardwareConcurrency || 'Unknown';
-        document.getElementById('deviceMemory').textContent = navigator.deviceMemory ? `${navigator.deviceMemory} GB+` : 'Not supported on this browser';
+</main>
 
-        // 2. Load Screen Info
-        document.getElementById('screenRes').textContent = `${window.screen.width} x ${window.screen.height}`;
-        document.getElementById('colorDepth').textContent = `${window.screen.colorDepth}-bit`;
-        document.getElementById('pixelRatio').textContent = window.devicePixelRatio;
 
-        // 3. Battery API (Not supported in Safari/iOS)
-        if ('getBattery' in navigator) {
-            navigator.getBattery().then(function(battery) {
-                updateBattery(battery);
-                battery.addEventListener('levelchange', () => updateBattery(battery));
-                battery.addEventListener('chargingchange', () => updateBattery(battery));
+<script>
+
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
+
+const CLIENT_ID =
+    "YOUR_CLIENT_ID.apps.googleusercontent.com";
+
+const API_KEY =
+    "YOUR_API_KEY";
+
+
+const DISCOVERY_DOC =
+    "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest";
+
+
+/*
+ * gmail.modify allows:
+ *
+ * Read emails
+ * Mark read/unread
+ * Move emails to trash
+ * Modify labels
+ *
+ * We don't request full gmail access here.
+ */
+const SCOPES =
+    "https://www.googleapis.com/auth/gmail.modify";
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+   ========================================================= */
+
+let tokenClient;
+
+let gapiInited = false;
+let gisInited = false;
+
+let nextPageToken = null;
+
+let currentMessages = [];
+
+let currentMessageId = null;
+
+
+/* =========================================================
+   GOOGLE API INITIALIZATION
+   ========================================================= */
+
+function gapiLoaded() {
+
+    gapi.load("client", initializeGapiClient);
+
+}
+
+
+async function initializeGapiClient() {
+
+    await gapi.client.init({
+
+        apiKey: API_KEY,
+
+        discoveryDocs: [
+            DISCOVERY_DOC
+        ]
+
+    });
+
+    gapiInited = true;
+
+    maybeEnableButtons();
+
+}
+
+
+/* =========================================================
+   GOOGLE IDENTITY SERVICES
+   ========================================================= */
+
+function gisLoaded() {
+
+    tokenClient =
+        google.accounts.oauth2.initTokenClient({
+
+            client_id: CLIENT_ID,
+
+            scope: SCOPES,
+
+            callback: ""
+
+        });
+
+    gisInited = true;
+
+    maybeEnableButtons();
+
+}
+
+
+function maybeEnableButtons() {
+
+    if (gapiInited && gisInited) {
+
+        document.getElementById(
+            "authorizeButton"
+        ).style.display = "inline-block";
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+function handleAuthClick() {
+
+    tokenClient.callback = async (response) => {
+
+        if (response.error !== undefined) {
+
+            console.error(response);
+
+            alert("Google authorization failed.");
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "loginSection"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "dashboard"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "authorizeButton"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "signoutButton"
+        ).style.display = "inline-block";
+
+
+        await loadInbox();
+
+    };
+
+
+    if (gapi.client.getToken() === null) {
+
+        tokenClient.requestAccessToken({
+            prompt: "consent"
+        });
+
+    } else {
+
+        tokenClient.requestAccessToken({
+            prompt: ""
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   SIGN OUT
+   ========================================================= */
+
+function handleSignoutClick() {
+
+    const token = gapi.client.getToken();
+
+    if (token !== null) {
+
+        google.accounts.oauth2.revoke(
+            token.access_token
+        );
+
+        gapi.client.setToken("");
+
+    }
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "loginSection"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "authorizeButton"
+    ).style.display = "inline-block";
+
+
+    document.getElementById(
+        "signoutButton"
+    ).style.display = "none";
+
+}
+
+
+/* =========================================================
+   LOAD INBOX
+   ========================================================= */
+
+async function loadInbox() {
+
+    nextPageToken = null;
+
+    currentMessages = [];
+
+    document.getElementById(
+        "emailList"
+    ).innerHTML =
+        `<div class="loading">
+            Loading emails...
+        </div>`;
+
+
+    try {
+
+        const response =
+            await gapi.client.gmail.users.messages.list({
+
+                userId: "me",
+
+                labelIds: ["INBOX"],
+
+                maxResults: 20
+
             });
-        } else {
-            document.getElementById('batteryLevel').textContent = 'API not supported';
-            document.getElementById('batteryCharging').textContent = 'API not supported';
+
+
+        nextPageToken =
+            response.result.nextPageToken || null;
+
+
+        const messages =
+            response.result.messages || [];
+
+
+        currentMessages = messages;
+
+
+        await displayMessageList(messages);
+
+
+        setStatus(
+            `${messages.length} emails loaded.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "Unable to load emails."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD MORE
+   ========================================================= */
+
+async function loadMore() {
+
+    if (!nextPageToken) {
+
+        setStatus(
+            "No more emails."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await gapi.client.gmail.users.messages.list({
+
+                userId: "me",
+
+                labelIds: ["INBOX"],
+
+                maxResults: 20,
+
+                pageToken: nextPageToken
+
+            });
+
+
+        nextPageToken =
+            response.result.nextPageToken || null;
+
+
+        const messages =
+            response.result.messages || [];
+
+
+        currentMessages =
+            currentMessages.concat(messages);
+
+
+        await displayMessageList(
+            currentMessages
+        );
+
+
+        setStatus(
+            `${currentMessages.length} emails loaded.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "Unable to load more emails."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DISPLAY EMAIL LIST
+   ========================================================= */
+
+async function displayMessageList(messages) {
+
+    const container =
+        document.getElementById("emailList");
+
+
+    if (!messages.length) {
+
+        container.innerHTML =
+            `<div class="empty">
+                No emails found.
+            </div>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Loading...
+        </div>`;
+
+
+    const emailData = [];
+
+
+    for (const message of messages) {
+
+        try {
+
+            const response =
+                await gapi.client.gmail.users.messages.get({
+
+                    userId: "me",
+
+                    id: message.id,
+
+                    format: "metadata",
+
+                    metadataHeaders: [
+                        "From",
+                        "Subject",
+                        "Date"
+                    ]
+
+                });
+
+
+            emailData.push(
+                response.result
+            );
+
         }
 
-        function updateBattery(battery) {
-            document.getElementById('batteryLevel').textContent = `${(battery.level * 100).toFixed(0)}%`;
-            document.getElementById('batteryCharging').textContent = battery.charging ? 'Yes' : 'No';
+        catch (error) {
+
+            console.error(error);
+
         }
 
-        // 4. Request Geolocation
-        document.getElementById('btnLocation').addEventListener('click', () => {
-            if ('geolocation' in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        document.getElementById('lat').textContent = position.coords.latitude.toFixed(5);
-                        document.getElementById('lon').textContent = position.coords.longitude.toFixed(5);
-                    },
-                    (error) => {
-                        alert(`Location access error: ${error.message}`);
-                    }
-                );
-            } else {
-                alert('Geolocation is not supported by your browser.');
+    }
+
+
+    container.innerHTML = "";
+
+
+    emailData.forEach(message => {
+
+        const headers =
+            message.payload?.headers || [];
+
+
+        const from =
+            getHeader(headers, "From");
+
+
+        const subject =
+            getHeader(headers, "Subject")
+            || "(No subject)";
+
+
+        const date =
+            getHeader(headers, "Date");
+
+
+        const isUnread =
+            message.labelIds &&
+            message.labelIds.includes("UNREAD");
+
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "email-item" +
+            (isUnread ? " unread" : "");
+
+
+        item.innerHTML = `
+
+            <div class="sender">
+                ${escapeHtml(from)}
+            </div>
+
+            <div class="subject">
+                ${escapeHtml(subject)}
+            </div>
+
+            <div class="snippet">
+                ${escapeHtml(message.snippet || "")}
+            </div>
+
+            <div class="date">
+                ${escapeHtml(date || "")}
+            </div>
+
+        `;
+
+
+        item.onclick = () => {
+
+            openEmail(message.id);
+
+        };
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================================================
+   OPEN EMAIL
+   ========================================================= */
+
+async function openEmail(messageId) {
+
+    currentMessageId = messageId;
+
+
+    document.getElementById(
+        "emailViewer"
+    ).innerHTML =
+        `<div class="loading">
+            Loading email...
+        </div>`;
+
+
+    try {
+
+        const response =
+            await gapi.client.gmail.users.messages.get({
+
+                userId: "me",
+
+                id: messageId,
+
+                format: "full"
+
+            });
+
+
+        const message =
+            response.result;
+
+
+        const headers =
+            message.payload?.headers || [];
+
+
+        const from =
+            getHeader(headers, "From");
+
+
+        const subject =
+            getHeader(headers, "Subject")
+            || "(No subject)";
+
+
+        const date =
+            getHeader(headers, "Date");
+
+
+        const body =
+            extractEmailBody(message.payload);
+
+
+        document.getElementById(
+            "emailViewer"
+        ).innerHTML = `
+
+            <div class="email-actions">
+
+                <button
+                    class="secondary"
+                    onclick="markAsRead('${messageId}')">
+                    ✅ Mark Read
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="markAsUnread('${messageId}')">
+                    🔵 Mark Unread
+                </button>
+
+                <button
+                    class="danger"
+                    onclick="moveToTrash('${messageId}')">
+                    🗑️ Delete
+                </button>
+
+            </div>
+
+
+            <div class="email-header">
+
+                <div class="email-subject">
+                    ${escapeHtml(subject)}
+                </div>
+
+                <div class="email-from">
+                    <strong>From:</strong>
+                    ${escapeHtml(from)}
+                </div>
+
+                <div class="email-date">
+                    ${escapeHtml(date)}
+                </div>
+
+            </div>
+
+
+            <div class="email-body">
+                ${body}
+            </div>
+
+        `;
+
+
+        /*
+         * Automatically mark unread messages as read.
+         */
+
+        if (
+            message.labelIds &&
+            message.labelIds.includes("UNREAD")
+        ) {
+
+            await markAsRead(
+                messageId,
+                false
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "emailViewer"
+        ).innerHTML =
+            `<div class="empty">
+                Unable to open this email.
+            </div>`;
+
+    }
+
+}
+
+
+/* =========================================================
+   MARK READ
+   ========================================================= */
+
+async function markAsRead(
+    messageId,
+    refresh = true
+) {
+
+    try {
+
+        await gapi.client.gmail.users.messages.modify({
+
+            userId: "me",
+
+            id: messageId,
+
+            resource: {
+
+                removeLabelIds: [
+                    "UNREAD"
+                ]
+
             }
+
         });
 
-        // 5. Request Camera/Mic Access
-        document.getElementById('btnCamera').addEventListener('click', async () => {
-            try {
-                // Request stream
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('camStatus').textContent = "Granted ✅";
-                // Stop the tracks immediately so the camera light turns off
-                stream.getTracks().forEach(track => track.stop());
-            } catch (err) {
-                document.getElementById('camStatus').textContent = "Denied ❌";
-                alert(`Media access denied: ${err.message}`);
+
+        if (refresh) {
+
+            await loadInbox();
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to mark email as read."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MARK UNREAD
+   ========================================================= */
+
+async function markAsUnread(messageId) {
+
+    try {
+
+        await gapi.client.gmail.users.messages.modify({
+
+            userId: "me",
+
+            id: messageId,
+
+            resource: {
+
+                addLabelIds: [
+                    "UNREAD"
+                ]
+
             }
+
         });
-    </script>
+
+
+        await loadInbox();
+
+        await openEmail(messageId);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to mark email as unread."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MOVE TO TRASH
+   ========================================================= */
+
+async function moveToTrash(messageId) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to move this email to Trash?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await gapi.client.gmail.users.messages.trash({
+
+            userId: "me",
+
+            id: messageId
+
+        });
+
+
+        document.getElementById(
+            "emailViewer"
+        ).innerHTML =
+            `<div class="empty">
+                🗑️ Email moved to Trash.
+            </div>`;
+
+
+        await loadInbox();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to delete the email."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+async function searchEmails() {
+
+    const query =
+        document.getElementById(
+            "searchInput"
+        ).value.trim();
+
+
+    if (!query) {
+
+        await loadInbox();
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "emailList"
+    ).innerHTML =
+        `<div class="loading">
+            Searching...
+        </div>`;
+
+
+    try {
+
+        const response =
+            await gapi.client.gmail.users.messages.list({
+
+                userId: "me",
+
+                q: query,
+
+                maxResults: 20
+
+            });
+
+
+        nextPageToken =
+            response.result.nextPageToken || null;
+
+
+        const messages =
+            response.result.messages || [];
+
+
+        currentMessages =
+            messages;
+
+
+        await displayMessageList(
+            messages
+        );
+
+
+        setStatus(
+            `${messages.length} results found.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "Search failed."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function getHeader(headers, name) {
+
+    const header =
+        headers.find(
+            h =>
+                h.name.toLowerCase() ===
+                name.toLowerCase()
+        );
+
+
+    return header
+        ? header.value
+        : "";
+
+}
+
+
+/* =========================================================
+   EMAIL BODY EXTRACTION
+   ========================================================= */
+
+function extractEmailBody(payload) {
+
+    if (!payload) {
+
+        return "";
+
+    }
+
+
+    /*
+     * Direct body
+     */
+
+    if (
+        payload.body &&
+        payload.body.data
+    ) {
+
+        return formatEmailBody(
+            decodeBase64Url(
+                payload.body.data
+            )
+        );
+
+    }
+
+
+    /*
+     * Multipart email
+     */
+
+    if (payload.parts) {
+
+        let html = "";
+        let plain = "";
+
+
+        for (const part of payload.parts) {
+
+            if (
+                part.mimeType ===
+                "text/html" &&
+                part.body &&
+                part.body.data
+            ) {
+
+                html =
+                    decodeBase64Url(
+                        part.body.data
+                    );
+
+            }
+
+
+            if (
+                part.mimeType ===
+                "text/plain" &&
+                part.body &&
+                part.body.data
+            ) {
+
+                plain =
+                    decodeBase64Url(
+                        part.body.data
+                    );
+
+            }
+
+
+            /*
+             * Nested multipart
+             */
+
+            if (part.parts) {
+
+                const nested =
+                    extractEmailBody(part);
+
+                if (nested) {
+
+                    html += nested;
+
+                }
+
+            }
+
+        }
+
+
+        if (html) {
+
+            /*
+             * Emails are displayed inside
+             * a sandboxed iframe below.
+             */
+
+            return `
+                <iframe
+                    sandbox=""
+                    style="
+                        width:100%;
+                        min-height:500px;
+                        border:0;
+                    "
+                    srcdoc="${escapeAttribute(html)}">
+                </iframe>
+            `;
+
+        }
+
+
+        return formatEmailBody(
+            plain
+        );
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =========================================================
+   BASE64 DECODER
+   ========================================================= */
+
+function decodeBase64Url(data) {
+
+    try {
+
+        data =
+            data
+                .replace(/-/g, "+")
+                .replace(/_/g, "/");
+
+
+        const decoded =
+            atob(data);
+
+
+        const bytes =
+            new Uint8Array(
+                decoded.length
+            );
+
+
+        for (
+            let i = 0;
+            i < decoded.length;
+            i++
+        ) {
+
+            bytes[i] =
+                decoded.charCodeAt(i);
+
+        }
+
+
+        return new TextDecoder(
+            "utf-8"
+        ).decode(bytes);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return "";
+
+    }
+
+}
+
+
+/* =========================================================
+   FORMAT PLAIN TEXT
+   ========================================================= */
+
+function formatEmailBody(text) {
+
+    return escapeHtml(text)
+        .replace(/\n/g, "<br>");
+
+}
+
+
+/* =========================================================
+   HTML ESCAPING
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeAttribute(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function setStatus(message) {
+
+    document.getElementById(
+        "status"
+    ).textContent = message;
+
+}
+
+
+/* =========================================================
+   ENTER KEY SEARCH
+   ========================================================= */
+
+document
+    .getElementById("searchInput")
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Enter") {
+
+                searchEmails();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+<!-- Google API -->
+<script
+    async
+    defer
+    src="https://apis.google.com/js/api.js"
+    onload="gapiLoaded()">
+</script>
+
+
+<!-- Google Identity Services -->
+<script
+    async
+    defer
+    src="https://accounts.google.com/gsi/client"
+    onload="gisLoaded()">
+</script>
+
 </body>
 </html>
