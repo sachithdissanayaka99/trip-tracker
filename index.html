@@ -2,637 +2,1135 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Gmail Dashboard</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>PDF Editor</title>
+
+    <!--
+        PDF.js
+        Used to render PDF pages in the browser.
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs"
+            type="module"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f4f6f8;
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f1f3f4;
             color: #202124;
         }
 
-        /* Header */
+
+        /* ==============================
+           HEADER
+        ============================== */
+
         header {
+            height: 64px;
+
             background: white;
+
             border-bottom: 1px solid #ddd;
-            padding: 15px 25px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
+            padding: 0 20px;
+
             position: sticky;
+
             top: 0;
-            z-index: 10;
+
+            z-index: 100;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 22px;
+
+        .logo {
+            font-size: 20px;
+
+            font-weight: 700;
         }
 
-        .header-buttons {
+
+        .header-actions {
             display: flex;
-            gap: 10px;
+
+            gap: 8px;
+
+            align-items: center;
         }
+
+
+        /* ==============================
+           BUTTONS
+        ============================== */
 
         button {
             border: none;
+
             border-radius: 6px;
+
             padding: 9px 15px;
+
             cursor: pointer;
+
             font-size: 14px;
         }
+
+
+        button:disabled {
+            opacity: 0.5;
+
+            cursor: not-allowed;
+        }
+
 
         .primary {
             background: #1a73e8;
+
             color: white;
         }
 
-        .primary:hover {
+
+        .primary:hover:not(:disabled) {
             background: #1557b0;
         }
 
+
+        .secondary {
+            background: #e8eaed;
+
+            color: #202124;
+        }
+
+
+        .secondary:hover:not(:disabled) {
+            background: #d9dce1;
+        }
+
+
         .danger {
             background: #d93025;
+
             color: white;
         }
 
-        .secondary {
-            background: #eee;
-            color: #333;
-        }
 
-        /* Login */
-        #loginSection {
-            max-width: 500px;
-            margin: 100px auto;
-            text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,.08);
-        }
+        /* ==============================
+           UPLOAD SCREEN
+        ============================== */
 
-        #loginSection h2 {
-            margin-top: 0;
-        }
+        #uploadScreen {
 
-        /* Dashboard */
-        #dashboard {
-            display: none;
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
+            min-height: calc(100vh - 64px);
 
-        .toolbar {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 30px;
         }
 
-        .search {
-            flex: 1;
-            min-width: 250px;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+
+        .upload-box {
+
+            background: white;
+
+            width: 100%;
+
+            max-width: 600px;
+
+            padding: 50px 30px;
+
+            text-align: center;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 4px 20px rgba(0,0,0,0.08);
+        }
+
+
+        .upload-icon {
+            font-size: 55px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .upload-box h1 {
+            margin-bottom: 10px;
+        }
+
+
+        .upload-box p {
+            color: #666;
+
+            line-height: 1.6;
+        }
+
+
+        #fileInput {
+            display: none;
+        }
+
+
+        .upload-button {
+            display: inline-block;
+
+            background: #1a73e8;
+
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            margin-top: 15px;
+        }
+
+
+        .upload-button:hover {
+            background: #1557b0;
+        }
+
+
+        /* ==============================
+           EDITOR
+        ============================== */
+
+        #editor {
+
+            display: none;
+
+            height: calc(100vh - 64px);
+
+            overflow: hidden;
+        }
+
+
+        .editor-layout {
+
+            display: grid;
+
+            grid-template-columns: 250px 1fr 260px;
+
+            height: 100%;
+        }
+
+
+        /* ==============================
+           LEFT SIDEBAR
+        ============================== */
+
+        .sidebar {
+
+            background: white;
+
+            border-right: 1px solid #ddd;
+
+            overflow-y: auto;
+
+            padding: 15px;
+        }
+
+
+        .sidebar h3 {
+
+            margin-top: 0;
+
             font-size: 15px;
         }
 
-        .layout {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 15px;
-        }
 
-        /* Email list */
-        .email-list {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        #thumbnails {
 
-        .email-list-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-weight: bold;
-        }
-
-        .email-item {
-            padding: 14px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background .15s;
-        }
-
-        .email-item:hover {
-            background: #f5f7f9;
-        }
-
-        .email-item.unread {
-            background: #eef5ff;
-            font-weight: 600;
-        }
-
-        .sender {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .subject {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .snippet {
-            color: #777;
-            font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .date {
-            color: #777;
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        /* Email viewer */
-        .email-viewer {
-            background: white;
-            border-radius: 10px;
-            min-height: 500px;
-            padding: 25px;
-        }
-
-        .empty {
-            color: #888;
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .email-header {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .email-subject {
-            font-size: 22px;
-            margin-bottom: 15px;
-        }
-
-        .email-from {
-            color: #555;
-            font-size: 14px;
-        }
-
-        .email-date {
-            color: #888;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .email-body {
-            line-height: 1.6;
-            white-space: normal;
-            overflow-wrap: anywhere;
-        }
-
-        .email-actions {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+
+            flex-direction: column;
+
+            gap: 12px;
         }
 
-        .loading {
+
+        .thumbnail {
+
+            border: 2px solid transparent;
+
+            border-radius: 6px;
+
+            padding: 5px;
+
+            cursor: pointer;
+
+            background: #f5f5f5;
+        }
+
+
+        .thumbnail:hover {
+
+            border-color: #aaa;
+        }
+
+
+        .thumbnail.active {
+
+            border-color: #1a73e8;
+        }
+
+
+        .thumbnail canvas {
+
+            width: 100%;
+
+            height: auto;
+
+            display: block;
+        }
+
+
+        .page-number {
+
             text-align: center;
-            padding: 30px;
-            color: #777;
-        }
 
-        .status {
-            margin: 10px 0;
+            font-size: 12px;
+
+            padding-top: 5px;
+
             color: #555;
-            font-size: 13px;
         }
 
-        @media (max-width: 800px) {
-            .layout {
+
+        /* ==============================
+           PDF AREA
+        ============================== */
+
+        .pdf-area {
+
+            background: #525659;
+
+            overflow: auto;
+
+            padding: 30px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: flex-start;
+        }
+
+
+        #pagesContainer {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 25px;
+        }
+
+
+        .pdf-page-wrapper {
+
+            position: relative;
+
+            background: white;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.3);
+        }
+
+
+        .pdf-page-wrapper canvas {
+
+            display: block;
+        }
+
+
+        /* ==============================
+           TEXT OVERLAY
+        ============================== */
+
+        .text-layer {
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            right: 0;
+
+            bottom: 0;
+
+            pointer-events: none;
+        }
+
+
+        .editable-text {
+
+            position: absolute;
+
+            min-width: 50px;
+
+            min-height: 25px;
+
+            padding: 3px 5px;
+
+            border: 1px dashed #1a73e8;
+
+            background: rgba(255,255,255,0.75);
+
+            cursor: move;
+
+            pointer-events: auto;
+
+            user-select: none;
+
+            white-space: pre-wrap;
+
+            outline: none;
+        }
+
+
+        .editable-text.selected {
+
+            border: 2px solid #1a73e8;
+
+            background: rgba(255,255,255,0.9);
+        }
+
+
+        .editable-text[contenteditable="true"] {
+
+            cursor: text;
+
+            user-select: text;
+        }
+
+
+        /* ==============================
+           RIGHT SIDEBAR
+        ============================== */
+
+        .properties {
+
+            background: white;
+
+            border-left: 1px solid #ddd;
+
+            padding: 20px;
+
+            overflow-y: auto;
+        }
+
+
+        .properties h3 {
+
+            margin-top: 0;
+
+            font-size: 16px;
+        }
+
+
+        .property {
+
+            margin-bottom: 18px;
+        }
+
+
+        .property label {
+
+            display: block;
+
+            font-size: 13px;
+
+            color: #555;
+
+            margin-bottom: 6px;
+        }
+
+
+        .property input,
+        .property select {
+
+            width: 100%;
+
+            padding: 8px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 5px;
+
+            font-size: 14px;
+        }
+
+
+        .color-input {
+
+            width: 100%;
+
+            height: 40px;
+
+            padding: 2px;
+
+            cursor: pointer;
+        }
+
+
+        .no-selection {
+
+            color: #888;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ==============================
+           TOOLBAR
+        ============================== */
+
+        .toolbar {
+
+            position: fixed;
+
+            bottom: 20px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            background: white;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 15px rgba(0,0,0,0.2);
+
+            padding: 8px;
+
+            display: flex;
+
+            gap: 6px;
+
+            z-index: 200;
+        }
+
+
+        .toolbar button {
+
+            white-space: nowrap;
+        }
+
+
+        /* ==============================
+           LOADING
+        ============================== */
+
+        #loading {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.5);
+
+            z-index: 1000;
+
+            justify-content: center;
+
+            align-items: center;
+        }
+
+
+        .loading-box {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 10px;
+
+            text-align: center;
+        }
+
+
+        .spinner {
+
+            width: 35px;
+
+            height: 35px;
+
+            border: 4px solid #ddd;
+
+            border-top-color: #1a73e8;
+
+            border-radius: 50%;
+
+            animation: spin 1s linear infinite;
+
+            margin: auto auto 15px;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (max-width: 900px) {
+
+            .editor-layout {
+
+                grid-template-columns: 170px 1fr;
+            }
+
+
+            .properties {
+
+                display: none;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .editor-layout {
+
                 grid-template-columns: 1fr;
             }
 
-            .email-viewer {
-                min-height: 400px;
+
+            .sidebar {
+
+                display: none;
             }
 
-            header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
+
+            .pdf-area {
+
+                padding: 10px;
             }
+
+
+            .toolbar {
+
+                max-width: 95%;
+
+                overflow-x: auto;
+            }
+
         }
+
     </style>
 </head>
 
+
 <body>
 
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
 <header>
-    <h1>📧 My Gmail Dashboard</h1>
 
-    <div class="header-buttons">
-        <button id="authorizeButton"
-                class="primary"
-                onclick="handleAuthClick()">
-            Sign in with Google
-        </button>
-
-        <button id="signoutButton"
-                class="secondary"
-                onclick="handleSignoutClick()"
-                style="display:none;">
-            Sign Out
-        </button>
+    <div class="logo">
+        📄 PDF Editor
     </div>
+
+
+    <div class="header-actions">
+
+        <button
+            class="secondary"
+            onclick="newDocument()">
+
+            New PDF
+
+        </button>
+
+
+        <button
+            id="saveButton"
+            class="primary"
+            onclick="savePDF()"
+            disabled>
+
+            💾 Save PDF
+
+        </button>
+
+    </div>
+
 </header>
 
 
-<!-- LOGIN -->
-<section id="loginSection">
 
-    <h2>Gmail Dashboard</h2>
+<!-- =====================================================
+     UPLOAD SCREEN
+===================================================== -->
 
-    <p>
-        Connect your Gmail account to manage your emails.
-    </p>
+<section id="uploadScreen">
 
-    <button class="primary"
-            onclick="handleAuthClick()">
-        🔐 Connect Gmail
-    </button>
+    <div class="upload-box">
 
-    <p style="font-size:13px;color:#777;margin-top:20px;">
-        You control the permissions granted to this application.
-    </p>
+        <div class="upload-icon">
+            📄
+        </div>
+
+
+        <h1>
+            PDF Editor
+        </h1>
+
+
+        <p>
+            Upload a PDF file to view and edit it.
+        </p>
+
+
+        <p>
+            You can add text, move text, change
+            font size and color, and save the
+            edited PDF.
+        </p>
+
+
+        <input
+            id="fileInput"
+            type="file"
+            accept="application/pdf"
+        >
+
+
+        <label
+            for="fileInput"
+            class="upload-button">
+
+            📂 Upload PDF
+
+        </label>
+
+    </div>
 
 </section>
 
 
-<!-- DASHBOARD -->
-<main id="dashboard">
 
-    <!-- Search / toolbar -->
+<!-- =====================================================
+     EDITOR
+===================================================== -->
 
-    <div class="toolbar">
-
-        <input
-            id="searchInput"
-            class="search"
-            type="text"
-            placeholder="Search Gmail... e.g. from:john is:unread"
-        >
-
-        <button class="primary"
-                onclick="searchEmails()">
-            🔍 Search
-        </button>
-
-        <button class="secondary"
-                onclick="loadInbox()">
-            🔄 Refresh
-        </button>
-
-    </div>
+<section id="editor">
 
 
-    <div class="status" id="status"></div>
+    <div class="editor-layout">
 
 
-    <div class="layout">
+        <!-- ============================
+             LEFT: PAGE THUMBNAILS
+        ============================= -->
 
-        <!-- EMAIL LIST -->
+        <aside class="sidebar">
 
-        <section class="email-list">
+            <h3>
+                Pages
+            </h3>
 
-            <div class="email-list-header">
-                📥 Inbox
+
+            <div id="thumbnails"></div>
+
+        </aside>
+
+
+
+        <!-- ============================
+             CENTER: PDF
+        ============================= -->
+
+        <main class="pdf-area">
+
+            <div id="pagesContainer"></div>
+
+        </main>
+
+
+
+        <!-- ============================
+             RIGHT: PROPERTIES
+        ============================= -->
+
+        <aside class="properties">
+
+            <h3>
+                Text Properties
+            </h3>
+
+
+            <div
+                id="noSelection"
+                class="no-selection">
+
+                Select a text element to edit
+                its properties.
+
             </div>
 
-            <div id="emailList">
-                <div class="empty">
-                    Loading emails...
+
+            <div
+                id="propertiesForm"
+                style="display:none;">
+
+
+                <div class="property">
+
+                    <label>
+                        Text
+                    </label>
+
+                    <textarea
+                        id="textValue"
+                        rows="4"
+                        style="
+                            width:100%;
+                            padding:8px;
+                            border:1px solid #ccc;
+                            border-radius:5px;
+                            resize:vertical;
+                        "
+                    ></textarea>
+
                 </div>
-            </div>
 
-            <div style="padding:15px;">
+
+                <div class="property">
+
+                    <label>
+                        Font Size
+                    </label>
+
+                    <input
+                        id="fontSize"
+                        type="number"
+                        min="6"
+                        max="100"
+                        value="16"
+                    >
+
+                </div>
+
+
+                <div class="property">
+
+                    <label>
+                        Text Color
+                    </label>
+
+                    <input
+                        id="textColor"
+                        class="color-input"
+                        type="color"
+                        value="#000000"
+                    >
+
+                </div>
+
+
                 <button
-                    class="secondary"
+                    class="danger"
                     style="width:100%;"
-                    onclick="loadMore()">
-                    Load More
+                    onclick="deleteSelectedText()">
+
+                    🗑️ Delete Text
+
                 </button>
-            </div>
 
-        </section>
-
-
-        <!-- EMAIL VIEWER -->
-
-        <section class="email-viewer">
-
-            <div id="emailViewer">
-
-                <div class="empty">
-                    Select an email to read it.
-                </div>
 
             </div>
 
-        </section>
+        </aside>
+
 
     </div>
 
-</main>
+
+</section>
 
 
-<script>
 
-/* =========================================================
-   CONFIGURATION
-   ========================================================= */
+<!-- =====================================================
+     BOTTOM TOOLBAR
+===================================================== -->
 
-const CLIENT_ID =
-    "YOUR_CLIENT_ID.apps.googleusercontent.com";
+<div
+    id="toolbar"
+    class="toolbar"
+    style="display:none;">
 
-const API_KEY =
-    "YOUR_API_KEY";
+    <button
+        class="primary"
+        onclick="addText()">
+
+        ✏️ Add Text
+
+    </button>
 
 
-const DISCOVERY_DOC =
-    "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest";
+    <button
+        class="secondary"
+        onclick="zoomOut()">
+
+        −
+
+    </button>
+
+
+    <span
+        id="zoomValue"
+        style="
+            padding:9px;
+            min-width:55px;
+            text-align:center;
+        ">
+
+        100%
+
+    </span>
+
+
+    <button
+        class="secondary"
+        onclick="zoomIn()">
+
+        +
+
+    </button>
+
+</div>
+
+
+
+<!-- =====================================================
+     LOADING
+===================================================== -->
+
+<div id="loading">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <div id="loadingText">
+            Processing PDF...
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     PDF LIB
+===================================================== -->
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js">
+</script>
+
+
+
+<script type="module">
+
+/* =====================================================
+   PDF.JS
+===================================================== */
+
+import * as pdfjsLib
+    from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 
 
 /*
- * gmail.modify allows:
- *
- * Read emails
- * Mark read/unread
- * Move emails to trash
- * Modify labels
- *
- * We don't request full gmail access here.
+ * PDF.js worker
  */
-const SCOPES =
-    "https://www.googleapis.com/auth/gmail.modify";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
 
-/* =========================================================
+
+/* =====================================================
    GLOBAL VARIABLES
-   ========================================================= */
+===================================================== */
 
-let tokenClient;
+let pdfDocument = null;
 
-let gapiInited = false;
-let gisInited = false;
+let originalPDFBytes = null;
 
-let nextPageToken = null;
+let pdfFileName = "edited.pdf";
 
-let currentMessages = [];
+let zoom = 1;
 
-let currentMessageId = null;
+let selectedText = null;
 
-
-/* =========================================================
-   GOOGLE API INITIALIZATION
-   ========================================================= */
-
-function gapiLoaded() {
-
-    gapi.load("client", initializeGapiClient);
-
-}
+let textCounter = 0;
 
 
-async function initializeGapiClient() {
+/*
+ * Store every text added by the user.
+ *
+ * Example:
+ *
+ * {
+ *    id: 1,
+ *    page: 1,
+ *    text: "Hello",
+ *    x: 100,
+ *    y: 100,
+ *    fontSize: 16,
+ *    color: "#000000"
+ * }
+ */
 
-    await gapi.client.init({
-
-        apiKey: API_KEY,
-
-        discoveryDocs: [
-            DISCOVERY_DOC
-        ]
-
-    });
-
-    gapiInited = true;
-
-    maybeEnableButtons();
-
-}
-
-
-/* =========================================================
-   GOOGLE IDENTITY SERVICES
-   ========================================================= */
-
-function gisLoaded() {
-
-    tokenClient =
-        google.accounts.oauth2.initTokenClient({
-
-            client_id: CLIENT_ID,
-
-            scope: SCOPES,
-
-            callback: ""
-
-        });
-
-    gisInited = true;
-
-    maybeEnableButtons();
-
-}
+let textElements = [];
 
 
-function maybeEnableButtons() {
 
-    if (gapiInited && gisInited) {
+/* =====================================================
+   FILE UPLOAD
+===================================================== */
 
-        document.getElementById(
-            "authorizeButton"
-        ).style.display = "inline-block";
+document
+    .getElementById("fileInput")
+    .addEventListener(
+        "change",
+        handleFileUpload
+    );
+
+
+
+async function handleFileUpload(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+
+        return;
 
     }
 
-}
+
+    if (
+        file.type !==
+        "application/pdf"
+    ) {
+
+        alert(
+            "Please select a PDF file."
+        );
+
+        return;
+
+    }
 
 
-/* =========================================================
-   LOGIN
-   ========================================================= */
+    showLoading(
+        "Loading PDF..."
+    );
 
-function handleAuthClick() {
 
-    tokenClient.callback = async (response) => {
+    try {
 
-        if (response.error !== undefined) {
+        originalPDFBytes =
+            await file.arrayBuffer();
 
-            console.error(response);
 
-            alert("Google authorization failed.");
+        pdfFileName =
+            file.name.replace(
+                /\.pdf$/i,
+                ""
+            ) + "_edited.pdf";
 
-            return;
 
-        }
+        pdfDocument =
+            await pdfjsLib.getDocument({
+                data: originalPDFBytes.slice(0)
+            }).promise;
+
+
+        textElements = [];
+
+        selectedText = null;
+
+        textCounter = 0;
+
+        zoom = 1;
+
+
+        await renderPDF();
 
 
         document.getElementById(
-            "loginSection"
+            "uploadScreen"
         ).style.display = "none";
 
 
         document.getElementById(
-            "dashboard"
+            "editor"
         ).style.display = "block";
 
 
         document.getElementById(
-            "authorizeButton"
-        ).style.display = "none";
+            "toolbar"
+        ).style.display = "flex";
 
 
         document.getElementById(
-            "signoutButton"
-        ).style.display = "inline-block";
+            "saveButton"
+        ).disabled = false;
 
-
-        await loadInbox();
-
-    };
-
-
-    if (gapi.client.getToken() === null) {
-
-        tokenClient.requestAccessToken({
-            prompt: "consent"
-        });
-
-    } else {
-
-        tokenClient.requestAccessToken({
-            prompt: ""
-        });
-
-    }
-
-}
-
-
-/* =========================================================
-   SIGN OUT
-   ========================================================= */
-
-function handleSignoutClick() {
-
-    const token = gapi.client.getToken();
-
-    if (token !== null) {
-
-        google.accounts.oauth2.revoke(
-            token.access_token
-        );
-
-        gapi.client.setToken("");
-
-    }
-
-
-    document.getElementById(
-        "dashboard"
-    ).style.display = "none";
-
-
-    document.getElementById(
-        "loginSection"
-    ).style.display = "block";
-
-
-    document.getElementById(
-        "authorizeButton"
-    ).style.display = "inline-block";
-
-
-    document.getElementById(
-        "signoutButton"
-    ).style.display = "none";
-
-}
-
-
-/* =========================================================
-   LOAD INBOX
-   ========================================================= */
-
-async function loadInbox() {
-
-    nextPageToken = null;
-
-    currentMessages = [];
-
-    document.getElementById(
-        "emailList"
-    ).innerHTML =
-        `<div class="loading">
-            Loading emails...
-        </div>`;
-
-
-    try {
-
-        const response =
-            await gapi.client.gmail.users.messages.list({
-
-                userId: "me",
-
-                labelIds: ["INBOX"],
-
-                maxResults: 20
-
-            });
-
-
-        nextPageToken =
-            response.result.nextPageToken || null;
-
-
-        const messages =
-            response.result.messages || [];
-
-
-        currentMessages = messages;
-
-
-        await displayMessageList(messages);
-
-
-        setStatus(
-            `${messages.length} emails loaded.`
-        );
 
     }
 
@@ -640,467 +1138,874 @@ async function loadInbox() {
 
         console.error(error);
 
-        setStatus(
-            "Unable to load emails."
+        alert(
+            "Unable to open this PDF."
         );
+
+    }
+
+    finally {
+
+        hideLoading();
 
     }
 
 }
 
 
-/* =========================================================
-   LOAD MORE
-   ========================================================= */
 
-async function loadMore() {
+/* =====================================================
+   RENDER PDF
+===================================================== */
 
-    if (!nextPageToken) {
-
-        setStatus(
-            "No more emails."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const response =
-            await gapi.client.gmail.users.messages.list({
-
-                userId: "me",
-
-                labelIds: ["INBOX"],
-
-                maxResults: 20,
-
-                pageToken: nextPageToken
-
-            });
-
-
-        nextPageToken =
-            response.result.nextPageToken || null;
-
-
-        const messages =
-            response.result.messages || [];
-
-
-        currentMessages =
-            currentMessages.concat(messages);
-
-
-        await displayMessageList(
-            currentMessages
-        );
-
-
-        setStatus(
-            `${currentMessages.length} emails loaded.`
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        setStatus(
-            "Unable to load more emails."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   DISPLAY EMAIL LIST
-   ========================================================= */
-
-async function displayMessageList(messages) {
+async function renderPDF() {
 
     const container =
-        document.getElementById("emailList");
+        document.getElementById(
+            "pagesContainer"
+        );
 
 
-    if (!messages.length) {
-
-        container.innerHTML =
-            `<div class="empty">
-                No emails found.
-            </div>`;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        `<div class="loading">
-            Loading...
-        </div>`;
-
-
-    const emailData = [];
-
-
-    for (const message of messages) {
-
-        try {
-
-            const response =
-                await gapi.client.gmail.users.messages.get({
-
-                    userId: "me",
-
-                    id: message.id,
-
-                    format: "metadata",
-
-                    metadataHeaders: [
-                        "From",
-                        "Subject",
-                        "Date"
-                    ]
-
-                });
-
-
-            emailData.push(
-                response.result
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-        }
-
-    }
+    const thumbnails =
+        document.getElementById(
+            "thumbnails"
+        );
 
 
     container.innerHTML = "";
 
-
-    emailData.forEach(message => {
-
-        const headers =
-            message.payload?.headers || [];
+    thumbnails.innerHTML = "";
 
 
-        const from =
-            getHeader(headers, "From");
+    for (
+        let pageNumber = 1;
+        pageNumber <= pdfDocument.numPages;
+        pageNumber++
+    ) {
+
+        await renderPage(
+            pageNumber,
+            container
+        );
 
 
-        const subject =
-            getHeader(headers, "Subject")
-            || "(No subject)";
+        await renderThumbnail(
+            pageNumber,
+            thumbnails
+        );
+
+    }
 
 
-        const date =
-            getHeader(headers, "Date");
-
-
-        const isUnread =
-            message.labelIds &&
-            message.labelIds.includes("UNREAD");
-
-
-        const item =
-            document.createElement("div");
-
-
-        item.className =
-            "email-item" +
-            (isUnread ? " unread" : "");
-
-
-        item.innerHTML = `
-
-            <div class="sender">
-                ${escapeHtml(from)}
-            </div>
-
-            <div class="subject">
-                ${escapeHtml(subject)}
-            </div>
-
-            <div class="snippet">
-                ${escapeHtml(message.snippet || "")}
-            </div>
-
-            <div class="date">
-                ${escapeHtml(date || "")}
-            </div>
-
-        `;
-
-
-        item.onclick = () => {
-
-            openEmail(message.id);
-
-        };
-
-
-        container.appendChild(item);
-
-    });
+    updateZoomLabel();
 
 }
 
 
-/* =========================================================
-   OPEN EMAIL
-   ========================================================= */
 
-async function openEmail(messageId) {
+/* =====================================================
+   RENDER PAGE
+===================================================== */
 
-    currentMessageId = messageId;
+async function renderPage(
+    pageNumber,
+    container
+) {
+
+    const page =
+        await pdfDocument.getPage(
+            pageNumber
+        );
 
 
-    document.getElementById(
-        "emailViewer"
-    ).innerHTML =
-        `<div class="loading">
-            Loading email...
-        </div>`;
+    const viewport =
+        page.getViewport({
+            scale: zoom
+        });
 
 
-    try {
+    const wrapper =
+        document.createElement("div");
 
-        const response =
-            await gapi.client.gmail.users.messages.get({
 
-                userId: "me",
+    wrapper.className =
+        "pdf-page-wrapper";
 
-                id: messageId,
 
-                format: "full"
+    wrapper.dataset.page =
+        pageNumber;
 
+
+    wrapper.style.width =
+        viewport.width + "px";
+
+
+    wrapper.style.height =
+        viewport.height + "px";
+
+
+    const canvas =
+        document.createElement("canvas");
+
+
+    const context =
+        canvas.getContext("2d");
+
+
+    canvas.width =
+        viewport.width;
+
+
+    canvas.height =
+        viewport.height;
+
+
+    wrapper.appendChild(
+        canvas
+    );
+
+
+    /*
+     * Text layer where our
+     * editable elements live.
+     */
+
+    const textLayer =
+        document.createElement("div");
+
+
+    textLayer.className =
+        "text-layer";
+
+
+    textLayer.dataset.page =
+        pageNumber;
+
+
+    wrapper.appendChild(
+        textLayer
+    );
+
+
+    container.appendChild(
+        wrapper
+    );
+
+
+    await page.render({
+
+        canvasContext:
+            context,
+
+        viewport:
+            viewport
+
+    }).promise;
+
+
+    /*
+     * Re-create user-added
+     * text for this page.
+     */
+
+    restoreTextElements(
+        pageNumber,
+        textLayer
+    );
+
+}
+
+
+
+/* =====================================================
+   THUMBNAIL
+===================================================== */
+
+async function renderThumbnail(
+    pageNumber,
+    container
+) {
+
+    const page =
+        await pdfDocument.getPage(
+            pageNumber
+        );
+
+
+    const scale = 0.2;
+
+
+    const viewport =
+        page.getViewport({
+            scale
+        });
+
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    wrapper.className =
+        "thumbnail";
+
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    canvas.width =
+        viewport.width;
+
+
+    canvas.height =
+        viewport.height;
+
+
+    wrapper.appendChild(
+        canvas
+    );
+
+
+    const number =
+        document.createElement(
+            "div"
+        );
+
+
+    number.className =
+        "page-number";
+
+
+    number.textContent =
+        `Page ${pageNumber}`;
+
+
+    wrapper.appendChild(
+        number
+    );
+
+
+    wrapper.onclick = () => {
+
+        const target =
+            document.querySelector(
+                `.pdf-page-wrapper[data-page="${pageNumber}"]`
+            );
+
+
+        if (target) {
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
             });
 
+        }
 
-        const message =
-            response.result;
-
-
-        const headers =
-            message.payload?.headers || [];
+    };
 
 
-        const from =
-            getHeader(headers, "From");
+    container.appendChild(
+        wrapper
+    );
 
 
-        const subject =
-            getHeader(headers, "Subject")
-            || "(No subject)";
+    await page.render({
+
+        canvasContext:
+            canvas.getContext("2d"),
+
+        viewport:
+            viewport
+
+    }).promise;
+
+}
 
 
-        const date =
-            getHeader(headers, "Date");
+
+/* =====================================================
+   ADD TEXT
+===================================================== */
+
+function addText() {
+
+    if (!pdfDocument) {
+
+        return;
+
+    }
 
 
-        const body =
-            extractEmailBody(message.payload);
+    /*
+     * Add to page 1 by default.
+     */
+
+    const pageNumber = 1;
 
 
-        document.getElementById(
-            "emailViewer"
-        ).innerHTML = `
-
-            <div class="email-actions">
-
-                <button
-                    class="secondary"
-                    onclick="markAsRead('${messageId}')">
-                    ✅ Mark Read
-                </button>
-
-                <button
-                    class="secondary"
-                    onclick="markAsUnread('${messageId}')">
-                    🔵 Mark Unread
-                </button>
-
-                <button
-                    class="danger"
-                    onclick="moveToTrash('${messageId}')">
-                    🗑️ Delete
-                </button>
-
-            </div>
+    const pageWrapper =
+        document.querySelector(
+            `.pdf-page-wrapper[data-page="${pageNumber}"]`
+        );
 
 
-            <div class="email-header">
+    if (!pageWrapper) {
 
-                <div class="email-subject">
-                    ${escapeHtml(subject)}
-                </div>
+        return;
 
-                <div class="email-from">
-                    <strong>From:</strong>
-                    ${escapeHtml(from)}
-                </div>
-
-                <div class="email-date">
-                    ${escapeHtml(date)}
-                </div>
-
-            </div>
+    }
 
 
-            <div class="email-body">
-                ${body}
-            </div>
+    const textLayer =
+        pageWrapper.querySelector(
+            ".text-layer"
+        );
 
-        `;
+
+    textCounter++;
 
 
-        /*
-         * Automatically mark unread messages as read.
-         */
+    const element = {
 
-        if (
-            message.labelIds &&
-            message.labelIds.includes("UNREAD")
-        ) {
+        id: textCounter,
 
-            await markAsRead(
-                messageId,
-                false
+        page: pageNumber,
+
+        text: "Double click to edit",
+
+        x: 50,
+
+        y: 50,
+
+        fontSize: 16,
+
+        color: "#000000"
+
+    };
+
+
+    textElements.push(
+        element
+    );
+
+
+    createTextElement(
+        element,
+        textLayer
+    );
+
+
+    selectTextElement(
+        element
+    );
+
+}
+
+
+
+/* =====================================================
+   CREATE TEXT ELEMENT
+===================================================== */
+
+function createTextElement(
+    data,
+    textLayer
+) {
+
+    const element =
+        document.createElement("div");
+
+
+    element.className =
+        "editable-text";
+
+
+    element.dataset.id =
+        data.id;
+
+
+    element.textContent =
+        data.text;
+
+
+    element.style.left =
+        data.x + "px";
+
+
+    element.style.top =
+        data.y + "px";
+
+
+    element.style.fontSize =
+        data.fontSize + "px";
+
+
+    element.style.color =
+        data.color;
+
+
+    /*
+     * Click = select
+     */
+
+    element.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            selectTextElement(
+                data
             );
 
         }
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        document.getElementById(
-            "emailViewer"
-        ).innerHTML =
-            `<div class="empty">
-                Unable to open this email.
-            </div>`;
-
-    }
-
-}
+    );
 
 
-/* =========================================================
-   MARK READ
-   ========================================================= */
+    /*
+     * Double click = edit
+     */
 
-async function markAsRead(
-    messageId,
-    refresh = true
-) {
+    element.addEventListener(
+        "dblclick",
+        event => {
 
-    try {
+            event.stopPropagation();
 
-        await gapi.client.gmail.users.messages.modify({
+            element.contentEditable =
+                "true";
 
-            userId: "me",
-
-            id: messageId,
-
-            resource: {
-
-                removeLabelIds: [
-                    "UNREAD"
-                ]
-
-            }
-
-        });
-
-
-        if (refresh) {
-
-            await loadInbox();
+            element.focus();
 
         }
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to mark email as read."
-        );
-
-    }
-
-}
+    );
 
 
-/* =========================================================
-   MARK UNREAD
-   ========================================================= */
+    /*
+     * Finish editing
+     */
 
-async function markAsUnread(messageId) {
+    element.addEventListener(
+        "blur",
+        () => {
 
-    try {
+            element.contentEditable =
+                "false";
 
-        await gapi.client.gmail.users.messages.modify({
 
-            userId: "me",
+            data.text =
+                element.innerText;
 
-            id: messageId,
+            updatePropertiesPanel();
 
-            resource: {
+        }
+    );
 
-                addLabelIds: [
-                    "UNREAD"
-                ]
+
+    /*
+     * Dragging
+     */
+
+    let dragging = false;
+
+    let startX = 0;
+
+    let startY = 0;
+
+    let originalX = 0;
+
+    let originalY = 0;
+
+
+    element.addEventListener(
+        "mousedown",
+        event => {
+
+            if (
+                element.contentEditable ===
+                "true"
+            ) {
+
+                return;
 
             }
 
-        });
+
+            dragging = true;
 
 
-        await loadInbox();
+            startX =
+                event.clientX;
 
-        await openEmail(messageId);
 
-    }
+            startY =
+                event.clientY;
 
-    catch (error) {
 
-        console.error(error);
+            originalX =
+                data.x;
 
-        alert(
-            "Unable to mark email as unread."
-        );
 
-    }
+            originalY =
+                data.y;
+
+
+            event.preventDefault();
+
+        }
+    );
+
+
+    document.addEventListener(
+        "mousemove",
+        event => {
+
+            if (!dragging) {
+
+                return;
+
+            }
+
+
+            const dx =
+                event.clientX -
+                startX;
+
+
+            const dy =
+                event.clientY -
+                startY;
+
+
+            data.x =
+                originalX + dx;
+
+
+            data.y =
+                originalY + dy;
+
+
+            element.style.left =
+                data.x + "px";
+
+
+            element.style.top =
+                data.y + "px";
+
+        }
+    );
+
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            dragging = false;
+
+        }
+    );
+
+
+    textLayer.appendChild(
+        element
+    );
 
 }
 
 
-/* =========================================================
-   MOVE TO TRASH
-   ========================================================= */
 
-async function moveToTrash(messageId) {
+/* =====================================================
+   RESTORE TEXT
+===================================================== */
+
+function restoreTextElements(
+    pageNumber,
+    textLayer
+) {
+
+    const pageElements =
+        textElements.filter(
+            item =>
+                item.page ===
+                pageNumber
+        );
+
+
+    pageElements.forEach(
+        item => {
+
+            createTextElement(
+                item,
+                textLayer
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   SELECT TEXT
+===================================================== */
+
+function selectTextElement(
+    data
+) {
+
+    selectedText =
+        data;
+
+
+    /*
+     * Remove previous selection
+     */
+
+    document
+        .querySelectorAll(
+            ".editable-text"
+        )
+        .forEach(
+            element => {
+
+                element.classList.remove(
+                    "selected"
+                );
+
+            }
+        );
+
+
+    const element =
+        document.querySelector(
+            `.editable-text[data-id="${data.id}"]`
+        );
+
+
+    if (element) {
+
+        element.classList.add(
+            "selected"
+        );
+
+    }
+
+
+    updatePropertiesPanel();
+
+}
+
+
+
+/* =====================================================
+   PROPERTIES PANEL
+===================================================== */
+
+function updatePropertiesPanel() {
+
+    const noSelection =
+        document.getElementById(
+            "noSelection"
+        );
+
+
+    const form =
+        document.getElementById(
+            "propertiesForm"
+        );
+
+
+    if (!selectedText) {
+
+        noSelection.style.display =
+            "block";
+
+        form.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    noSelection.style.display =
+        "none";
+
+
+    form.style.display =
+        "block";
+
+
+    document.getElementById(
+        "textValue"
+    ).value =
+        selectedText.text;
+
+
+    document.getElementById(
+        "fontSize"
+    ).value =
+        selectedText.fontSize;
+
+
+    document.getElementById(
+        "textColor"
+    ).value =
+        selectedText.color;
+
+}
+
+
+
+/* =====================================================
+   TEXT VALUE CHANGE
+===================================================== */
+
+document
+    .getElementById("textValue")
+    .addEventListener(
+        "input",
+        event => {
+
+            if (!selectedText) {
+
+                return;
+
+            }
+
+
+            selectedText.text =
+                event.target.value;
+
+
+            updateSelectedDOM();
+
+        }
+    );
+
+
+
+/* =====================================================
+   FONT SIZE CHANGE
+===================================================== */
+
+document
+    .getElementById("fontSize")
+    .addEventListener(
+        "input",
+        event => {
+
+            if (!selectedText) {
+
+                return;
+
+            }
+
+
+            selectedText.fontSize =
+                Number(
+                    event.target.value
+                );
+
+
+            updateSelectedDOM();
+
+        }
+    );
+
+
+
+/* =====================================================
+   COLOR CHANGE
+===================================================== */
+
+document
+    .getElementById("textColor")
+    .addEventListener(
+        "input",
+        event => {
+
+            if (!selectedText) {
+
+                return;
+
+            }
+
+
+            selectedText.color =
+                event.target.value;
+
+
+            updateSelectedDOM();
+
+        }
+    );
+
+
+
+/* =====================================================
+   UPDATE DOM
+===================================================== */
+
+function updateSelectedDOM() {
+
+    if (!selectedText) {
+
+        return;
+
+    }
+
+
+    const element =
+        document.querySelector(
+            `.editable-text[data-id="${selectedText.id}"]`
+        );
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.textContent =
+        selectedText.text;
+
+
+    element.style.fontSize =
+        selectedText.fontSize + "px";
+
+
+    element.style.color =
+        selectedText.color;
+
+}
+
+
+
+/* =====================================================
+   DELETE SELECTED TEXT
+===================================================== */
+
+function deleteSelectedText() {
+
+    if (!selectedText) {
+
+        return;
+
+    }
+
 
     const confirmed =
         confirm(
-            "Are you sure you want to move this email to Trash?"
+            "Delete this text?"
         );
 
 
@@ -1111,26 +2016,319 @@ async function moveToTrash(messageId) {
     }
 
 
+    const id =
+        selectedText.id;
+
+
+    /*
+     * Remove from data
+     */
+
+    textElements =
+        textElements.filter(
+            item =>
+                item.id !== id
+        );
+
+
+    /*
+     * Remove from DOM
+     */
+
+    const element =
+        document.querySelector(
+            `.editable-text[data-id="${id}"]`
+        );
+
+
+    if (element) {
+
+        element.remove();
+
+    }
+
+
+    selectedText = null;
+
+
+    updatePropertiesPanel();
+
+}
+
+
+
+/* =====================================================
+   ZOOM
+===================================================== */
+
+window.zoomIn = function() {
+
+    if (zoom >= 2) {
+
+        return;
+
+    }
+
+
+    zoom += 0.1;
+
+
+    rerenderPages();
+
+};
+
+
+
+window.zoomOut = function() {
+
+    if (zoom <= 0.5) {
+
+        return;
+
+    }
+
+
+    zoom -= 0.1;
+
+
+    rerenderPages();
+
+};
+
+
+
+async function rerenderPages() {
+
+    showLoading(
+        "Updating view..."
+    );
+
+
     try {
 
-        await gapi.client.gmail.users.messages.trash({
-
-            userId: "me",
-
-            id: messageId
-
-        });
+        const container =
+            document.getElementById(
+                "pagesContainer"
+            );
 
 
-        document.getElementById(
-            "emailViewer"
-        ).innerHTML =
-            `<div class="empty">
-                🗑️ Email moved to Trash.
-            </div>`;
+        const thumbnails =
+            document.getElementById(
+                "thumbnails"
+            );
 
 
-        await loadInbox();
+        container.innerHTML =
+            "";
+
+
+        thumbnails.innerHTML =
+            "";
+
+
+        await renderPDF();
+
+    }
+
+    finally {
+
+        hideLoading();
+
+    }
+
+}
+
+
+
+function updateZoomLabel() {
+
+    document.getElementById(
+        "zoomValue"
+    ).textContent =
+        Math.round(
+            zoom * 100
+        ) + "%";
+
+}
+
+
+
+/* =====================================================
+   SAVE PDF
+===================================================== */
+
+window.savePDF = async function() {
+
+    if (!originalPDFBytes) {
+
+        alert(
+            "Please upload a PDF first."
+        );
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Creating edited PDF..."
+    );
+
+
+    try {
+
+        /*
+         * PDF-LIB
+         */
+
+        const {
+            PDFDocument,
+            rgb,
+            StandardFonts
+        } = window.PDFLib;
+
+
+        /*
+         * Load original PDF
+         */
+
+        const pdfDoc =
+            await PDFDocument.load(
+                originalPDFBytes
+            );
+
+
+        const pages =
+            pdfDoc.getPages();
+
+
+        /*
+         * Use Helvetica
+         */
+
+        const font =
+            await pdfDoc.embedFont(
+                StandardFonts.Helvetica
+            );
+
+
+        /*
+         * Add each text element
+         */
+
+        for (
+            const item of textElements
+        ) {
+
+            const pageIndex =
+                item.page - 1;
+
+
+            const page =
+                pages[pageIndex];
+
+
+            if (!page) {
+
+                continue;
+
+            }
+
+
+            /*
+             * IMPORTANT:
+             *
+             * Browser coordinates:
+             *
+             * top-left = 0,0
+             *
+             * PDF coordinates:
+             *
+             * bottom-left = 0,0
+             */
+
+
+            const pageHeight =
+                page.getHeight();
+
+
+            /*
+             * Convert browser
+             * coordinates to PDF.
+             */
+
+            const pdfX =
+                item.x / zoom;
+
+
+            const pdfY =
+                pageHeight -
+                (item.y / zoom) -
+                (item.fontSize / zoom);
+
+
+            /*
+             * Convert hex color
+             * to RGB.
+             */
+
+            const color =
+                hexToRgb(
+                    item.color
+                );
+
+
+            page.drawText(
+                item.text,
+                {
+
+                    x: pdfX,
+
+                    y: pdfY,
+
+                    size:
+                        item.fontSize /
+                        zoom,
+
+                    font:
+
+                        font,
+
+                    color:
+
+                        rgb(
+                            color.r,
+                            color.g,
+                            color.b
+                        ),
+
+                    lineHeight:
+                        item.fontSize /
+                        zoom * 1.2
+
+                }
+            );
+
+        }
+
+
+        /*
+         * Generate final PDF
+         */
+
+        const pdfBytes =
+            await pdfDoc.save();
+
+
+        /*
+         * Download
+         */
+
+        downloadFile(
+            pdfBytes,
+            pdfFileName
+        );
+
 
     }
 
@@ -1139,383 +2337,183 @@ async function moveToTrash(messageId) {
         console.error(error);
 
         alert(
-            "Unable to delete the email."
+            "Unable to save the PDF.\n\n" +
+            error.message
         );
 
     }
 
+    finally {
+
+        hideLoading();
+
+    }
+
+};
+
+
+
+/* =====================================================
+   HEX → RGB
+===================================================== */
+
+function hexToRgb(
+    hex
+) {
+
+    hex =
+        hex.replace(
+            "#",
+            ""
+        );
+
+
+    const r =
+        parseInt(
+            hex.substring(0, 2),
+            16
+        ) / 255;
+
+
+    const g =
+        parseInt(
+            hex.substring(2, 4),
+            16
+        ) / 255;
+
+
+    const b =
+        parseInt(
+            hex.substring(4, 6),
+            16
+        ) / 255;
+
+
+    return {
+        r,
+        g,
+        b
+    };
+
 }
 
 
-/* =========================================================
-   SEARCH
-   ========================================================= */
 
-async function searchEmails() {
+/* =====================================================
+   DOWNLOAD
+===================================================== */
 
-    const query =
-        document.getElementById(
-            "searchInput"
-        ).value.trim();
+function downloadFile(
+    bytes,
+    filename
+) {
+
+    const blob =
+        new Blob(
+            [bytes],
+            {
+                type:
+                    "application/pdf"
+            }
+        );
 
 
-    if (!query) {
+    const url =
+        URL.createObjectURL(
+            blob
+        );
 
-        await loadInbox();
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        filename;
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+
+/* =====================================================
+   NEW DOCUMENT
+===================================================== */
+
+window.newDocument = function() {
+
+    const confirmed =
+        confirm(
+            "Open another PDF?"
+        );
+
+
+    if (!confirmed) {
 
         return;
 
     }
 
 
-    document.getElementById(
-        "emailList"
-    ).innerHTML =
-        `<div class="loading">
-            Searching...
-        </div>`;
+    location.reload();
 
+};
 
-    try {
 
-        const response =
-            await gapi.client.gmail.users.messages.list({
 
-                userId: "me",
+/* =====================================================
+   LOADING
+===================================================== */
 
-                q: query,
-
-                maxResults: 20
-
-            });
-
-
-        nextPageToken =
-            response.result.nextPageToken || null;
-
-
-        const messages =
-            response.result.messages || [];
-
-
-        currentMessages =
-            messages;
-
-
-        await displayMessageList(
-            messages
-        );
-
-
-        setStatus(
-            `${messages.length} results found.`
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        setStatus(
-            "Search failed."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function getHeader(headers, name) {
-
-    const header =
-        headers.find(
-            h =>
-                h.name.toLowerCase() ===
-                name.toLowerCase()
-        );
-
-
-    return header
-        ? header.value
-        : "";
-
-}
-
-
-/* =========================================================
-   EMAIL BODY EXTRACTION
-   ========================================================= */
-
-function extractEmailBody(payload) {
-
-    if (!payload) {
-
-        return "";
-
-    }
-
-
-    /*
-     * Direct body
-     */
-
-    if (
-        payload.body &&
-        payload.body.data
-    ) {
-
-        return formatEmailBody(
-            decodeBase64Url(
-                payload.body.data
-            )
-        );
-
-    }
-
-
-    /*
-     * Multipart email
-     */
-
-    if (payload.parts) {
-
-        let html = "";
-        let plain = "";
-
-
-        for (const part of payload.parts) {
-
-            if (
-                part.mimeType ===
-                "text/html" &&
-                part.body &&
-                part.body.data
-            ) {
-
-                html =
-                    decodeBase64Url(
-                        part.body.data
-                    );
-
-            }
-
-
-            if (
-                part.mimeType ===
-                "text/plain" &&
-                part.body &&
-                part.body.data
-            ) {
-
-                plain =
-                    decodeBase64Url(
-                        part.body.data
-                    );
-
-            }
-
-
-            /*
-             * Nested multipart
-             */
-
-            if (part.parts) {
-
-                const nested =
-                    extractEmailBody(part);
-
-                if (nested) {
-
-                    html += nested;
-
-                }
-
-            }
-
-        }
-
-
-        if (html) {
-
-            /*
-             * Emails are displayed inside
-             * a sandboxed iframe below.
-             */
-
-            return `
-                <iframe
-                    sandbox=""
-                    style="
-                        width:100%;
-                        min-height:500px;
-                        border:0;
-                    "
-                    srcdoc="${escapeAttribute(html)}">
-                </iframe>
-            `;
-
-        }
-
-
-        return formatEmailBody(
-            plain
-        );
-
-    }
-
-
-    return "";
-
-}
-
-
-/* =========================================================
-   BASE64 DECODER
-   ========================================================= */
-
-function decodeBase64Url(data) {
-
-    try {
-
-        data =
-            data
-                .replace(/-/g, "+")
-                .replace(/_/g, "/");
-
-
-        const decoded =
-            atob(data);
-
-
-        const bytes =
-            new Uint8Array(
-                decoded.length
-            );
-
-
-        for (
-            let i = 0;
-            i < decoded.length;
-            i++
-        ) {
-
-            bytes[i] =
-                decoded.charCodeAt(i);
-
-        }
-
-
-        return new TextDecoder(
-            "utf-8"
-        ).decode(bytes);
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        return "";
-
-    }
-
-}
-
-
-/* =========================================================
-   FORMAT PLAIN TEXT
-   ========================================================= */
-
-function formatEmailBody(text) {
-
-    return escapeHtml(text)
-        .replace(/\n/g, "<br>");
-
-}
-
-
-/* =========================================================
-   HTML ESCAPING
-   ========================================================= */
-
-function escapeHtml(value) {
-
-    return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-function escapeAttribute(value) {
-
-    return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-
-}
-
-
-/* =========================================================
-   STATUS
-   ========================================================= */
-
-function setStatus(message) {
+function showLoading(
+    message
+) {
 
     document.getElementById(
-        "status"
-    ).textContent = message;
+        "loadingText"
+    ).textContent =
+        message;
+
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "flex";
 
 }
 
 
-/* =========================================================
-   ENTER KEY SEARCH
-   ========================================================= */
 
-document
-    .getElementById("searchInput")
-    .addEventListener(
-        "keydown",
-        event => {
+function hideLoading() {
 
-            if (event.key === "Enter") {
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
 
-                searchEmails();
+}
 
-            }
-
-        }
-    );
-
-</script>
-
-
-<!-- Google API -->
-<script
-    async
-    defer
-    src="https://apis.google.com/js/api.js"
-    onload="gapiLoaded()">
-</script>
-
-
-<!-- Google Identity Services -->
-<script
-    async
-    defer
-    src="https://accounts.google.com/gsi/client"
-    onload="gisLoaded()">
 </script>
 
 </body>
