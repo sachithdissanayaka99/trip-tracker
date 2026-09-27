@@ -1,999 +1,369 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>PDF Editor</title>
-
-
-    <!--
-        PDF.JS
-        Used for reading PDF pages and detecting text.
-    -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-
-    <!--
-        PDF-LIB
-        Used to create/save the modified PDF.
-    -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-
-        body {
-
-            font-family:
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            background: #f1f3f4;
-
-            color: #202124;
-
-            overflow: hidden;
-        }
-
-
-        /* ==================================================
-           HEADER
-        ================================================== */
-
-        header {
-
-            height: 64px;
-
-            background: white;
-
-            border-bottom: 1px solid #ddd;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            padding: 0 18px;
-
-            position: relative;
-
-            z-index: 100;
-        }
-
-
-        .logo {
-
-            font-size: 19px;
-
-            font-weight: 700;
-
-            white-space: nowrap;
-        }
-
-
-        .header-actions {
-
-            display: flex;
-
-            gap: 8px;
-
-            align-items: center;
-        }
-
-
-        /* ==================================================
-           BUTTONS
-        ================================================== */
-
-        button {
-
-            border: 0;
-
-            border-radius: 6px;
-
-            padding: 9px 14px;
-
-            font-size: 14px;
-
-            cursor: pointer;
-
-            transition:
-                background .15s,
-                opacity .15s;
-        }
-
-
-        button:hover:not(:disabled) {
-            filter: brightness(.95);
-        }
-
-
-        button:disabled {
-
-            opacity: .45;
-
-            cursor: not-allowed;
-        }
-
-
-        .primary {
-
-            background: #1a73e8;
-
-            color: white;
-        }
-
-
-        .secondary {
-
-            background: #e8eaed;
-
-            color: #202124;
-        }
-
-
-        .danger {
-
-            background: #d93025;
-
-            color: white;
-        }
-
-
-        .success {
-
-            background: #188038;
-
-            color: white;
-        }
-
-
-        /* ==================================================
-           UPLOAD SCREEN
-        ================================================== */
-
-        #uploadScreen {
-
-            height: calc(100vh - 64px);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 25px;
-
-            overflow: auto;
-        }
-
-
-        .upload-card {
-
-            width: 100%;
-
-            max-width: 650px;
-
-            background: white;
-
-            border-radius: 15px;
-
-            padding: 45px 30px;
-
-            text-align: center;
-
-            box-shadow:
-                0 5px 25px rgba(0,0,0,.08);
-        }
-
-
-        .upload-icon {
-
-            font-size: 60px;
-
-            margin-bottom: 10px;
-        }
-
-
-        .upload-card h1 {
-
-            margin:
-                0 0 10px;
-        }
-
-
-        .upload-card p {
-
-            color: #666;
-
-            line-height: 1.6;
-        }
-
-
-        #fileInput {
-
-            display: none;
-        }
-
-
-        .upload-label {
-
-            display: inline-block;
-
-            margin-top: 15px;
-
-            padding: 12px 22px;
-
-            background: #1a73e8;
-
-            color: white;
-
-            border-radius: 7px;
-
-            cursor: pointer;
-        }
-
-
-        .upload-label:hover {
-
-            background: #1557b0;
-        }
-
-
-        /* ==================================================
-           EDITOR
-        ================================================== */
-
-        #editor {
-
-            display: none;
-
-            height: calc(100vh - 64px);
-        }
-
-
-        .editor-layout {
-
-            display: grid;
-
-            grid-template-columns:
-                220px
-                minmax(400px, 1fr)
-                270px;
-
-            height: 100%;
-        }
-
-
-        /* ==================================================
-           LEFT SIDEBAR
-        ================================================== */
-
-        .pages-sidebar {
-
-            background: white;
-
-            border-right: 1px solid #ddd;
-
-            overflow-y: auto;
-
-            padding: 15px;
-        }
-
-
-        .pages-sidebar h3 {
-
-            margin:
-                0 0 15px;
-
-            font-size: 15px;
-        }
-
-
-        #thumbnails {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 12px;
-        }
-
-
-        .thumbnail {
-
-            background: #f4f4f4;
-
-            border:
-                2px solid transparent;
-
-            border-radius: 6px;
-
-            padding: 5px;
-
-            cursor: pointer;
-        }
-
-
-        .thumbnail:hover {
-
-            border-color: #aaa;
-        }
-
-
-        .thumbnail.active {
-
-            border-color: #1a73e8;
-        }
-
-
-        .thumbnail canvas {
-
-            display: block;
-
-            width: 100%;
-
-            height: auto;
-        }
-
-
-        .thumbnail-number {
-
-            text-align: center;
-
-            font-size: 12px;
-
-            color: #666;
-
-            padding: 5px;
-        }
-
-
-        /* ==================================================
-           PDF AREA
-        ================================================== */
-
-        .pdf-area {
-
-            background: #525659;
-
-            overflow: auto;
-
-            padding: 30px;
-
-            position: relative;
-        }
-
-
-        #pagesContainer {
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            gap: 30px;
-        }
-
-
-        /* ==================================================
-           PDF PAGE
-        ================================================== */
-
-        .pdf-page {
-
-            position: relative;
-
-            background: white;
-
-            box-shadow:
-                0 4px 20px rgba(0,0,0,.35);
-
-            flex-shrink: 0;
-        }
-
-
-        .pdf-canvas {
-
-            display: block;
-        }
-
-
-        /*
-            Overlay contains:
-
-            1. Existing PDF text
-            2. New text
-        */
-
-        .overlay {
-
-            position: absolute;
-
-            inset: 0;
-
-            pointer-events: none;
-        }
-
-
-        /* ==================================================
-           EXISTING PDF TEXT
-        ================================================== */
-
-        .existing-text {
-
-            position: absolute;
-
-            pointer-events: auto;
-
-            cursor: pointer;
-
-            border: 1px solid transparent;
-
-            white-space: pre;
-
-            overflow: hidden;
-
-            color: transparent;
-
-            background: transparent;
-
-            user-select: none;
-        }
-
-
-        .existing-text:hover {
-
-            border:
-                1px dashed #1a73e8;
-
-            background:
-                rgba(26,115,232,.08);
-        }
-
-
-        .existing-text.selected {
-
-            border:
-                2px solid #1a73e8;
-
-            background:
-                rgba(26,115,232,.12);
-        }
-
-
-        /* ==================================================
-           NEW TEXT
-        ================================================== */
-
-        .new-text {
-
-            position: absolute;
-
-            pointer-events: auto;
-
-            min-width: 40px;
-
-            min-height: 20px;
-
-            padding: 2px 4px;
-
-            border:
-                1px dashed #1a73e8;
-
-            background:
-                rgba(255,255,255,.85);
-
-            cursor: move;
-
-            white-space: pre-wrap;
-
-            user-select: none;
-
-            line-height: 1.2;
-
-            z-index: 20;
-        }
-
-
-        .new-text.selected {
-
-            border:
-                2px solid #1a73e8;
-
-            background:
-                rgba(255,255,255,.95);
-        }
-
-
-        .new-text.editing {
-
-            cursor: text;
-
-            user-select: text;
-
-            border:
-                2px solid #188038;
-        }
-
-
-        /* ==================================================
-           RIGHT PROPERTIES
-        ================================================== */
-
-        .properties {
-
-            background: white;
-
-            border-left: 1px solid #ddd;
-
-            padding: 18px;
-
-            overflow-y: auto;
-        }
-
-
-        .properties h3 {
-
-            margin:
-                0 0 18px;
-
-            font-size: 16px;
-        }
-
-
-        #noSelection {
-
-            color: #777;
-
-            font-size: 13px;
-
-            line-height: 1.6;
-        }
-
-
-        #propertyForm {
-
-            display: none;
-        }
-
-
-        .property {
-
-            margin-bottom: 17px;
-        }
-
-
-        .property label {
-
-            display: block;
-
-            margin-bottom: 6px;
-
-            color: #555;
-
-            font-size: 13px;
-        }
-
-
-        .property input,
-        .property textarea {
-
-            width: 100%;
-
-            border:
-                1px solid #ccc;
-
-            border-radius: 5px;
-
-            padding: 8px;
-
-            font-family: inherit;
-
-            font-size: 14px;
-        }
-
-
-        .property textarea {
-
-            min-height: 80px;
-
-            resize: vertical;
-        }
-
-
-        .color-input {
-
-            height: 40px;
-
-            padding: 2px !important;
-
-            cursor: pointer;
-        }
-
-
-        .property button {
-
-            width: 100%;
-
-            margin-bottom: 8px;
-        }
-
-
-        .info-box {
-
-            margin-top: 20px;
-
-            padding: 10px;
-
-            background: #f5f7f9;
-
-            border-radius: 6px;
-
-            font-size: 12px;
-
-            color: #666;
-
-            line-height: 1.5;
-        }
-
-
-        /* ==================================================
-           TOOLBAR
-        ================================================== */
-
-        #toolbar {
-
-            display: none;
-
-            position: fixed;
-
-            bottom: 18px;
-
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            background: white;
-
-            padding: 8px;
-
-            border-radius: 9px;
-
-            box-shadow:
-                0 4px 20px rgba(0,0,0,.25);
-
-            z-index: 500;
-
-            gap: 6px;
-
-            align-items: center;
-        }
-
-
-        #zoomText {
-
-            min-width: 50px;
-
-            text-align: center;
-
-            font-size: 13px;
-
-            padding: 8px;
-        }
-
-
-        /* ==================================================
-           ERROR BOX
-        ================================================== */
-
-        #errorBox {
-
-            display: none;
-
-            position: fixed;
-
-            top: 80px;
-
-            right: 20px;
-
-            width: min(500px, calc(100% - 40px));
-
-            background: #fce8e6;
-
-            border:
-                1px solid #d93025;
-
-            color: #8b1a13;
-
-            border-radius: 8px;
-
-            padding: 15px;
-
-            z-index: 2000;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,.15);
-        }
-
-
-        #errorTitle {
-
-            font-weight: 700;
-
-            margin-bottom: 6px;
-        }
-
-
-        #errorMessage {
-
-            font-size: 13px;
-
-            white-space: pre-wrap;
-
-            word-break: break-word;
-
-        }
-
-
-        #closeError {
-
-            float: right;
-
-            cursor: pointer;
-
-            font-size: 18px;
-
-            font-weight: bold;
-        }
-
-
-        /* ==================================================
-           SUCCESS MESSAGE
-        ================================================== */
-
-        #successBox {
-
-            display: none;
-
-            position: fixed;
-
-            top: 80px;
-
-            right: 20px;
-
-            width: min(400px, calc(100% - 40px));
-
-            background: #e6f4ea;
-
-            border:
-                1px solid #188038;
-
-            color: #137333;
-
-            border-radius: 8px;
-
-            padding: 13px;
-
-            z-index: 1900;
-        }
-
-
-        /* ==================================================
-           LOADING
-        ================================================== */
-
-        #loading {
-
-            display: none;
-
-            position: fixed;
-
-            inset: 0;
-
-            background:
-                rgba(0,0,0,.55);
-
-            z-index: 3000;
-
-            align-items: center;
-
-            justify-content: center;
-        }
-
-
-        .loading-card {
-
-            background: white;
-
-            border-radius: 10px;
-
-            padding: 25px;
-
-            width: min(400px, calc(100% - 40px));
-
-            text-align: center;
-        }
-
-
-        .spinner {
-
-            width: 35px;
-
-            height: 35px;
-
-            border:
-                4px solid #ddd;
-
-            border-top-color:
-                #1a73e8;
-
-            border-radius: 50%;
-
-            animation:
-                spin 1s linear infinite;
-
-            margin:
-                0 auto 15px;
-        }
-
-
-        @keyframes spin {
-
-            to {
-                transform: rotate(360deg);
-            }
-
-        }
-
-
-        /* ==================================================
-           RESPONSIVE
-        ================================================== */
-
-        @media(max-width: 900px) {
-
-            .editor-layout {
-
-                grid-template-columns:
-                    160px
-                    minmax(300px, 1fr);
-            }
-
-
-            .properties {
-
-                display: none;
-            }
-
-        }
-
-
-        @media(max-width: 650px) {
-
-            body {
-
-                overflow: auto;
-            }
-
-
-            header {
-
-                height: auto;
-
-                min-height: 60px;
-
-                gap: 8px;
-
-                padding: 10px;
-
-                flex-wrap: wrap;
-            }
-
-
-            .logo {
-
-                font-size: 16px;
-            }
-
-
-            .editor-layout {
-
-                display: block;
-
-                height:
-                    calc(100vh - 75px);
-            }
-
-
-            .pages-sidebar {
-
-                display: none;
-            }
-
-
-            .pdf-area {
-
-                height: 100%;
-            }
-
-
-            #toolbar {
-
-                max-width: 95%;
-
-                overflow-x: auto;
-
-                white-space: nowrap;
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PDF Editor</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f3f5;
+    color: #222;
+}
+
+/* HEADER */
+
+header {
+    height: 60px;
+    background: #1f2937;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    border: none;
+    border-radius: 6px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.success {
+    background: #16a34a;
+    color: white;
+}
+
+.danger {
+    background: #dc2626;
+    color: white;
+}
+
+.secondary {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+/* UPLOAD */
+
+#uploadScreen {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-box {
+    background: white;
+    padding: 40px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+}
+
+.upload-box h1 {
+    margin-top: 0;
+}
+
+.file-input {
+    margin-top: 20px;
+}
+
+/* EDITOR */
+
+#editor {
+    display: none;
+    height: calc(100vh - 60px);
+}
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: 180px 1fr 240px;
+    height: 100%;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.sidebar h3 {
+    margin: 5px 0 15px;
+}
+
+.thumbnail {
+    width: 100%;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.thumbnail:hover {
+    border-color: #2563eb;
+}
+
+.thumbnail canvas {
+    width: 100%;
+    display: block;
+}
+
+/* MAIN */
+
+.main-area {
+    position: relative;
+    overflow: auto;
+    background: #525659;
+}
+
+.toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.toolbar button.active {
+    background: #2563eb;
+    color: white;
+}
+
+.zoom-label {
+    margin-left: auto;
+    font-weight: bold;
+}
+
+#pdfContainer {
+    padding: 30px;
+}
+
+/* PDF PAGE */
+
+.pdf-page {
+    position: relative;
+    margin: 0 auto 30px auto;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.pdf-page canvas {
+    display: block;
+}
+
+.text-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+/* ADDED TEXT */
+
+.added-text {
+    position: absolute;
+    min-width: 20px;
+    min-height: 20px;
+    padding: 2px;
+    cursor: move;
+    border: 1px dashed transparent;
+    white-space: pre-wrap;
+    user-select: none;
+}
+
+.added-text:hover {
+    border-color: #2563eb;
+}
+
+.added-text.selected {
+    border: 1px solid #2563eb;
+    background: rgba(37,99,235,0.08);
+}
+
+/* EXISTING PDF TEXT */
+
+.existing-text {
+    position: absolute;
+    cursor: pointer;
+    color: transparent;
+    white-space: pre;
+    transform-origin: left top;
+}
+
+.existing-text:hover {
+    background: rgba(37,99,235,0.15);
+}
+
+.existing-text.selected {
+    background: rgba(255,255,255,0.95);
+    color: #111;
+    outline: 2px solid #2563eb;
+}
+
+/* RIGHT PANEL */
+
+.properties {
+    background: white;
+    border-left: 1px solid #ddd;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.properties h3 {
+    margin-top: 0;
+}
+
+.property-group {
+    margin-bottom: 18px;
+}
+
+.property-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.property-group input,
+.property-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.property-group textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+#noSelection {
+    color: #777;
+    font-size: 14px;
+}
+
+/* MESSAGES */
+
+#errorBox,
+#successBox {
+    position: fixed;
+    top: 75px;
+    right: 20px;
+    max-width: 400px;
+    padding: 14px 18px;
+    border-radius: 7px;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+#errorBox {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+#successBox {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #22c55e;
+}
+
+/* LOADING */
+
+#loading {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+}
+
+/* MOBILE */
+
+@media(max-width: 900px) {
+
+    .editor-layout {
+        grid-template-columns: 100px 1fr;
+    }
+
+    .properties {
+        display: none;
+    }
+
+    .sidebar {
+        width: 100px;
+    }
+
+    #pdfContainer {
+        padding: 15px;
+    }
+}
+</style>
 </head>
-
 
 <body>
 
-
-<!-- ======================================================
-     HEADER
-====================================================== -->
-
 <header>
 
-    <div class="logo">
-        📄 PDF Editor
-    </div>
+    <h2>PDF Editor</h2>
 
+    <div class="header-buttons">
 
-    <div class="header-actions">
-
-        <button
-            class="secondary"
-            id="newButton"
-            onclick="newPDF()">
-
+        <button class="secondary" onclick="newPDF()">
             New PDF
-
         </button>
 
-
-        <button
-            class="primary"
-            id="saveButton"
-            onclick="savePDF()"
-            disabled>
-
-            💾 Save PDF
-
+        <button class="success" onclick="savePDF()">
+            Save PDF
         </button>
 
     </div>
@@ -1001,216 +371,184 @@
 </header>
 
 
+<!-- ERROR -->
 
-<!-- ======================================================
-     UPLOAD SCREEN
-====================================================== -->
-
-<section id="uploadScreen">
-
-    <div class="upload-card">
-
-        <div class="upload-icon">
-            📄
-        </div>
+<div id="errorBox"></div>
+<div id="successBox"></div>
 
 
-        <h1>
-            PDF Editor
-        </h1>
+<!-- LOADING -->
+
+<div id="loading">
+    Processing PDF...
+</div>
 
 
-        <p>
-            Upload a PDF and edit its text directly
-            in your browser.
-        </p>
+<!-- UPLOAD SCREEN -->
 
+<div id="uploadScreen">
+
+    <div class="upload-box">
+
+        <h1>PDF Editor</h1>
 
         <p>
-            You can add new text or select existing
-            PDF text and replace it.
+            Upload a PDF to start editing.
         </p>
-
 
         <input
             type="file"
             id="fileInput"
-            accept=".pdf,application/pdf"
+            class="file-input"
+            accept="application/pdf"
         >
 
-
-        <label
-            for="fileInput"
-            class="upload-label">
-
-            📂 Choose PDF
-
-        </label>
+        <p style="font-size:13px;color:#777;">
+            Text-based PDFs work best.
+        </p>
 
     </div>
 
-</section>
+</div>
 
 
+<!-- EDITOR -->
 
-<!-- ======================================================
-     EDITOR
-====================================================== -->
-
-<section id="editor">
+<div id="editor">
 
     <div class="editor-layout">
 
+        <!-- PAGE SIDEBAR -->
 
-        <!-- ==================================================
-             PAGES
-        ================================================== -->
+        <aside class="sidebar">
 
-        <aside class="pages-sidebar">
-
-            <h3>
-                Pages
-            </h3>
-
+            <h3>Pages</h3>
 
             <div id="thumbnails"></div>
 
         </aside>
 
 
+        <!-- MAIN PDF AREA -->
 
-        <!-- ==================================================
-             PDF
-        ================================================== -->
+        <main class="main-area">
 
-        <main class="pdf-area">
+            <div class="toolbar">
 
-            <div id="pagesContainer"></div>
+                <button
+                    id="addTextButton"
+                    class="primary"
+                    onclick="toggleAddText()">
+                    + Add Text
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="zoomOut()">
+                    −
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="zoomIn()">
+                    +
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="resetZoom()">
+                    Reset
+                </button>
+
+                <span
+                    id="zoomLabel"
+                    class="zoom-label">
+                    100%
+                </span>
+
+            </div>
+
+            <div id="pdfContainer"></div>
 
         </main>
 
 
-
-        <!-- ==================================================
-             PROPERTIES
-        ================================================== -->
+        <!-- PROPERTIES -->
 
         <aside class="properties">
 
-            <h3>
-                Edit Element
-            </h3>
-
+            <h3>Properties</h3>
 
             <div id="noSelection">
 
-                Nothing selected.
+                Select text to edit it.
 
                 <br><br>
 
-                <strong>
-                    Existing text:
-                </strong>
-
-                Click text inside the PDF.
-
-                <br><br>
-
-                <strong>
-                    New text:
-                </strong>
-
-                Click "Add Text".
+                Or click <b>+ Add Text</b>
+                and then click anywhere on the PDF.
 
             </div>
 
 
-            <div id="propertyForm">
+            <div id="propertyPanel" style="display:none;">
 
+                <div class="property-group">
 
-                <div class="property">
-
-                    <label>
-                        Text
-                    </label>
-
+                    <label>Text</label>
 
                     <textarea
                         id="textInput"
-                        placeholder="Enter text..."
-                    ></textarea>
+                        placeholder="Enter text">
+                    </textarea>
 
                 </div>
 
 
-                <div class="property">
+                <div class="property-group">
 
-                    <label>
-                        Font Size
-                    </label>
-
+                    <label>Font Size</label>
 
                     <input
                         id="fontSizeInput"
                         type="number"
                         min="5"
-                        max="200"
-                        value="16"
-                    >
+                        max="100"
+                        value="16">
 
                 </div>
 
 
-                <div class="property">
+                <div class="property-group">
 
-                    <label>
-                        Text Color
-                    </label>
-
+                    <label>Text Color</label>
 
                     <input
                         id="colorInput"
-                        class="color-input"
                         type="color"
-                        value="#000000"
-                    >
+                        value="#000000">
 
                 </div>
 
 
                 <button
                     class="danger"
+                    style="width:100%;"
                     onclick="deleteSelected()">
 
-                    🗑️ Delete
+                    Delete Text
 
                 </button>
 
 
                 <button
                     class="secondary"
-                    id="undoButton"
-                    onclick="undoExistingEdit()">
+                    style="width:100%;margin-top:8px;"
+                    onclick="undoSelected()">
 
-                    ↩️ Undo Original
+                    Undo Changes
 
                 </button>
-
-
-            </div>
-
-
-            <div class="info-box">
-
-                <strong>How editing works</strong>
-
-                <br><br>
-
-                Existing PDF text is detected from
-                the document. When you replace it,
-                the original area is covered and the
-                new text is written there when you
-                save the PDF.
 
             </div>
 
@@ -1218,115 +556,17 @@
 
     </div>
 
-</section>
-
-
-
-<!-- ======================================================
-     TOOLBAR
-====================================================== -->
-
-<div id="toolbar">
-
-    <button
-        class="primary"
-        onclick="startAddText()">
-
-        ✏️ Add Text
-
-    </button>
-
-
-    <button
-        class="secondary"
-        onclick="zoomOut()">
-
-        −
-
-    </button>
-
-
-    <span id="zoomText">
-        100%
-    </span>
-
-
-    <button
-        class="secondary"
-        onclick="zoomIn()">
-
-        +
-
-    </button>
-
 </div>
-
-
-
-<!-- ======================================================
-     ERROR
-====================================================== -->
-
-<div id="errorBox">
-
-    <span
-        id="closeError"
-        onclick="hideError()">
-
-        ×
-
-    </span>
-
-
-    <div id="errorTitle">
-        Error
-    </div>
-
-
-    <div id="errorMessage"></div>
-
-</div>
-
-
-
-<!-- ======================================================
-     SUCCESS
-====================================================== -->
-
-<div id="successBox"></div>
-
-
-
-<!-- ======================================================
-     LOADING
-====================================================== -->
-
-<div id="loading">
-
-    <div class="loading-card">
-
-        <div class="spinner"></div>
-
-
-        <div id="loadingText">
-            Loading...
-        </div>
-
-    </div>
-
-</div>
-
 
 
 <script>
 
 /* =========================================================
-   PDF.JS CONFIGURATION
+   PDF.JS CONFIG
 ========================================================= */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
 
 
 /* =========================================================
@@ -1337,31 +577,91 @@ let pdfDocument = null;
 
 let originalPDFBytes = null;
 
-let pdfFileName = "edited.pdf";
+let originalFileName = "edited.pdf";
 
 let zoom = 1;
 
-let selected = null;
+let selectedObject = null;
 
 let addTextMode = false;
 
-let elementCounter = 0;
+let objectId = 0;
 
 
 /*
-    All user changes.
+Each edit is stored here.
 
-    Type:
+New text:
 
-        "new"
+{
+    type: "new",
+    id,
+    page,
+    x,
+    y,
+    text,
+    fontSize,
+    color
+}
 
-    or
+Existing text:
 
-        "existing"
+{
+    type: "existing",
+    id,
+    page,
+    x,
+    y,
+    width,
+    height,
+    originalText,
+    text,
+    fontSize,
+    originalFontSize,
+    changed
+}
 */
 
 let edits = [];
 
+
+/* =========================================================
+   UI HELPERS
+========================================================= */
+
+function showError(message) {
+
+    const box = document.getElementById("errorBox");
+
+    box.innerHTML = "❌ " + message;
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 6000);
+}
+
+
+function showSuccess(message) {
+
+    const box = document.getElementById("successBox");
+
+    box.innerHTML = "✓ " + message;
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 4000);
+}
+
+
+function setLoading(show) {
+
+    document.getElementById("loading").style.display =
+        show ? "flex" : "none";
+}
 
 
 /* =========================================================
@@ -1370,184 +670,98 @@ let edits = [];
 
 document
     .getElementById("fileInput")
-    .addEventListener(
-        "change",
-        uploadPDF
-    );
+    .addEventListener("change", async function(e) {
+
+        const file = e.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (file.type !== "application/pdf") {
+
+            showError("Please select a valid PDF file.");
+
+            return;
+        }
+
+        try {
+
+            setLoading(true);
+
+            originalFileName = file.name;
+
+            const buffer = await file.arrayBuffer();
+
+            /*
+                Make our own copy.
+            */
+
+            originalPDFBytes = new Uint8Array(buffer);
+
+            pdfDocument = await pdfjsLib.getDocument({
+                data: originalPDFBytes
+            }).promise;
 
 
+            /*
+                Reset state
+            */
 
-async function uploadPDF(event) {
+            edits = [];
 
-    clearError();
+            selectedObject = null;
 
+            objectId = 0;
 
-    const file =
-        event.target.files[0];
+            zoom = 1;
 
+            document.getElementById("uploadScreen").style.display =
+                "none";
 
-    if (!file) {
-
-        return;
-
-    }
-
-
-    if (
-        file.type !==
-        "application/pdf"
-    ) {
-
-        showError(
-            "Invalid file",
-            "Please select a PDF file."
-        );
-
-        return;
-
-    }
+            document.getElementById("editor").style.display =
+                "block";
 
 
-    if (
-        file.size >
-        50 * 1024 * 1024
-    ) {
+            await renderPDF();
 
-        showError(
-            "File too large",
-            "Please select a PDF smaller than 50 MB."
-        );
+            showSuccess(
+                `PDF loaded successfully — ${pdfDocument.numPages} page(s).`
+            );
 
-        return;
+        }
+        catch(error) {
 
-    }
+            console.error(error);
 
+            showError(
+                "Could not open this PDF. " +
+                (error.message || "Unknown PDF error.")
+            );
 
-    showLoading(
-        "Reading PDF..."
-    );
+        }
+        finally {
 
+            setLoading(false);
 
-    try {
+        }
 
-        originalPDFBytes =
-            await file.arrayBuffer();
-
-
-        pdfFileName =
-            file.name.replace(
-                /\.pdf$/i,
-                ""
-            ) +
-            "_edited.pdf";
-
-
-        /*
-         * Important:
-         *
-         * Use a copy of the ArrayBuffer
-         * because PDF.js may transfer ownership.
-         */
-
-        const pdfData =
-            originalPDFBytes.slice(0);
-
-
-        pdfDocument =
-            await pdfjsLib
-                .getDocument({
-                    data: pdfData
-                })
-                .promise;
-
-
-        edits = [];
-
-        selected = null;
-
-        elementCounter = 0;
-
-        zoom = 1;
-
-
-        await renderAllPages();
-
-
-        document
-            .getElementById(
-                "uploadScreen"
-            )
-            .style.display = "none";
-
-
-        document
-            .getElementById(
-                "editor"
-            )
-            .style.display = "block";
-
-
-        document
-            .getElementById(
-                "toolbar"
-            )
-            .style.display = "flex";
-
-
-        document
-            .getElementById(
-                "saveButton"
-            )
-            .disabled = false;
-
-
-        showSuccess(
-            "PDF loaded successfully."
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-
-        showError(
-            "Unable to open PDF",
-            getErrorMessage(error)
-        );
-
-    }
-
-    finally {
-
-        hideLoading();
-
-    }
-
-}
-
+    });
 
 
 /* =========================================================
-   RENDER ALL PAGES
+   RENDER PDF
 ========================================================= */
 
-async function renderAllPages() {
+async function renderPDF() {
 
-    const pagesContainer =
-        document.getElementById(
-            "pagesContainer"
-        );
-
+    const container =
+        document.getElementById("pdfContainer");
 
     const thumbnails =
-        document.getElementById(
-            "thumbnails"
-        );
+        document.getElementById("thumbnails");
 
-
-    pagesContainer.innerHTML = "";
+    container.innerHTML = "";
 
     thumbnails.innerHTML = "";
 
@@ -1558,35 +772,26 @@ async function renderAllPages() {
         pageNumber++
     ) {
 
-        await renderPage(
-            pageNumber
-        );
+        await renderPage(pageNumber);
 
-        await renderThumbnail(
-            pageNumber
-        );
+        await renderThumbnail(pageNumber);
 
     }
 
 
-    updateZoom();
+    updateZoomLabel();
 
 }
 
 
-
 /* =========================================================
-   RENDER PDF PAGE
+   RENDER PAGE
 ========================================================= */
 
-async function renderPage(
-    pageNumber
-) {
+async function renderPage(pageNumber) {
 
     const page =
-        await pdfDocument.getPage(
-            pageNumber
-        );
+        await pdfDocument.getPage(pageNumber);
 
 
     const viewport =
@@ -1595,514 +800,419 @@ async function renderPage(
         });
 
 
-    const wrapper =
-        document.createElement(
-            "div"
-        );
+    /*
+        PAGE
+    */
 
+    const pageDiv =
+        document.createElement("div");
 
-    wrapper.className =
-        "pdf-page";
+    pageDiv.className = "pdf-page";
 
-
-    wrapper.dataset.page =
+    pageDiv.dataset.page =
         pageNumber;
 
-
-    wrapper.style.width =
+    pageDiv.style.width =
         viewport.width + "px";
 
-
-    wrapper.style.height =
+    pageDiv.style.height =
         viewport.height + "px";
 
 
+    /*
+        CANVAS
+    */
+
     const canvas =
-        document.createElement(
-            "canvas"
-        );
-
-
-    canvas.className =
-        "pdf-canvas";
-
+        document.createElement("canvas");
 
     canvas.width =
-        Math.ceil(
-            viewport.width
-        );
-
+        viewport.width;
 
     canvas.height =
-        Math.ceil(
-            viewport.height
-        );
+        viewport.height;
+
+    canvas.style.width =
+        viewport.width + "px";
+
+    canvas.style.height =
+        viewport.height + "px";
 
 
-    wrapper.appendChild(
-        canvas
-    );
-
-
-    const overlay =
-        document.createElement(
-            "div"
-        );
-
-
-    overlay.className =
-        "overlay";
-
-
-    overlay.dataset.page =
-        pageNumber;
-
-
-    wrapper.appendChild(
-        overlay
-    );
-
-
-    document
-        .getElementById(
-            "pagesContainer"
-        )
-        .appendChild(
-            wrapper
-        );
+    const context =
+        canvas.getContext("2d");
 
 
     await page.render({
-
-        canvasContext:
-            canvas.getContext(
-                "2d"
-            ),
-
-        viewport:
-            viewport
-
+        canvasContext: context,
+        viewport: viewport
     }).promise;
 
 
+    pageDiv.appendChild(canvas);
+
+
     /*
-     * Detect existing PDF text.
-     */
+        TEXT LAYER
+    */
+
+    const textLayer =
+        document.createElement("div");
+
+    textLayer.className =
+        "text-layer";
+
+    pageDiv.appendChild(textLayer);
+
+
+    document
+        .getElementById("pdfContainer")
+        .appendChild(pageDiv);
+
+
+    /*
+        Existing PDF text
+    */
 
     await renderExistingText(
         page,
-        viewport,
-        overlay,
+        textLayer,
         pageNumber
     );
 
 
     /*
-     * Restore user edits.
-     */
+        Restore user-added text
+    */
 
-    restoreEdits(
+    restoreNewText(
         pageNumber,
-        overlay
+        textLayer
     );
 
 }
 
 
-
 /* =========================================================
-   DETECT EXISTING TEXT
+   EXISTING PDF TEXT
 ========================================================= */
 
 async function renderExistingText(
     page,
-    viewport,
-    overlay,
+    layer,
     pageNumber
 ) {
 
+    let textContent;
+
     try {
 
-        const textContent =
+        textContent =
             await page.getTextContent();
 
+    }
+    catch(error) {
 
-        textContent.items.forEach(
-            (item, index) => {
+        console.error(error);
 
-                if (
-                    !item.str ||
-                    !item.str.trim()
-                ) {
-
-                    return;
-
-                }
-
-
-                /*
-                 * PDF.js gives us a transform.
-                 */
-
-                const transform =
-                    pdfjsLib.Util.transform(
-                        viewport.transform,
-                        item.transform
-                    );
-
-
-                const x =
-                    transform[4];
-
-
-                const y =
-                    transform[5];
-
-
-                /*
-                 * Approximate font size.
-                 */
-
-                const fontSize =
-                    Math.max(
-                        5,
-                        Math.abs(
-                            transform[3]
-                        )
-                    );
-
-
-                /*
-                 * Approximate width.
-                 */
-
-                const width =
-                    Math.max(
-                        10,
-                        item.width * zoom
-                    );
-
-
-                const height =
-                    Math.max(
-                        fontSize * 1.25,
-                        10
-                    );
-
-
-                /*
-                 * PDF.js y coordinate is baseline.
-                 *
-                 * Move the overlay upward
-                 * by font size.
-                 */
-
-                const top =
-                    y - fontSize;
-
-
-                const element =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                element.className =
-                    "existing-text";
-
-
-                element.dataset.page =
-                    pageNumber;
-
-
-                element.dataset.index =
-                    index;
-
-
-                element.dataset.original =
-                    item.str;
-
-
-                element.textContent =
-                    item.str;
-
-
-                element.style.left =
-                    x + "px";
-
-
-                element.style.top =
-                    top + "px";
-
-
-                element.style.width =
-                    width + "px";
-
-
-                element.style.height =
-                    height + "px";
-
-
-                element.style.fontSize =
-                    fontSize + "px";
-
-
-                /*
-                 * Clicking existing text.
-                 */
-
-                element.addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
-
-                        selectExistingText(
-                            element,
-                            pageNumber,
-                            item.str,
-                            x,
-                            top,
-                            width,
-                            height,
-                            fontSize
-                        );
-
-                    }
-                );
-
-
-                overlay.appendChild(
-                    element
-                );
-
-            }
+        showError(
+            "Could not read the text layer of page " +
+            pageNumber
         );
 
+        return;
     }
 
-    catch (error) {
 
-        console.error(
-            "Text detection failed:",
-            error
-        );
+    /*
+        Use a scale=1 viewport to keep our
+        stored coordinates independent of zoom.
+    */
+
+    const baseViewport =
+        page.getViewport({
+            scale: 1
+        });
+
+
+    for (const item of textContent.items) {
+
+        if (!item.str || !item.str.trim()) {
+            continue;
+        }
+
+
+        const transform =
+            pdfjsLib.Util.transform(
+                baseViewport.transform,
+                item.transform
+            );
+
+
+        const x =
+            transform[4];
+
+        const y =
+            transform[5];
+
+
+        const fontSize =
+            Math.abs(transform[3]);
+
+
+        const width =
+            Math.max(
+                item.width || 20,
+                20
+            );
+
 
         /*
-         * Don't stop the whole application.
-         *
-         * PDF can still be displayed.
-         */
+            PDF.js gives baseline coordinates.
 
-    }
+            Convert to top-left coordinate.
+        */
 
-}
-
-
-
-/* =========================================================
-   SELECT EXISTING TEXT
-========================================================= */
-
-function selectExistingText(
-    domElement,
-    page,
-    originalText,
-    x,
-    y,
-    width,
-    height,
-    fontSize
-) {
-
-    clearSelectionVisuals();
+        const top =
+            baseViewport.height -
+            y -
+            fontSize;
 
 
-    let existingEdit =
-        edits.find(
-            item =>
-                item.type ===
-                "existing" &&
-                item.domKey ===
-                getDomKey(
-                    page,
-                    domElement.dataset.index
-                )
-        );
+        const id =
+            "existing-" +
+            (++objectId);
 
 
-    if (!existingEdit) {
+        const edit = {
 
-        elementCounter++;
-
-
-        existingEdit = {
+            id,
 
             type: "existing",
 
-            id: elementCounter,
-
-            domKey:
-                getDomKey(
-                    page,
-                    domElement.dataset.index
-                ),
-
-            page: page,
-
-            originalText:
-                originalText,
-
-            text:
-                originalText,
+            page: pageNumber,
 
             x: x,
 
-            y: y,
+            y: top,
 
             width: width,
 
-            height: height,
+            height: fontSize * 1.3,
+
+            originalText: item.str,
+
+            text: item.str,
 
             fontSize: fontSize,
 
-            color: "#000000",
+            originalFontSize: fontSize,
 
             changed: false
 
         };
 
 
-        edits.push(
-            existingEdit
-        );
-
-    }
+        edits.push(edit);
 
 
-    selected =
-        existingEdit;
+        /*
+            DOM
+        */
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "existing-text";
+
+        div.dataset.id =
+            id;
+
+        div.textContent =
+            item.str;
 
 
-    domElement.classList.add(
-        "selected"
-    );
+        div.style.left =
+            (x * zoom) + "px";
+
+        div.style.top =
+            (top * zoom) + "px";
+
+        div.style.width =
+            (width * zoom) + "px";
+
+        div.style.height =
+            (fontSize * 1.5 * zoom) + "px";
+
+        div.style.fontSize =
+            (fontSize * zoom) + "px";
 
 
-    showProperties();
+        /*
+            IMPORTANT:
+            Clicking existing text selects it.
+        */
 
-}
+        div.addEventListener(
+            "click",
+            function(e) {
 
+                e.stopPropagation();
 
-
-/* =========================================================
-   DOM KEY
-========================================================= */
-
-function getDomKey(
-    page,
-    index
-) {
-
-    return (
-        "page-" +
-        page +
-        "-text-" +
-        index
-    );
-
-}
-
-
-
-/* =========================================================
-   ADD TEXT MODE
-========================================================= */
-
-window.startAddText = function() {
-
-    addTextMode = true;
-
-
-    clearSelectionVisuals();
-
-
-    document
-        .getElementById(
-            "pdf-area"
-        );
-
-
-    showSuccess(
-        "Click anywhere on a PDF page to place text."
-    );
-
-
-    /*
-     * Add temporary click handlers
-     */
-
-    document
-        .querySelectorAll(
-            ".pdf-page"
-        )
-        .forEach(
-            page => {
-
-                page.style.cursor =
-                    "crosshair";
+                selectObject(edit);
 
             }
         );
 
-};
 
+        /*
+            Double click automatically focuses
+            the text editor.
+        */
+
+        div.addEventListener(
+            "dblclick",
+            function(e) {
+
+                e.stopPropagation();
+
+                selectObject(edit);
+
+                setTimeout(() => {
+
+                    const input =
+                        document.getElementById(
+                            "textInput"
+                        );
+
+                    input.focus();
+
+                    input.select();
+
+                }, 50);
+
+            }
+        );
+
+
+        layer.appendChild(div);
+
+    }
+
+}
 
 
 /* =========================================================
-   CLICK PAGE TO ADD TEXT
+   RESTORE NEW TEXT
+========================================================= */
+
+function restoreNewText(
+    pageNumber,
+    layer
+) {
+
+    const pageEdits =
+        edits.filter(e =>
+            e.type === "new" &&
+            e.page === pageNumber
+        );
+
+
+    for (const edit of pageEdits) {
+
+        createNewTextElement(
+            edit,
+            layer
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ADD TEXT
+========================================================= */
+
+function toggleAddText() {
+
+    if (!pdfDocument) {
+
+        showError(
+            "Please upload a PDF first."
+        );
+
+        return;
+    }
+
+
+    addTextMode =
+        !addTextMode;
+
+
+    const button =
+        document.getElementById(
+            "addTextButton"
+        );
+
+
+    if (addTextMode) {
+
+        button.classList.add("active");
+
+        button.textContent =
+            "Click PDF to Add Text";
+
+        document.body.style.cursor =
+            "crosshair";
+
+    }
+    else {
+
+        button.classList.remove("active");
+
+        button.textContent =
+            "+ Add Text";
+
+        document.body.style.cursor =
+            "default";
+
+    }
+
+}
+
+
+/* =========================================================
+   CLICK PDF TO ADD TEXT
 ========================================================= */
 
 document.addEventListener(
     "click",
-    event => {
+    function(e) {
 
         if (!addTextMode) {
-
             return;
-
         }
 
 
-        const pageElement =
-            event.target.closest(
-                ".pdf-page"
-            );
+        const page =
+            e.target.closest(".pdf-page");
 
 
-        /*
-         * Click must be inside a PDF page.
-         */
-
-        if (!pageElement) {
-
+        if (!page) {
             return;
-
         }
 
 
         /*
-         * Don't create text if user
-         * clicked an existing/new text.
-         */
+            Don't trigger when clicking an existing
+            or already-added text.
+        */
 
         if (
-            event.target.closest(
-                ".existing-text"
-            ) ||
-            event.target.closest(
-                ".new-text"
-            )
+            e.target.closest(".existing-text") ||
+            e.target.closest(".added-text")
         ) {
 
             return;
@@ -2111,353 +1221,184 @@ document.addEventListener(
 
 
         const rect =
-            pageElement.getBoundingClientRect();
+            page.getBoundingClientRect();
 
+
+        /*
+            Convert screen coordinates to PDF
+            coordinates independent of zoom.
+        */
 
         const x =
-            event.clientX -
-            rect.left;
+            (e.clientX - rect.left) /
+            zoom;
 
 
         const y =
-            event.clientY -
-            rect.top;
+            (e.clientY - rect.top) /
+            zoom;
 
 
-        addTextAtPosition(
-            Number(
-                pageElement.dataset.page
-            ),
-            x,
-            y
+        const newEdit = {
+
+            id:
+                "new-" +
+                (++objectId),
+
+            type: "new",
+
+            page:
+                Number(page.dataset.page),
+
+            x: x,
+
+            y: y,
+
+            text:
+                "New text",
+
+            fontSize:
+                16,
+
+            color:
+                "#000000"
+
+        };
+
+
+        edits.push(newEdit);
+
+
+        /*
+            Find layer
+        */
+
+        const layer =
+            page.querySelector(
+                ".text-layer"
+            );
+
+
+        createNewTextElement(
+            newEdit,
+            layer
         );
 
 
-        addTextMode = false;
+        selectObject(
+            newEdit
+        );
 
 
-        document
-            .querySelectorAll(
-                ".pdf-page"
-            )
-            .forEach(
-                page => {
+        /*
+            Turn add mode off
+        */
 
-                    page.style.cursor =
-                        "default";
-
-                }
-            );
+        toggleAddText();
 
     }
 );
 
 
-
 /* =========================================================
-   CREATE NEW TEXT
+   CREATE NEW TEXT ELEMENT
 ========================================================= */
 
-function addTextAtPosition(
-    page,
-    x,
-    y
+function createNewTextElement(
+    edit,
+    layer
 ) {
 
-    elementCounter++;
+    const div =
+        document.createElement("div");
 
 
-    const data = {
-
-        type: "new",
-
-        id: elementCounter,
-
-        page: page,
-
-        text: "Double click to edit",
-
-        x: x,
-
-        y: y,
-
-        fontSize: 16,
-
-        color: "#000000"
-
-    };
+    div.className =
+        "added-text";
 
 
-    edits.push(
-        data
-    );
+    div.dataset.id =
+        edit.id;
 
 
-    const overlay =
-        document.querySelector(
-            `.overlay[data-page="${page}"]`
-        );
+    div.textContent =
+        edit.text;
 
 
-    if (!overlay) {
-
-        showError(
-            "Add text failed",
-            "The PDF page overlay could not be found."
-        );
-
-        return;
-
-    }
+    div.style.left =
+        (edit.x * zoom) + "px";
 
 
-    createNewTextDOM(
-        data,
-        overlay
-    );
+    div.style.top =
+        (edit.y * zoom) + "px";
 
 
-    selected =
-        data;
+    div.style.fontSize =
+        (edit.fontSize * zoom) + "px";
 
 
-    selectNewTextDOM(
-        data
-    );
+    div.style.color =
+        edit.color;
 
 
-    showSuccess(
-        "Text added. Double-click it to edit."
-    );
-
-}
-
-
-
-/* =========================================================
-   CREATE NEW TEXT DOM
-========================================================= */
-
-function createNewTextDOM(
-    data,
-    overlay
-) {
-
-    const element =
-        document.createElement(
-            "div"
-        );
-
-
-    element.className =
-        "new-text";
-
-
-    element.dataset.id =
-        data.id;
-
-
-    element.textContent =
-        data.text;
-
-
-    element.style.left =
-        data.x + "px";
-
-
-    element.style.top =
-        data.y + "px";
-
-
-    element.style.fontSize =
-        data.fontSize + "px";
-
-
-    element.style.color =
-        data.color;
+    layer.appendChild(div);
 
 
     /*
-     * Click.
-     */
+        CLICK
+    */
 
-    element.addEventListener(
+    div.addEventListener(
         "click",
-        event => {
+        function(e) {
 
-            event.stopPropagation();
+            e.stopPropagation();
 
-            selectNewTextDOM(
-                data
-            );
+            selectObject(edit);
 
         }
     );
 
 
     /*
-     * Double click.
-     */
+        DOUBLE CLICK
+    */
 
-    element.addEventListener(
+    div.addEventListener(
         "dblclick",
-        event => {
+        function(e) {
 
-            event.stopPropagation();
+            e.stopPropagation();
 
-            startTextEditing(
-                element,
-                data
-            );
-
-        }
-    );
-
-
-    /*
-     * Dragging.
-     */
-
-    enableDragging(
-        element,
-        data
-    );
-
-
-    overlay.appendChild(
-        element
-    );
-
-}
-
-
-
-/* =========================================================
-   SELECT NEW TEXT
-========================================================= */
-
-function selectNewTextDOM(
-    data
-) {
-
-    clearSelectionVisuals();
-
-
-    selected =
-        data;
-
-
-    const element =
-        document.querySelector(
-            `.new-text[data-id="${data.id}"]`
-        );
-
-
-    if (element) {
-
-        element.classList.add(
-            "selected"
-        );
-
-    }
-
-
-    showProperties();
-
-}
-
-
-
-/* =========================================================
-   TEXT EDITING
-========================================================= */
-
-function startTextEditing(
-    element,
-    data
-) {
-
-    element.classList.add(
-        "editing"
-    );
-
-
-    element.contentEditable =
-        "true";
-
-
-    element.focus();
-
-
-    /*
-     * Select all text.
-     */
-
-    const selection =
-        window.getSelection();
-
-
-    const range =
-        document.createRange();
-
-
-    range.selectNodeContents(
-        element
-    );
-
-
-    selection.removeAllRanges();
-
-    selection.addRange(
-        range
-    );
-
-
-    const finish =
-        () => {
-
-            element.contentEditable =
-                "false";
-
-
-            element.classList.remove(
-                "editing"
-            );
-
-
-            data.text =
-                element.innerText;
-
+            selectObject(edit);
 
             document
-                .getElementById(
-                    "textInput"
-                )
-                .value =
-                data.text;
+                .getElementById("textInput")
+                .focus();
 
-        };
-
-
-    element.addEventListener(
-        "blur",
-        finish,
-        {
-            once: true
         }
+    );
+
+
+    /*
+        DRAG
+    */
+
+    makeDraggable(
+        div,
+        edit
     );
 
 }
 
 
-
 /* =========================================================
-   DRAGGING
+   DRAG TEXT
 ========================================================= */
 
-function enableDragging(
+function makeDraggable(
     element,
-    data
+    edit
 ) {
 
     let dragging = false;
@@ -2472,87 +1413,78 @@ function enableDragging(
 
 
     element.addEventListener(
-        "mousedown",
-        event => {
+        "pointerdown",
+        function(e) {
 
-            if (
-                element.contentEditable ===
-                "true"
-            ) {
-
-                return;
-
-            }
-
+            e.stopPropagation();
 
             dragging = true;
 
+            element.setPointerCapture(
+                e.pointerId
+            );
+
 
             startX =
-                event.clientX;
-
+                e.clientX;
 
             startY =
-                event.clientY;
+                e.clientY;
 
 
             originalX =
-                data.x;
-
+                edit.x;
 
             originalY =
-                data.y;
+                edit.y;
 
-
-            event.preventDefault();
+            selectObject(edit);
 
         }
     );
 
 
-    document.addEventListener(
-        "mousemove",
-        event => {
+    element.addEventListener(
+        "pointermove",
+        function(e) {
 
             if (!dragging) {
-
                 return;
-
             }
 
 
             const dx =
-                event.clientX -
-                startX;
+                (e.clientX - startX) /
+                zoom;
 
 
             const dy =
-                event.clientY -
-                startY;
+                (e.clientY - startY) /
+                zoom;
 
 
-            data.x =
+            edit.x =
                 originalX + dx;
 
 
-            data.y =
+            edit.y =
                 originalY + dy;
 
 
             element.style.left =
-                data.x + "px";
+                (edit.x * zoom) + "px";
 
 
             element.style.top =
-                data.y + "px";
+                (edit.y * zoom) + "px";
 
         }
     );
 
 
-    document.addEventListener(
-        "mouseup",
-        () => {
+    element.addEventListener(
+        "pointerup",
+        function(e) {
 
             dragging = false;
 
@@ -2562,77 +1494,93 @@ function enableDragging(
 }
 
 
-
 /* =========================================================
-   PROPERTIES
+   SELECT OBJECT
 ========================================================= */
 
-function showProperties() {
+function selectObject(
+    edit
+) {
+
+    selectedObject =
+        edit;
+
+
+    /*
+        Remove previous selections
+    */
 
     document
-        .getElementById(
-            "noSelection"
+        .querySelectorAll(
+            ".selected"
         )
-        .style.display =
-        "none";
+        .forEach(el => {
+
+            el.classList.remove(
+                "selected"
+            );
+
+        });
 
 
-    document
-        .getElementById(
-            "propertyForm"
-        )
-        .style.display =
-        "block";
+    /*
+        Select DOM object
+    */
+
+    const element =
+        document.querySelector(
+            `[data-id="${edit.id}"]`
+        );
 
 
-    if (!selected) {
+    if (element) {
 
-        return;
+        element.classList.add(
+            "selected"
+        );
 
     }
 
 
-    document
-        .getElementById(
-            "textInput"
-        )
-        .value =
-        selected.text;
+    /*
+        Show property panel
+    */
+
+    document.getElementById(
+        "noSelection"
+    ).style.display =
+        "none";
 
 
-    document
-        .getElementById(
-            "fontSizeInput"
-        )
-        .value =
-        selected.fontSize;
-
-
-    document
-        .getElementById(
-            "colorInput"
-        )
-        .value =
-        selected.color;
+    document.getElementById(
+        "propertyPanel"
+    ).style.display =
+        "block";
 
 
     /*
-     * Undo only makes sense
-     * for existing text.
-     */
+        Load values
+    */
 
-    document
-        .getElementById(
-            "undoButton"
-        )
-        .style.display =
-        selected.type ===
-        "existing"
-            ? "block"
-            : "none";
+    document.getElementById(
+        "textInput"
+    ).value =
+        edit.text;
+
+
+    document.getElementById(
+        "fontSizeInput"
+    ).value =
+        edit.fontSize;
+
+
+    document.getElementById(
+        "colorInput"
+    ).value =
+        edit.color ||
+        "#000000";
 
 }
-
 
 
 /* =========================================================
@@ -2640,29 +1588,24 @@ function showProperties() {
 ========================================================= */
 
 document
-    .getElementById(
-        "textInput"
-    )
+    .getElementById("textInput")
     .addEventListener(
         "input",
-        event => {
+        function() {
 
-            if (!selected) {
-
+            if (!selectedObject) {
                 return;
-
             }
 
 
-            selected.text =
-                event.target.value;
+            selectedObject.text =
+                this.value;
 
 
             updateSelectedDOM();
 
         }
     );
-
 
 
 /* =========================================================
@@ -2670,31 +1613,24 @@ document
 ========================================================= */
 
 document
-    .getElementById(
-        "fontSizeInput"
-    )
+    .getElementById("fontSizeInput")
     .addEventListener(
         "input",
-        event => {
+        function() {
 
-            if (!selected) {
-
+            if (!selectedObject) {
                 return;
-
             }
 
 
-            const value =
-                Number(
-                    event.target.value
-                );
+            let size =
+                Number(this.value);
 
 
             if (
-                !Number.isFinite(
-                    value
-                ) ||
-                value < 5
+                !size ||
+                size < 5 ||
+                size > 100
             ) {
 
                 return;
@@ -2702,15 +1638,25 @@ document
             }
 
 
-            selected.fontSize =
-                value;
+            selectedObject.fontSize =
+                size;
+
+
+            if (
+                selectedObject.type ===
+                "existing"
+            ) {
+
+                selectedObject.changed =
+                    true;
+
+            }
 
 
             updateSelectedDOM();
 
         }
     );
-
 
 
 /* =========================================================
@@ -2718,29 +1664,35 @@ document
 ========================================================= */
 
 document
-    .getElementById(
-        "colorInput"
-    )
+    .getElementById("colorInput")
     .addEventListener(
         "input",
-        event => {
+        function() {
 
-            if (!selected) {
-
+            if (!selectedObject) {
                 return;
-
             }
 
 
-            selected.color =
-                event.target.value;
+            selectedObject.color =
+                this.value;
+
+
+            if (
+                selectedObject.type ===
+                "existing"
+            ) {
+
+                selectedObject.changed =
+                    true;
+
+            }
 
 
             updateSelectedDOM();
 
         }
     );
-
 
 
 /* =========================================================
@@ -2749,505 +1701,313 @@ document
 
 function updateSelectedDOM() {
 
-    if (!selected) {
-
+    if (!selectedObject) {
         return;
-
     }
+
+
+    const element =
+        document.querySelector(
+            `[data-id="${selectedObject.id}"]`
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        selectedObject.text;
+
+
+    element.style.fontSize =
+        (
+            selectedObject.fontSize *
+            zoom
+        ) + "px";
+
+
+    element.style.color =
+        selectedObject.color ||
+        "#000000";
 
 
     if (
-        selected.type ===
-        "new"
-    ) {
-
-        const element =
-            document.querySelector(
-                `.new-text[data-id="${selected.id}"]`
-            );
-
-
-        if (!element) {
-
-            return;
-
-        }
-
-
-        element.textContent =
-            selected.text;
-
-
-        element.style.fontSize =
-            selected.fontSize +
-            "px";
-
-
-        element.style.color =
-            selected.color;
-
-    }
-
-
-    else if (
-        selected.type ===
+        selectedObject.type ===
         "existing"
     ) {
 
-        const element =
-            findExistingDOM(
-                selected
-            );
-
-
-        if (!element) {
-
-            return;
-
-        }
-
-
-        element.textContent =
-            selected.text;
-
-
-        element.style.fontSize =
-            selected.fontSize +
-            "px";
-
-
         element.style.color =
-            selected.color;
-
-
-        element.style.color =
-            "#000";
-
-
-        /*
-         * Show replacement text.
-         */
-
-        element.style.background =
-            "rgba(255,255,255,.9)";
-
-
-        element.style.border =
-            "2px solid #1a73e8";
-
-
-        selected.changed =
-            selected.text !==
-                selected.originalText ||
-            selected.fontSize !==
-                selected.originalFontSize;
+            "#111";
 
     }
 
 }
-
-
-
-/* =========================================================
-   FIND EXISTING DOM
-========================================================= */
-
-function findExistingDOM(
-    data
-) {
-
-    return document.querySelector(
-        `.existing-text[data-page="${data.page}"][data-index="${getIndexFromKey(data.domKey)}"]`
-    );
-
-}
-
-
-
-function getIndexFromKey(
-    key
-) {
-
-    const parts =
-        key.split("-");
-
-
-    return parts[
-        parts.length - 1
-    ];
-
-}
-
 
 
 /* =========================================================
    DELETE
 ========================================================= */
 
-window.deleteSelected = function() {
+function deleteSelected() {
 
-    if (!selected) {
+    if (!selectedObject) {
 
         showError(
-            "Nothing selected",
-            "Select text before deleting it."
+            "Select some text first."
         );
 
         return;
-
     }
 
 
+    const index =
+        edits.findIndex(
+            e =>
+                e.id ===
+                selectedObject.id
+        );
+
+
+    if (index === -1) {
+
+        showError(
+            "Could not find the selected text."
+        );
+
+        return;
+    }
+
+
+    /*
+        New text:
+        completely remove it.
+    */
+
     if (
-        selected.type ===
+        selectedObject.type ===
         "new"
     ) {
 
-        const id =
-            selected.id;
-
-
-        edits =
-            edits.filter(
-                item =>
-                    item.id !==
-                    id
-            );
-
-
-        const dom =
-            document.querySelector(
-                `.new-text[data-id="${id}"]`
-            );
-
-
-        if (dom) {
-
-            dom.remove();
-
-        }
+        edits.splice(
+            index,
+            1
+        );
 
     }
 
 
-    else if (
-        selected.type ===
-        "existing"
-    ) {
+    /*
+        Existing PDF text:
+        Mark as deleted.
+    */
 
-        /*
-         * Deleting existing text means
-         * creating a replacement with
-         * empty text.
-         */
+    else {
 
-        selected.text = "";
+        selectedObject.text = "";
 
-        selected.changed = true;
-
-
-        const dom =
-            findExistingDOM(
-                selected
-            );
-
-
-        if (dom) {
-
-            dom.textContent =
-                "";
-
-
-            dom.style.background =
-                "rgba(255,255,255,.9)";
-        }
+        selectedObject.changed =
+            true;
 
     }
 
 
-    selected = null;
+    selectedObject =
+        null;
 
 
-    document
-        .getElementById(
-            "propertyForm"
-        )
-        .style.display =
+    document.getElementById(
+        "propertyPanel"
+    ).style.display =
         "none";
 
 
-    document
-        .getElementById(
-            "noSelection"
-        )
-        .style.display =
+    document.getElementById(
+        "noSelection"
+    ).style.display =
         "block";
 
 
-    clearSelectionVisuals();
+    /*
+        Re-render so deleted existing
+        text disappears.
+    */
 
-};
+    renderPDF()
+        .catch(error => {
 
+            console.error(error);
 
+            showError(
+                "Could not refresh the PDF after deletion."
+            );
 
-/* =========================================================
-   UNDO EXISTING EDIT
-========================================================= */
-
-window.undoExistingEdit = function() {
-
-    if (
-        !selected ||
-        selected.type !==
-        "existing"
-    ) {
-
-        return;
-
-    }
-
-
-    selected.text =
-        selected.originalText;
-
-
-    selected.changed =
-        false;
-
-
-    updateSelectedDOM();
-
-
-    document
-        .getElementById(
-            "textInput"
-        )
-        .value =
-        selected.text;
-
-
-    showSuccess(
-        "Original text restored."
-    );
-
-};
-
-
-
-/* =========================================================
-   CLEAR VISUAL SELECTION
-========================================================= */
-
-function clearSelectionVisuals() {
-
-    document
-        .querySelectorAll(
-            ".existing-text.selected, .new-text.selected"
-        )
-        .forEach(
-            element => {
-
-                element.classList.remove(
-                    "selected"
-                );
-
-            }
-        );
+        });
 
 }
 
 
-
 /* =========================================================
-   RESTORE EDITS
+   UNDO
 ========================================================= */
 
-function restoreEdits(
-    page,
-    overlay
-) {
+function undoSelected() {
 
-    const pageEdits =
-        edits.filter(
-            item =>
-                item.page ===
-                page
-        );
-
-
-    pageEdits.forEach(
-        item => {
-
-            if (
-                item.type ===
-                "new"
-            ) {
-
-                createNewTextDOM(
-                    item,
-                    overlay
-                );
-
-            }
-
-
-            else if (
-                item.type ===
-                "existing"
-            ) {
-
-                const dom =
-                    overlay.querySelector(
-                        `.existing-text[data-index="${getIndexFromKey(item.domKey)}"]`
-                    );
-
-
-                if (dom) {
-
-                    dom.textContent =
-                        item.text;
-
-
-                    dom.style.fontSize =
-                        item.fontSize +
-                        "px";
-
-
-                    if (
-                        item.changed
-                    ) {
-
-                        dom.style.color =
-                            "#000";
-
-
-                        dom.style.background =
-                            "rgba(255,255,255,.9)";
-
-                    }
-
-                }
-
-            }
-
-        }
-    );
-
-}
-
-
-
-/* =========================================================
-   ZOOM IN
-========================================================= */
-
-window.zoomIn = async function() {
-
-    if (
-        zoom >= 2
-    ) {
-
-        return;
-
-    }
-
-
-    zoom =
-        Math.round(
-            (zoom + 0.1) * 10
-        ) / 10;
-
-
-    await rerender();
-
-};
-
-
-
-/* =========================================================
-   ZOOM OUT
-========================================================= */
-
-window.zoomOut = async function() {
-
-    if (
-        zoom <= .5
-    ) {
-
-        return;
-
-    }
-
-
-    zoom =
-        Math.round(
-            (zoom - 0.1) * 10
-        ) / 10;
-
-
-    await rerender();
-
-};
-
-
-
-/* =========================================================
-   RERENDER
-========================================================= */
-
-async function rerender() {
-
-    showLoading(
-        "Updating PDF view..."
-    );
-
-
-    try {
-
-        await renderAllPages();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
+    if (!selectedObject) {
 
         showError(
-            "Unable to update view",
-            getErrorMessage(error)
+            "Select some text first."
         );
 
+        return;
     }
 
-    finally {
 
-        hideLoading();
+    if (
+        selectedObject.type ===
+        "new"
+    ) {
+
+        const index =
+            edits.findIndex(
+                e =>
+                    e.id ===
+                    selectedObject.id
+            );
+
+
+        if (index !== -1) {
+
+            edits.splice(
+                index,
+                1
+            );
+
+        }
 
     }
+    else {
+
+        selectedObject.text =
+            selectedObject.originalText;
+
+        selectedObject.fontSize =
+            selectedObject.originalFontSize;
+
+        selectedObject.changed =
+            false;
+
+    }
+
+
+    selectedObject =
+        null;
+
+
+    document.getElementById(
+        "propertyPanel"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "noSelection"
+    ).style.display =
+        "block";
+
+
+    renderPDF()
+        .catch(error => {
+
+            console.error(error);
+
+            showError(
+                "Undo failed."
+            );
+
+        });
 
 }
 
 
-
 /* =========================================================
-   ZOOM LABEL
+   ZOOM
 ========================================================= */
 
-function updateZoom() {
+async function zoomIn() {
 
-    document
-        .getElementById(
-            "zoomText"
-        )
-        .textContent =
-        Math.round(
-            zoom * 100
-        ) +
+    zoom += 0.1;
+
+    if (zoom > 3) {
+        zoom = 3;
+    }
+
+    await rerender();
+
+}
+
+
+async function zoomOut() {
+
+    zoom -= 0.1;
+
+    if (zoom < 0.5) {
+        zoom = 0.5;
+    }
+
+    await rerender();
+
+}
+
+
+async function resetZoom() {
+
+    zoom = 1;
+
+    await rerender();
+
+}
+
+
+function updateZoomLabel() {
+
+    document.getElementById(
+        "zoomLabel"
+    ).textContent =
+        Math.round(zoom * 100) +
         "%";
 
 }
 
+
+async function rerender() {
+
+    try {
+
+        setLoading(true);
+
+        await renderPDF();
+
+        updateZoomLabel();
+
+    }
+    catch(error) {
+
+        console.error(error);
+
+        showError(
+            "Could not render the PDF."
+        );
+
+    }
+    finally {
+
+        setLoading(false);
+
+    }
+
+}
 
 
 /* =========================================================
@@ -3266,40 +2026,38 @@ async function renderThumbnail(
 
     const viewport =
         page.getViewport({
-            scale: .18
+            scale: 0.2
         });
 
 
+    const canvas =
+        document.createElement("canvas");
+
+
+    canvas.width =
+        viewport.width;
+
+    canvas.height =
+        viewport.height;
+
+
+    await page.render({
+
+        canvasContext:
+            canvas.getContext("2d"),
+
+        viewport:
+            viewport
+
+    }).promise;
+
+
     const wrapper =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     wrapper.className =
         "thumbnail";
-
-
-    wrapper.dataset.page =
-        pageNumber;
-
-
-    const canvas =
-        document.createElement(
-            "canvas"
-        );
-
-
-    canvas.width =
-        Math.ceil(
-            viewport.width
-        );
-
-
-    canvas.height =
-        Math.ceil(
-            viewport.height
-        );
 
 
     wrapper.appendChild(
@@ -3307,29 +2065,9 @@ async function renderThumbnail(
     );
 
 
-    const number =
-        document.createElement(
-            "div"
-        );
-
-
-    number.className =
-        "thumbnail-number";
-
-
-    number.textContent =
-        "Page " +
-        pageNumber;
-
-
-    wrapper.appendChild(
-        number
-    );
-
-
     wrapper.addEventListener(
         "click",
-        () => {
+        function() {
 
             const target =
                 document.querySelector(
@@ -3340,84 +2078,42 @@ async function renderThumbnail(
             if (target) {
 
                 target.scrollIntoView({
-                    behavior:
-                        "smooth",
-                    block:
-                        "start"
+                    behavior: "smooth"
                 });
 
             }
-
-
-            document
-                .querySelectorAll(
-                    ".thumbnail"
-                )
-                .forEach(
-                    t =>
-                        t.classList.remove(
-                            "active"
-                        )
-                );
-
-
-            wrapper.classList.add(
-                "active"
-            );
 
         }
     );
 
 
     document
-        .getElementById(
-            "thumbnails"
-        )
-        .appendChild(
-            wrapper
-        );
-
-
-    await page.render({
-
-        canvasContext:
-            canvas.getContext(
-                "2d"
-            ),
-
-        viewport:
-            viewport
-
-    }).promise;
+        .getElementById("thumbnails")
+        .appendChild(wrapper);
 
 }
-
 
 
 /* =========================================================
    SAVE PDF
 ========================================================= */
 
-window.savePDF = async function() {
+async function savePDF() {
 
     if (!originalPDFBytes) {
 
         showError(
-            "No PDF",
             "Please upload a PDF first."
         );
 
         return;
-
     }
 
 
-    showLoading(
-        "Saving edited PDF..."
-    );
-
-
     try {
+
+        setLoading(true);
+
 
         const {
             PDFDocument,
@@ -3427,22 +2123,14 @@ window.savePDF = async function() {
 
 
         /*
-         * Load original PDF.
-         */
+            Load original PDF
+        */
 
         const pdfDoc =
             await PDFDocument.load(
-                originalPDFBytes.slice(0)
+                originalPDFBytes
             );
 
-
-        const pages =
-            pdfDoc.getPages();
-
-
-        /*
-         * Embed a standard font.
-         */
 
         const font =
             await pdfDoc.embedFont(
@@ -3451,102 +2139,121 @@ window.savePDF = async function() {
 
 
         /*
-         * Process edits.
-         */
+            Process edits
+        */
 
-        for (
-            const edit of edits
-        ) {
+        for (const edit of edits) {
 
             const page =
-                pages[
+                pdfDoc.getPage(
                     edit.page - 1
-                ];
+                );
 
 
-            if (!page) {
-
-                continue;
-
-            }
-
+            /*
+                NEW TEXT
+            */
 
             if (
                 edit.type ===
                 "new"
             ) {
 
-                drawNewText(
-                    page,
-                    edit,
-                    font
+                if (
+                    !edit.text ||
+                    !edit.text.trim()
+                ) {
+
+                    continue;
+
+                }
+
+
+                const color =
+                    hexToRgb(
+                        edit.color ||
+                        "#000000"
+                    );
+
+
+                /*
+                    Convert top-left PDF.js
+                    coordinate to PDF
+                    bottom-left coordinate.
+                */
+
+                const pdfY =
+                    page.getHeight() -
+                    edit.y -
+                    edit.fontSize;
+
+
+                page.drawText(
+                    edit.text,
+                    {
+
+                        x:
+                            edit.x,
+
+                        y:
+                            pdfY,
+
+                        size:
+                            edit.fontSize,
+
+                        font:
+                            font,
+
+                        color:
+                            rgb(
+                                color.r / 255,
+                                color.g / 255,
+                                color.b / 255
+                            )
+
+                    }
                 );
 
             }
 
 
-            else if (
+            /*
+                EXISTING TEXT
+            */
+
+            if (
                 edit.type ===
                 "existing" &&
                 edit.changed
             ) {
 
                 /*
-                 * Cover original text.
-                 */
+                    Cover original text with
+                    a white rectangle.
 
-                const scale =
-                    1 / zoom;
-
-
-                const pdfX =
-                    edit.x * scale;
-
-
-                const pdfWidth =
-                    edit.width * scale;
-
-
-                const pdfHeight =
-                    page.getHeight();
-
-
-                /*
-                 * Convert browser top
-                 * coordinate to PDF bottom
-                 * coordinate.
-                 */
+                    This works for normal PDFs
+                    with white backgrounds.
+                */
 
                 const pdfY =
-                    pdfHeight -
-                    (
-                        (edit.y +
-                            edit.height)
-                        * scale
-                    );
+                    page.getHeight() -
+                    edit.y -
+                    edit.height;
 
-
-                /*
-                 * White rectangle over
-                 * original text.
-                 */
 
                 page.drawRectangle({
 
                     x:
-                        pdfX - 2,
+                        edit.x - 1,
 
                     y:
-                        pdfY - 2,
+                        pdfY - 1,
 
                     width:
-                        pdfWidth + 5,
+                        edit.width + 4,
 
                     height:
-                        (
-                            edit.height *
-                            scale
-                        ) + 5,
+                        edit.height + 4,
 
                     color:
                         rgb(
@@ -3559,16 +2266,19 @@ window.savePDF = async function() {
 
 
                 /*
-                 * Draw replacement text.
-                 */
+                    If user deleted the text,
+                    don't draw replacement.
+                */
 
                 if (
-                    edit.text
+                    edit.text &&
+                    edit.text.trim()
                 ) {
 
                     const color =
                         hexToRgb(
-                            edit.color
+                            edit.color ||
+                            "#000000"
                         );
 
 
@@ -3577,23 +2287,24 @@ window.savePDF = async function() {
                         {
 
                             x:
-                                pdfX,
+                                edit.x,
 
                             y:
-                                pdfY,
+                                page.getHeight() -
+                                edit.y -
+                                edit.fontSize,
 
                             size:
-                                edit.fontSize *
-                                scale,
+                                edit.fontSize,
 
                             font:
                                 font,
 
                             color:
                                 rgb(
-                                    color.r,
-                                    color.g,
-                                    color.b
+                                    color.r / 255,
+                                    color.g / 255,
+                                    color.b / 255
                                 )
 
                         }
@@ -3607,16 +2318,59 @@ window.savePDF = async function() {
 
 
         /*
-         * Save.
-         */
+            Save
+        */
 
         const bytes =
             await pdfDoc.save();
 
 
-        downloadPDF(
-            bytes,
-            pdfFileName
+        const blob =
+            new Blob(
+                [bytes],
+                {
+                    type:
+                        "application/pdf"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const a =
+            document.createElement("a");
+
+
+        a.href =
+            url;
+
+
+        const baseName =
+            originalFileName
+                .replace(
+                    /\.pdf$/i,
+                    ""
+                );
+
+
+        a.download =
+            baseName +
+            "-edited.pdf";
+
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+
+        URL.revokeObjectURL(
+            url
         );
 
 
@@ -3625,523 +2379,159 @@ window.savePDF = async function() {
         );
 
     }
-
-    catch (error) {
+    catch(error) {
 
         console.error(error);
 
-
         showError(
-            "PDF save failed",
-            getErrorMessage(error) +
-            "\n\nIf this is a protected/encrypted PDF, it may not be editable with this browser-only version."
+            "Could not save the PDF: " +
+            (error.message ||
+             "Unknown error.")
         );
 
     }
-
     finally {
 
-        hideLoading();
+        setLoading(false);
 
     }
-
-};
-
-
-
-/* =========================================================
-   DRAW NEW TEXT
-========================================================= */
-
-function drawNewText(
-    page,
-    edit,
-    font
-) {
-
-    const scale =
-        1 / zoom;
-
-
-    const x =
-        edit.x * scale;
-
-
-    const y =
-        page.getHeight() -
-        (
-            edit.y *
-            scale
-        ) -
-        (
-            edit.fontSize *
-            scale
-        );
-
-
-    const color =
-        hexToRgb(
-            edit.color
-        );
-
-
-    /*
-     * Support multiline text.
-     */
-
-    const lines =
-        String(
-            edit.text || ""
-        ).split(
-            "\n"
-        );
-
-
-    const lineHeight =
-        edit.fontSize *
-        scale *
-        1.2;
-
-
-    lines.forEach(
-        (line, index) => {
-
-            page.drawText(
-                line,
-                {
-
-                    x:
-                        x,
-
-                    y:
-                        y -
-                        (
-                            index *
-                            lineHeight
-                        ),
-
-                    size:
-                        edit.fontSize *
-                        scale,
-
-                    font:
-                        font,
-
-                    color:
-                        rgb(
-                            color.r,
-                            color.g,
-                            color.b
-                        )
-
-                }
-            );
-
-        }
-    );
 
 }
 
 
-
 /* =========================================================
-   HEX TO RGB
+   HEX → RGB
 ========================================================= */
 
-function hexToRgb(
-    hex
-) {
+function hexToRgb(hex) {
 
     hex =
-        String(
-            hex || "#000000"
-        ).replace(
+        hex.replace(
             "#",
             ""
         );
 
 
-    if (
-        hex.length === 3
-    ) {
-
-        hex =
-            hex
-                .split("")
-                .map(
-                    x =>
-                        x + x
-                )
-                .join("");
-
-    }
-
-
-    const r =
-        parseInt(
-            hex.substring(0, 2),
-            16
-        ) / 255;
-
-
-    const g =
-        parseInt(
-            hex.substring(2, 4),
-            16
-        ) / 255;
-
-
-    const b =
-        parseInt(
-            hex.substring(4, 6),
-            16
-        ) / 255;
-
-
     return {
 
         r:
-            Number.isFinite(r)
-                ? r
-                : 0,
+            parseInt(
+                hex.substring(0, 2),
+                16
+            ),
 
         g:
-            Number.isFinite(g)
-                ? g
-                : 0,
+            parseInt(
+                hex.substring(2, 4),
+                16
+            ),
 
         b:
-            Number.isFinite(b)
-                ? b
-                : 0
+            parseInt(
+                hex.substring(4, 6),
+                16
+            )
 
     };
 
 }
 
 
-
-/* =========================================================
-   DOWNLOAD PDF
-========================================================= */
-
-function downloadPDF(
-    bytes,
-    filename
-) {
-
-    const blob =
-        new Blob(
-            [bytes],
-            {
-                type:
-                    "application/pdf"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        filename;
-
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-
-    link.remove();
-
-
-    setTimeout(
-        () => {
-
-            URL.revokeObjectURL(
-                url
-            );
-
-        },
-        1000
-    );
-
-}
-
-
-
 /* =========================================================
    NEW PDF
 ========================================================= */
 
-window.newPDF = function() {
+function newPDF() {
 
-    const confirmed =
-        confirm(
-            "Start with another PDF?"
-        );
+    if (
+        edits.length > 0
+    ) {
+
+        const confirmReset =
+            confirm(
+                "Start a new PDF? Unsaved changes will be lost."
+            );
 
 
-    if (!confirmed) {
-
-        return;
+        if (!confirmReset) {
+            return;
+        }
 
     }
 
 
-    location.reload();
+    pdfDocument = null;
 
-};
+    originalPDFBytes = null;
 
+    edits = [];
 
+    selectedObject = null;
 
-/* =========================================================
-   LOADING
-========================================================= */
+    addTextMode = false;
 
-function showLoading(
-    message
-) {
+    zoom = 1;
 
-    document
-        .getElementById(
-            "loadingText"
-        )
-        .textContent =
-        message;
+    document.getElementById(
+        "pdfContainer"
+    ).innerHTML = "";
 
+    document.getElementById(
+        "thumbnails"
+    ).innerHTML = "";
 
-    document
-        .getElementById(
-            "loading"
-        )
-        .style.display =
-        "flex";
+    document.getElementById(
+        "editor"
+    ).style.display = "none";
 
-}
+    document.getElementById(
+        "uploadScreen"
+    ).style.display = "flex";
 
+    document.getElementById(
+        "fileInput"
+    ).value = "";
 
-
-function hideLoading() {
-
-    document
-        .getElementById(
-            "loading"
-        )
-        .style.display =
-        "none";
+    document.body.style.cursor =
+        "default";
 
 }
-
 
 
 /* =========================================================
    ERROR HANDLING
 ========================================================= */
 
-function showError(
-    title,
-    message
-) {
+window.addEventListener(
+    "error",
+    function(event) {
 
-    const box =
-        document.getElementById(
-            "errorBox"
+        console.error(
+            "JavaScript error:",
+            event.error
         );
 
-
-    document.getElementById(
-        "errorTitle"
-    ).textContent =
-        title;
-
-
-    document.getElementById(
-        "errorMessage"
-    ).textContent =
-        message;
-
-
-    box.style.display =
-        "block";
-
-}
-
-
-
-function hideError() {
-
-    document
-        .getElementById(
-            "errorBox"
-        )
-        .style.display =
-        "none";
-
-}
-
-
-
-function clearError() {
-
-    hideError();
-
-}
-
-
-
-function getErrorMessage(
-    error
-) {
-
-    if (!error) {
-
-        return "Unknown error.";
-
-    }
-
-
-    if (
-        error.message
-    ) {
-
-        return error.message;
-
-    }
-
-
-    return String(
-        error
-    );
-
-}
-
-
-
-/* =========================================================
-   SUCCESS
-========================================================= */
-
-let successTimer = null;
-
-
-function showSuccess(
-    message
-) {
-
-    const box =
-        document.getElementById(
-            "successBox"
+        showError(
+            "A JavaScript error occurred. " +
+            "Open the browser console for details."
         );
-
-
-    box.textContent =
-        message;
-
-
-    box.style.display =
-        "block";
-
-
-    clearTimeout(
-        successTimer
-    );
-
-
-    successTimer =
-        setTimeout(
-            () => {
-
-                box.style.display =
-                    "none";
-
-            },
-            3000
-        );
-
-}
-
-
-
-/* =========================================================
-   ESCAPE KEY
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key ===
-            "Escape"
-        ) {
-
-            addTextMode = false;
-
-
-            document
-                .querySelectorAll(
-                    ".pdf-page"
-                )
-                .forEach(
-                    page => {
-
-                        page.style.cursor =
-                            "default";
-
-                    }
-                );
-
-        }
 
     }
 );
 
 
-/* =========================================================
-   PAGE CLICK SELECTION
-========================================================= */
+window.addEventListener(
+    "unhandledrejection",
+    function(event) {
 
-document.addEventListener(
-    "click",
-    event => {
+        console.error(
+            "Unhandled promise rejection:",
+            event.reason
+        );
 
-        /*
-         * Don't clear selection when
-         * interacting with properties.
-         */
-
-        if (
-            event.target.closest(
-                ".properties"
-            ) ||
-            event.target.closest(
-                "#toolbar"
-            ) ||
-            event.target.closest(
-                "header"
-            )
-        ) {
-
-            return;
-
-        }
+        showError(
+            "An unexpected PDF processing error occurred."
+        );
 
     }
 );
@@ -4149,5 +2539,4 @@ document.addEventListener(
 </script>
 
 </body>
-
 </html>
