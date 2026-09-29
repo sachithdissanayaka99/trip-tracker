@@ -2,368 +2,868 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PDF Editor</title>
+<meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             viewport-fit=cover,
+             user-scalable=no"
+>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+>
+
+<meta
+    name="theme-color"
+    content="#07111f"
+>
+
+<title>NightWatch - Hidden Camera Scanner</title>
 
 <style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+:root {
+    --bg: #07111f;
+    --panel: #0d1b2d;
+    --panel2: #10243a;
+    --border: #203752;
+
+    --text: #f4f7fb;
+    --muted: #9fb0c4;
+
+    --blue: #38bdf8;
+    --green: #22c55e;
+    --yellow: #facc15;
+    --red: #fb7185;
+}
+
 * {
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f1f3f5;
-    color: #222;
+    padding: 0;
+    min-height: 100%;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
+        "Segoe UI",
+        Arial,
+        sans-serif;
 }
 
-/* HEADER */
-
-header {
-    height: 60px;
-    background: #1f2937;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-}
-
-header h2 {
-    margin: 0;
-    font-size: 20px;
-}
-
-.header-buttons {
-    display: flex;
-    gap: 8px;
+body {
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 button {
-    border: none;
-    border-radius: 6px;
-    padding: 9px 14px;
-    cursor: pointer;
-    font-size: 14px;
+    font: inherit;
 }
 
-button:hover {
-    opacity: 0.9;
+.app {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #102b46 0,
+            #07111f 45%,
+            #050c15 100%
+        );
 }
 
-.primary {
-    background: #2563eb;
-    color: white;
-}
 
-.success {
-    background: #16a34a;
-    color: white;
-}
+/* =========================================================
+   HEADER
+========================================================= */
 
-.danger {
-    background: #dc2626;
-    color: white;
-}
-
-.secondary {
-    background: #e5e7eb;
-    color: #111827;
-}
-
-/* UPLOAD */
-
-#uploadScreen {
-    min-height: calc(100vh - 60px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.upload-box {
-    background: white;
-    padding: 40px;
-    width: 90%;
-    max-width: 500px;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-}
-
-.upload-box h1 {
-    margin-top: 0;
-}
-
-.file-input {
-    margin-top: 20px;
-}
-
-/* EDITOR */
-
-#editor {
-    display: none;
-    height: calc(100vh - 60px);
-}
-
-.editor-layout {
-    display: grid;
-    grid-template-columns: 180px 1fr 240px;
-    height: 100%;
-}
-
-/* SIDEBAR */
-
-.sidebar {
-    background: #ffffff;
-    border-right: 1px solid #ddd;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.sidebar h3 {
-    margin: 5px 0 15px;
-}
-
-.thumbnail {
-    width: 100%;
-    margin-bottom: 12px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.thumbnail:hover {
-    border-color: #2563eb;
-}
-
-.thumbnail canvas {
-    width: 100%;
-    display: block;
-}
-
-/* MAIN */
-
-.main-area {
-    position: relative;
-    overflow: auto;
-    background: #525659;
-}
-
-.toolbar {
+header {
     position: sticky;
     top: 0;
+
     z-index: 100;
-    background: white;
-    padding: 10px;
+
+    padding:
+        max(14px, env(safe-area-inset-top))
+        16px
+        14px
+        16px;
+
+    background:
+        rgba(7, 17, 31, 0.94);
+
+    backdrop-filter: blur(18px);
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.header-inner {
+    max-width: 1100px;
+
+    margin: auto;
+
     display: flex;
+
     align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid #ddd;
+
+    justify-content: space-between;
+
+    gap: 12px;
 }
 
-.toolbar button.active {
-    background: #2563eb;
-    color: white;
+.brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
 }
 
-.zoom-label {
-    margin-left: auto;
-    font-weight: bold;
+.logo {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 13px;
+
+    display: grid;
+    place-items: center;
+
+    background: #102a43;
+
+    border:
+        1px solid #315879;
+
+    font-size: 22px;
 }
 
-#pdfContainer {
-    padding: 30px;
+.brand-title {
+    font-size: 19px;
+
+    font-weight: 700;
 }
 
-/* PDF PAGE */
+.brand-subtitle {
+    margin-top: 2px;
 
-.pdf-page {
-    position: relative;
-    margin: 0 auto 30px auto;
-    background: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    color: var(--muted);
+
+    font-size: 12px;
 }
 
-.pdf-page canvas {
-    display: block;
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main {
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding: 16px;
 }
 
-.text-layer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+
+/* =========================================================
+   NOTICE
+========================================================= */
+
+.notice {
+    padding: 14px 16px;
+
+    margin-bottom: 16px;
+
+    border:
+        1px solid #31516f;
+
+    border-radius: 15px;
+
+    background:
+        rgba(12, 32, 52, 0.9);
+
+    color: #cbd8e5;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(280px, 0.8fr);
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card {
+    background:
+        rgba(13, 27, 45, 0.94);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 18px;
+
     overflow: hidden;
 }
 
-/* ADDED TEXT */
 
-.added-text {
-    position: absolute;
-    min-width: 20px;
-    min-height: 20px;
-    padding: 2px;
-    cursor: move;
-    border: 1px dashed transparent;
-    white-space: pre-wrap;
-    user-select: none;
+/* =========================================================
+   CAMERA
+========================================================= */
+
+.camera-wrapper {
+    position: relative;
+
+    background: #000;
+
+    aspect-ratio: 4 / 3;
+
+    min-height: 260px;
+
+    overflow: hidden;
+
+    display: grid;
+
+    place-items: center;
 }
 
-.added-text:hover {
-    border-color: #2563eb;
+#video {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: none;
 }
 
-.added-text.selected {
-    border: 1px solid #2563eb;
-    background: rgba(37,99,235,0.08);
+#analysisCanvas {
+    display: none;
 }
 
-/* EXISTING PDF TEXT */
+.camera-placeholder {
+    text-align: center;
 
-.existing-text {
-    position: absolute;
-    cursor: pointer;
-    color: transparent;
-    white-space: pre;
-    transform-origin: left top;
+    padding: 30px;
+
+    color: #8798aa;
 }
 
-.existing-text:hover {
-    background: rgba(37,99,235,0.15);
+.camera-icon {
+    font-size: 50px;
+
+    margin-bottom: 10px;
 }
 
-.existing-text.selected {
-    background: rgba(255,255,255,0.95);
-    color: #111;
-    outline: 2px solid #2563eb;
-}
-
-/* RIGHT PANEL */
-
-.properties {
-    background: white;
-    border-left: 1px solid #ddd;
-    padding: 15px;
-    overflow-y: auto;
-}
-
-.properties h3 {
-    margin-top: 0;
-}
-
-.property-group {
-    margin-bottom: 18px;
-}
-
-.property-group label {
+.camera-placeholder strong {
     display: block;
-    font-size: 13px;
-    font-weight: bold;
+
+    color: white;
+
     margin-bottom: 6px;
 }
 
-.property-group input,
-.property-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+
+/* =========================================================
+   SCANNER OVERLAY
+========================================================= */
+
+.scanner-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    display: none;
 }
 
-.property-group textarea {
-    min-height: 90px;
-    resize: vertical;
+.corner {
+    position: absolute;
+
+    width: 35px;
+    height: 35px;
+
+    border-color:
+        rgba(56, 189, 248, 0.9);
+
+    border-style: solid;
 }
 
-#noSelection {
-    color: #777;
+.corner-top-left {
+    top: 18px;
+    left: 18px;
+
+    border-width:
+        3px
+        0
+        0
+        3px;
+}
+
+.corner-top-right {
+    top: 18px;
+    right: 18px;
+
+    border-width:
+        3px
+        3px
+        0
+        0;
+}
+
+.corner-bottom-left {
+    bottom: 18px;
+    left: 18px;
+
+    border-width:
+        0
+        0
+        3px
+        3px;
+}
+
+.corner-bottom-right {
+    bottom: 18px;
+    right: 18px;
+
+    border-width:
+        0
+        3px
+        3px
+        0;
+}
+
+.scan-line {
+    position: absolute;
+
+    left: 8%;
+    right: 8%;
+
+    top: 15%;
+
+    height: 2px;
+
+    background:
+        rgba(56, 189, 248, 0.85);
+
+    box-shadow:
+        0 0 14px #38bdf8;
+
+    animation:
+        scanAnimation 2.5s linear infinite;
+}
+
+@keyframes scanAnimation {
+
+    0% {
+        top: 15%;
+    }
+
+    50% {
+        top: 85%;
+    }
+
+    100% {
+        top: 15%;
+    }
+
+}
+
+
+/* =========================================================
+   DETECTION MARKERS
+========================================================= */
+
+.detection-marker {
+    position: absolute;
+
+    width: 28px;
+    height: 28px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border:
+        2px solid #ff334f;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 12px #ff334f;
+
+    pointer-events: none;
+
+    animation:
+        markerPulse 0.9s infinite;
+}
+
+@keyframes markerPulse {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.8);
+
+        opacity: 0.6;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.8);
+
+        opacity: 0.6;
+    }
+
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    padding: 14px;
+
+    border-top:
+        1px solid var(--border);
+}
+
+.btn {
+    border: 1px solid #2b4661;
+
+    border-radius: 11px;
+
+    padding: 11px 14px;
+
+    background: #172d45;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.1s,
+        opacity 0.2s;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #087bb3;
+
+    border-color: #159bdc;
+}
+
+.btn-danger {
+    background: #9f1239;
+
+    border-color: #fb7185;
+}
+
+.btn-success {
+    background: #15803d;
+
+    border-color: #22c55e;
+}
+
+
+/* =========================================================
+   SIDE PANEL
+========================================================= */
+
+.side-panel {
+    padding: 16px;
+}
+
+.status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px;
+
+    margin-bottom: 16px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 13px;
+
+    background: #0a1726;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #64748b;
+
+    flex-shrink: 0;
+}
+
+.status-dot.green {
+    background: var(--green);
+
+    box-shadow:
+        0 0 12px var(--green);
+}
+
+.status-dot.yellow {
+    background: var(--yellow);
+
+    box-shadow:
+        0 0 12px var(--yellow);
+}
+
+.status-dot.red {
+    background: var(--red);
+
+    box-shadow:
+        0 0 12px var(--red);
+}
+
+.status-title {
+    font-weight: 700;
+
     font-size: 14px;
 }
 
-/* MESSAGES */
+.status-description {
+    color: var(--muted);
 
-#errorBox,
-#successBox {
-    position: fixed;
-    top: 75px;
-    right: 20px;
-    max-width: 400px;
-    padding: 14px 18px;
-    border-radius: 7px;
-    z-index: 9999;
-    display: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 12px;
+
+    margin-top: 3px;
 }
+
+
+/* =========================================================
+   METRICS
+========================================================= */
+
+.metric {
+    margin: 18px 0;
+}
+
+.metric-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+}
+
+.metric-value {
+    font-weight: 700;
+}
+
+.progress {
+    width: 100%;
+
+    height: 9px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #07111f;
+
+    border:
+        1px solid #1b3048;
+}
+
+.progress-fill {
+    width: 0;
+
+    height: 100%;
+
+    background: var(--blue);
+
+    transition:
+        width 0.2s ease;
+}
+
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result {
+    padding: 14px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 13px;
+
+    background: #0b1a2b;
+}
+
+.result-title {
+    font-weight: 700;
+
+    margin-bottom: 6px;
+}
+
+.result-description {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+.green-text {
+    color: #4ade80;
+}
+
+.yellow-text {
+    color: #fde047;
+}
+
+.red-text {
+    color: #fb7185;
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history {
+    margin-top: 18px;
+}
+
+.history-title {
+    font-size: 14px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+}
+
+.history-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 9px 0;
+
+    border-bottom:
+        1px solid #172b42;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   HELP
+========================================================= */
+
+.help {
+    margin-top: 16px;
+
+    padding: 14px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 14px;
+
+    background: #0b1a2b;
+}
+
+.help h3 {
+    margin:
+        0 0 8px;
+
+    font-size: 14px;
+}
+
+.help li {
+    color: #aebed0;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+
+    margin:
+        6px 0;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
 
 #errorBox {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #ef4444;
-}
-
-#successBox {
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #22c55e;
-}
-
-/* LOADING */
-
-#loading {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    z-index: 10000;
+
+    left: 15px;
+    right: 15px;
+
+    bottom:
+        calc(
+            20px +
+            env(safe-area-inset-bottom)
+        );
+
+    z-index: 1000;
+
     display: none;
-    align-items: center;
-    justify-content: center;
+
+    padding: 14px 16px;
+
+    border:
+        1px solid #fb7185;
+
+    border-radius: 13px;
+
+    background: #4c1020;
+
     color: white;
-    font-size: 20px;
+
+    font-size: 13px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.4);
 }
 
-/* MOBILE */
 
-@media(max-width: 900px) {
+/* =========================================================
+   MOBILE
+========================================================= */
 
-    .editor-layout {
-        grid-template-columns: 100px 1fr;
+@media (max-width: 780px) {
+
+    main {
+        padding: 12px;
     }
 
-    .properties {
-        display: none;
+    .layout {
+        grid-template-columns: 1fr;
     }
 
-    .sidebar {
-        width: 100px;
+    .camera-wrapper {
+        aspect-ratio: 3 / 4;
     }
 
-    #pdfContainer {
-        padding: 15px;
+    .controls .btn {
+        flex: 1 1 auto;
     }
+
 }
+
 </style>
 </head>
 
+
 <body>
+
+<div class="app">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header>
 
-    <h2>PDF Editor</h2>
+    <div class="header-inner">
 
-    <div class="header-buttons">
+        <div class="brand">
 
-        <button class="secondary" onclick="newPDF()">
-            New PDF
-        </button>
+            <div class="logo">
+                ◉
+            </div>
 
-        <button class="success" onclick="savePDF()">
-            Save PDF
+            <div>
+
+                <div class="brand-title">
+                    NightWatch
+                </div>
+
+                <div class="brand-subtitle">
+                    Hidden Camera Scanner
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            id="flashButton"
+            class="btn"
+            disabled
+        >
+            🔦 Flash
         </button>
 
     </div>
@@ -371,190 +871,372 @@ button:hover {
 </header>
 
 
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main>
+
+
+    <!-- NOTICE -->
+
+    <div class="notice">
+
+        <b>How it works:</b>
+
+        This scanner analyzes the iPhone camera image
+        for unusually bright, small light sources.
+
+        These can sometimes be associated with
+        IR illuminators or camera LEDs.
+
+        <br><br>
+
+        <b>Important:</b>
+        this is a visual detection aid, not a guaranteed
+        hidden-camera detector.
+
+    </div>
+
+
+    <!-- MAIN GRID -->
+
+    <div class="layout">
+
+
+        <!-- =================================================
+             CAMERA CARD
+        ================================================== -->
+
+        <section class="card">
+
+
+            <div
+                id="cameraWrapper"
+                class="camera-wrapper"
+            >
+
+                <video
+                    id="video"
+                    autoplay
+                    playsinline
+                    muted
+                ></video>
+
+
+                <canvas
+                    id="analysisCanvas"
+                ></canvas>
+
+
+                <!-- CAMERA PLACEHOLDER -->
+
+                <div
+                    id="cameraPlaceholder"
+                    class="camera-placeholder"
+                >
+
+                    <div class="camera-icon">
+                        📷
+                    </div>
+
+                    <strong>
+                        Camera is off
+                    </strong>
+
+                    <div>
+                        Tap "Start Scanner"
+                        to begin.
+                    </div>
+
+                </div>
+
+
+                <!-- SCANNER OVERLAY -->
+
+                <div
+                    id="scannerOverlay"
+                    class="scanner-overlay"
+                >
+
+                    <div
+                        class="corner
+                               corner-top-left"
+                    ></div>
+
+                    <div
+                        class="corner
+                               corner-top-right"
+                    ></div>
+
+                    <div
+                        class="corner
+                               corner-bottom-left"
+                    ></div>
+
+                    <div
+                        class="corner
+                               corner-bottom-right"
+                    ></div>
+
+
+                    <div
+                        id="scanLine"
+                        class="scan-line"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTROLS -->
+
+            <div class="controls">
+
+
+                <button
+                    id="startButton"
+                    class="btn btn-primary"
+                >
+                    ▶ Start Scanner
+                </button>
+
+
+                <button
+                    id="stopButton"
+                    class="btn btn-danger"
+                    disabled
+                >
+                    ■ Stop
+                </button>
+
+
+                <button
+                    id="flipButton"
+                    class="btn"
+                    disabled
+                >
+                    ↔ Flip Camera
+                </button>
+
+
+                <button
+                    id="snapshotButton"
+                    class="btn"
+                    disabled
+                >
+                    📸 Analyze Frame
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             INFORMATION PANEL
+        ================================================== -->
+
+        <aside class="card side-panel">
+
+
+            <!-- STATUS -->
+
+            <div class="status">
+
+                <span
+                    id="statusDot"
+                    class="status-dot"
+                ></span>
+
+                <div>
+
+                    <div
+                        id="statusTitle"
+                        class="status-title"
+                    >
+                        Ready
+                    </div>
+
+                    <div
+                        id="statusDescription"
+                        class="status-description"
+                    >
+                        Camera permission is required.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SCORE -->
+
+            <div class="metric">
+
+                <div class="metric-header">
+
+                    <span>
+                        Bright-point score
+                    </span>
+
+                    <span
+                        id="scoreValue"
+                        class="metric-value"
+                    >
+                        0%
+                    </span>
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                        id="scoreProgress"
+                        class="progress-fill"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- POINTS -->
+
+            <div class="metric">
+
+                <div class="metric-header">
+
+                    <span>
+                        Candidate points
+                    </span>
+
+                    <span
+                        id="candidateValue"
+                        class="metric-value"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULT -->
+
+            <div
+                id="resultBox"
+                class="result"
+            >
+
+                <div
+                    id="resultTitle"
+                    class="result-title"
+                >
+                    Waiting for scan
+                </div>
+
+                <div
+                    id="resultDescription"
+                    class="result-description"
+                >
+                    Start the camera and move slowly
+                    around the room.
+                </div>
+
+            </div>
+
+
+            <!-- HISTORY -->
+
+            <div class="history">
+
+                <div class="history-title">
+                    Recent scans
+                </div>
+
+                <div id="historyList">
+
+                    <div class="result-description">
+                        No scans yet.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- =================================================
+         HELP
+    ================================================== -->
+
+    <div class="help">
+
+        <h3>
+            📱 Recommended iPhone scanning method
+        </h3>
+
+        <ul>
+
+            <li>
+                Open the website in
+                <b>Safari</b>.
+            </li>
+
+            <li>
+                Allow camera permission.
+            </li>
+
+            <li>
+                Start with the
+                <b>rear camera</b>.
+            </li>
+
+            <li>
+                Slowly scan walls, ceilings,
+                smoke detectors, clocks, chargers,
+                mirrors, vents and other objects.
+            </li>
+
+            <li>
+                Try scanning with the room
+                relatively dark.
+            </li>
+
+            <li>
+                If you see a persistent tiny
+                bright point, physically inspect
+                that location.
+            </li>
+
+            <li>
+                Use the <b>Flip Camera</b> button
+                to compare the front and rear cameras.
+            </li>
+
+            <li>
+                The score is only a heuristic.
+                Normal LEDs, reflections and
+                lights can create false positives.
+            </li>
+
+        </ul>
+
+    </div>
+
+</main>
+
+
 <!-- ERROR -->
 
 <div id="errorBox"></div>
-<div id="successBox"></div>
-
-
-<!-- LOADING -->
-
-<div id="loading">
-    Processing PDF...
-</div>
-
-
-<!-- UPLOAD SCREEN -->
-
-<div id="uploadScreen">
-
-    <div class="upload-box">
-
-        <h1>PDF Editor</h1>
-
-        <p>
-            Upload a PDF to start editing.
-        </p>
-
-        <input
-            type="file"
-            id="fileInput"
-            class="file-input"
-            accept="application/pdf"
-        >
-
-        <p style="font-size:13px;color:#777;">
-            Text-based PDFs work best.
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- EDITOR -->
-
-<div id="editor">
-
-    <div class="editor-layout">
-
-        <!-- PAGE SIDEBAR -->
-
-        <aside class="sidebar">
-
-            <h3>Pages</h3>
-
-            <div id="thumbnails"></div>
-
-        </aside>
-
-
-        <!-- MAIN PDF AREA -->
-
-        <main class="main-area">
-
-            <div class="toolbar">
-
-                <button
-                    id="addTextButton"
-                    class="primary"
-                    onclick="toggleAddText()">
-                    + Add Text
-                </button>
-
-                <button
-                    class="secondary"
-                    onclick="zoomOut()">
-                    −
-                </button>
-
-                <button
-                    class="secondary"
-                    onclick="zoomIn()">
-                    +
-                </button>
-
-                <button
-                    class="secondary"
-                    onclick="resetZoom()">
-                    Reset
-                </button>
-
-                <span
-                    id="zoomLabel"
-                    class="zoom-label">
-                    100%
-                </span>
-
-            </div>
-
-            <div id="pdfContainer"></div>
-
-        </main>
-
-
-        <!-- PROPERTIES -->
-
-        <aside class="properties">
-
-            <h3>Properties</h3>
-
-            <div id="noSelection">
-
-                Select text to edit it.
-
-                <br><br>
-
-                Or click <b>+ Add Text</b>
-                and then click anywhere on the PDF.
-
-            </div>
-
-
-            <div id="propertyPanel" style="display:none;">
-
-                <div class="property-group">
-
-                    <label>Text</label>
-
-                    <textarea
-                        id="textInput"
-                        placeholder="Enter text">
-                    </textarea>
-
-                </div>
-
-
-                <div class="property-group">
-
-                    <label>Font Size</label>
-
-                    <input
-                        id="fontSizeInput"
-                        type="number"
-                        min="5"
-                        max="100"
-                        value="16">
-
-                </div>
-
-
-                <div class="property-group">
-
-                    <label>Text Color</label>
-
-                    <input
-                        id="colorInput"
-                        type="color"
-                        value="#000000">
-
-                </div>
-
-
-                <button
-                    class="danger"
-                    style="width:100%;"
-                    onclick="deleteSelected()">
-
-                    Delete Text
-
-                </button>
-
-
-                <button
-                    class="secondary"
-                    style="width:100%;margin-top:8px;"
-                    onclick="undoSelected()">
-
-                    Undo Changes
-
-                </button>
-
-            </div>
-
-        </aside>
-
-    </div>
 
 </div>
 
@@ -562,1958 +1244,1439 @@ button:hover {
 <script>
 
 /* =========================================================
-   PDF.JS CONFIG
+   DOM
 ========================================================= */
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const video =
+    document.getElementById(
+        "video"
+    );
+
+const canvas =
+    document.getElementById(
+        "analysisCanvas"
+    );
+
+const ctx =
+    canvas.getContext(
+        "2d",
+        {
+            willReadFrequently: true
+        }
+    );
+
+
+const cameraPlaceholder =
+    document.getElementById(
+        "cameraPlaceholder"
+    );
+
+const scannerOverlay =
+    document.getElementById(
+        "scannerOverlay"
+    );
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+const stopButton =
+    document.getElementById(
+        "stopButton"
+    );
+
+const flipButton =
+    document.getElementById(
+        "flipButton"
+    );
+
+const snapshotButton =
+    document.getElementById(
+        "snapshotButton"
+    );
+
+const flashButton =
+    document.getElementById(
+        "flashButton"
+    );
+
+const statusDot =
+    document.getElementById(
+        "statusDot"
+    );
+
+const statusTitle =
+    document.getElementById(
+        "statusTitle"
+    );
+
+const statusDescription =
+    document.getElementById(
+        "statusDescription"
+    );
+
+const scoreValue =
+    document.getElementById(
+        "scoreValue"
+    );
+
+const scoreProgress =
+    document.getElementById(
+        "scoreProgress"
+    );
+
+const candidateValue =
+    document.getElementById(
+        "candidateValue"
+    );
+
+const resultTitle =
+    document.getElementById(
+        "resultTitle"
+    );
+
+const resultDescription =
+    document.getElementById(
+        "resultDescription"
+    );
+
+const historyList =
+    document.getElementById(
+        "historyList"
+    );
+
+const errorBox =
+    document.getElementById(
+        "errorBox"
+    );
 
 
 /* =========================================================
-   GLOBAL STATE
+   STATE
 ========================================================= */
 
-let pdfDocument = null;
+let stream = null;
 
-let originalPDFBytes = null;
+let videoTrack = null;
 
-let originalFileName = "edited.pdf";
+let cameraFacing = "environment";
 
-let zoom = 1;
+let scanning = false;
 
-let selectedObject = null;
+let animationFrame = null;
 
-let addTextMode = false;
+let lastAnalysisTime = 0;
 
-let objectId = 0;
+let torchEnabled = false;
 
-
-/*
-Each edit is stored here.
-
-New text:
-
-{
-    type: "new",
-    id,
-    page,
-    x,
-    y,
-    text,
-    fontSize,
-    color
-}
-
-Existing text:
-
-{
-    type: "existing",
-    id,
-    page,
-    x,
-    y,
-    width,
-    height,
-    originalText,
-    text,
-    fontSize,
-    originalFontSize,
-    changed
-}
-*/
-
-let edits = [];
+let scanHistory = [];
 
 
 /* =========================================================
-   UI HELPERS
+   ERROR
 ========================================================= */
 
 function showError(message) {
 
-    const box = document.getElementById("errorBox");
+    errorBox.textContent =
+        "⚠️ " + message;
 
-    box.innerHTML = "❌ " + message;
-
-    box.style.display = "block";
-
-    setTimeout(() => {
-        box.style.display = "none";
-    }, 6000);
-}
+    errorBox.style.display =
+        "block";
 
 
-function showSuccess(message) {
-
-    const box = document.getElementById("successBox");
-
-    box.innerHTML = "✓ " + message;
-
-    box.style.display = "block";
-
-    setTimeout(() => {
-        box.style.display = "none";
-    }, 4000);
-}
+    clearTimeout(
+        showError.timer
+    );
 
 
-function setLoading(show) {
+    showError.timer =
+        setTimeout(
+            () => {
 
-    document.getElementById("loading").style.display =
-        show ? "flex" : "none";
+                errorBox.style.display =
+                    "none";
+
+            },
+            6000
+        );
 }
 
 
 /* =========================================================
-   FILE UPLOAD
+   STATUS
 ========================================================= */
 
-document
-    .getElementById("fileInput")
-    .addEventListener("change", async function(e) {
+function setStatus(
+    title,
+    description,
+    state = ""
+) {
 
-        const file = e.target.files[0];
+    statusTitle.textContent =
+        title;
 
-        if (!file) {
-            return;
-        }
+    statusDescription.textContent =
+        description;
 
-        if (file.type !== "application/pdf") {
+    statusDot.className =
+        "status-dot";
 
-            showError("Please select a valid PDF file.");
+    if (state) {
 
-            return;
-        }
+        statusDot.classList.add(
+            state
+        );
 
-        try {
+    }
 
-            setLoading(true);
-
-            originalFileName = file.name;
-
-            const buffer = await file.arrayBuffer();
-
-            /*
-                Make our own copy.
-            */
-
-            originalPDFBytes = new Uint8Array(buffer);
-
-            pdfDocument = await pdfjsLib.getDocument({
-                data: originalPDFBytes
-            }).promise;
+}
 
 
-            /*
-                Reset state
-            */
+/* =========================================================
+   CAMERA SUPPORT
+========================================================= */
 
-            edits = [];
+function cameraSupported() {
 
-            selectedObject = null;
+    return (
+        navigator.mediaDevices &&
+        typeof navigator.mediaDevices.getUserMedia ===
+            "function"
+    );
 
-            objectId = 0;
-
-            zoom = 1;
-
-            document.getElementById("uploadScreen").style.display =
-                "none";
-
-            document.getElementById("editor").style.display =
-                "block";
+}
 
 
-            await renderPDF();
+/* =========================================================
+   START CAMERA
+========================================================= */
 
-            showSuccess(
-                `PDF loaded successfully — ${pdfDocument.numPages} page(s).`
-            );
+async function startCamera() {
 
-        }
-        catch(error) {
+    if (!cameraSupported()) {
 
-            console.error(error);
+        showError(
+            "Camera access is not supported by this browser. Please use Safari on your iPhone."
+        );
+
+        return;
+
+    }
+
+
+    stopCamera(
+        false
+    );
+
+
+    try {
+
+        const constraints = {
+
+            audio: false,
+
+            video: {
+
+                facingMode: {
+
+                    ideal:
+                        cameraFacing
+
+                },
+
+                width: {
+
+                    ideal:
+                        1280
+
+                },
+
+                height: {
+
+                    ideal:
+                        720
+
+                }
+
+            }
+
+        };
+
+
+        stream =
+            await navigator.mediaDevices
+                .getUserMedia(
+                    constraints
+                );
+
+
+        videoTrack =
+            stream.getVideoTracks()[0];
+
+
+        video.srcObject =
+            stream;
+
+
+        await video.play();
+
+
+        cameraPlaceholder.style.display =
+            "none";
+
+
+        video.style.display =
+            "block";
+
+
+        scannerOverlay.style.display =
+            "block";
+
+
+        startButton.disabled =
+            true;
+
+
+        stopButton.disabled =
+            false;
+
+
+        flipButton.disabled =
+            false;
+
+
+        snapshotButton.disabled =
+            false;
+
+
+        flashButton.disabled =
+            !supportsTorch();
+
+
+        scanning =
+            true;
+
+
+        setStatus(
+            "Scanner active",
+            "Analyzing the camera image...",
+            "green"
+        );
+
+
+        requestAnimationFrame(
+            scannerLoop
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        if (
+            error.name ===
+            "NotAllowedError"
+        ) {
 
             showError(
-                "Could not open this PDF. " +
-                (error.message || "Unknown PDF error.")
+                "Camera permission was denied. On iPhone go to Settings → Safari → Camera and allow access."
             );
 
         }
-        finally {
 
-            setLoading(false);
+        else if (
+            error.name ===
+            "NotFoundError"
+        ) {
+
+            showError(
+                "No camera was found."
+            );
 
         }
+
+        else if (
+            error.name ===
+            "NotReadableError"
+        ) {
+
+            showError(
+                "The camera is being used by another application."
+            );
+
+        }
+
+        else {
+
+            showError(
+                "Could not start the camera: " +
+                (
+                    error.message ||
+                    error.name
+                )
+            );
+
+        }
+
+
+        setStatus(
+            "Camera unavailable",
+            "Check your browser camera permission."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   STOP CAMERA
+========================================================= */
+
+function stopCamera(
+    updateStatus = true
+) {
+
+    scanning =
+        false;
+
+
+    if (animationFrame) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+        animationFrame =
+            null;
+
+    }
+
+
+    if (stream) {
+
+        stream
+            .getTracks()
+            .forEach(
+                track => track.stop()
+            );
+
+    }
+
+
+    stream =
+        null;
+
+
+    videoTrack =
+        null;
+
+
+    video.srcObject =
+        null;
+
+
+    video.style.display =
+        "none";
+
+
+    scannerOverlay.style.display =
+        "none";
+
+
+    startButton.disabled =
+        false;
+
+
+    stopButton.disabled =
+        true;
+
+
+    flipButton.disabled =
+        true;
+
+
+    snapshotButton.disabled =
+        true;
+
+
+    flashButton.disabled =
+        true;
+
+
+    torchEnabled =
+        false;
+
+
+    flashButton.textContent =
+        "🔦 Flash";
+
+
+    if (updateStatus) {
+
+        setStatus(
+            "Stopped",
+            "Camera is currently off."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TORCH SUPPORT
+========================================================= */
+
+function supportsTorch() {
+
+    try {
+
+        if (
+            !videoTrack ||
+            !videoTrack.getCapabilities
+        ) {
+
+            return false;
+
+        }
+
+
+        const capabilities =
+            videoTrack.getCapabilities();
+
+
+        return (
+            capabilities &&
+            capabilities.torch === true
+        );
+
+    }
+    catch (error) {
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   TORCH
+========================================================= */
+
+async function toggleTorch() {
+
+    if (!supportsTorch()) {
+
+        showError(
+            "Torch control is not available on this iPhone/browser."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        torchEnabled =
+            !torchEnabled;
+
+
+        await videoTrack.applyConstraints({
+
+            advanced: [
+
+                {
+                    torch:
+                        torchEnabled
+                }
+
+            ]
+
+        });
+
+
+        flashButton.textContent =
+            torchEnabled
+                ? "🔦 Flash On"
+                : "🔦 Flash";
+
+    }
+    catch (error) {
+
+        torchEnabled =
+            false;
+
+        showError(
+            "The browser did not allow flashlight control."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SCANNER LOOP
+========================================================= */
+
+function scannerLoop(
+    timestamp
+) {
+
+    if (!scanning) {
+
+        return;
+
+    }
+
+
+    if (
+        timestamp -
+        lastAnalysisTime >
+        180
+    ) {
+
+        if (
+            video.readyState >=
+            2
+        ) {
+
+            analyzeFrame(
+                false
+            );
+
+        }
+
+
+        lastAnalysisTime =
+            timestamp;
+
+    }
+
+
+    animationFrame =
+        requestAnimationFrame(
+            scannerLoop
+        );
+
+}
+
+
+/* =========================================================
+   FRAME ANALYSIS
+========================================================= */
+
+function analyzeFrame(
+    manual
+) {
+
+    if (
+        video.readyState < 2 ||
+        video.videoWidth === 0 ||
+        video.videoHeight === 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+        Resize analysis image.
+
+        We don't need to process
+        the full camera resolution.
+    */
+
+    const maxWidth =
+        640;
+
+
+    const scale =
+        Math.min(
+            1,
+            maxWidth /
+                video.videoWidth
+        );
+
+
+    canvas.width =
+        Math.max(
+            1,
+            Math.round(
+                video.videoWidth *
+                scale
+            )
+        );
+
+
+    canvas.height =
+        Math.max(
+            1,
+            Math.round(
+                video.videoHeight *
+                scale
+            )
+        );
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    const image =
+        ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+    const data =
+        image.data;
+
+
+    const width =
+        canvas.width;
+
+
+    const height =
+        canvas.height;
+
+
+    const candidates = [];
+
+
+    let veryBrightPixels =
+        0;
+
+
+    let samples =
+        0;
+
+
+    /*
+        Sample every 3 pixels.
+
+        This keeps iPhone Safari
+        responsive.
+    */
+
+    const step =
+        3;
+
+
+    for (
+        let y = 2;
+        y < height - 2;
+        y += step
+    ) {
+
+        for (
+            let x = 2;
+            x < width - 2;
+            x += step
+        ) {
+
+            const index =
+                (
+                    y *
+                    width +
+                    x
+                ) *
+                4;
+
+
+            const r =
+                data[index];
+
+
+            const g =
+                data[index + 1];
+
+
+            const b =
+                data[index + 2];
+
+
+            /*
+                Human-visible luminance.
+            */
+
+            const luminance =
+                (
+                    0.299 * r +
+                    0.587 * g +
+                    0.114 * b
+                );
+
+
+            samples++;
+
+
+            if (
+                luminance >
+                220
+            ) {
+
+                veryBrightPixels++;
+
+            }
+
+
+            /*
+                Compare this pixel
+                with nearby pixels.
+            */
+
+            const left =
+                (
+                    y *
+                    width +
+                    (x - 2)
+                ) *
+                4;
+
+
+            const right =
+                (
+                    y *
+                    width +
+                    (x + 2)
+                ) *
+                4;
+
+
+            const top =
+                (
+                    (y - 2) *
+                    width +
+                    x
+                ) *
+                4;
+
+
+            const bottom =
+                (
+                    (y + 2) *
+                    width +
+                    x
+                ) *
+                4;
+
+
+            const leftLum =
+                getLuminance(
+                    data,
+                    left
+                );
+
+
+            const rightLum =
+                getLuminance(
+                    data,
+                    right
+                );
+
+
+            const topLum =
+                getLuminance(
+                    data,
+                    top
+                );
+
+
+            const bottomLum =
+                getLuminance(
+                    data,
+                    bottom
+                );
+
+
+            const localAverage =
+                (
+                    leftLum +
+                    rightLum +
+                    topLum +
+                    bottomLum
+                ) / 4;
+
+
+            /*
+                Candidate rule.
+
+                It needs to be:
+                - very bright
+                - significantly brighter
+                  than nearby pixels
+            */
+
+            if (
+                luminance > 215 &&
+                luminance -
+                    localAverage >
+                    75
+            ) {
+
+                candidates.push({
+
+                    x:
+                        x,
+
+                    y:
+                        y,
+
+                    luminance:
+                        luminance
+
+                });
+
+            }
+
+        }
+
+    }
+
+
+    /*
+        Cluster nearby pixels.
+
+        Otherwise one tiny LED could
+        produce many detections.
+    */
+
+    const clusters = [];
+
+
+    const clusterRadius =
+        14;
+
+
+    for (
+        const candidate
+        of candidates
+    ) {
+
+        let cluster =
+            null;
+
+
+        for (
+            const existing
+            of clusters
+        ) {
+
+            const dx =
+                candidate.x -
+                existing.x;
+
+
+            const dy =
+                candidate.y -
+                existing.y;
+
+
+            const distance =
+                dx * dx +
+                dy * dy;
+
+
+            if (
+                distance <
+                clusterRadius *
+                clusterRadius
+            ) {
+
+                cluster =
+                    existing;
+
+                break;
+
+            }
+
+        }
+
+
+        if (cluster) {
+
+            cluster.x =
+                (
+                    cluster.x +
+                    candidate.x
+                ) / 2;
+
+
+            cluster.y =
+                (
+                    cluster.y +
+                    candidate.y
+                ) / 2;
+
+
+            cluster.count++;
+
+
+            cluster.luminance =
+                Math.max(
+                    cluster.luminance,
+                    candidate.luminance
+                );
+
+        }
+        else {
+
+            if (
+                clusters.length <
+                100
+            ) {
+
+                clusters.push({
+
+                    x:
+                        candidate.x,
+
+                    y:
+                        candidate.y,
+
+                    count:
+                        1,
+
+                    luminance:
+                        candidate.luminance
+
+                });
+
+            }
+
+        }
+
+    }
+
+
+    /*
+        Brightness density.
+
+        A whole bright scene should
+        not be treated as many
+        suspicious points.
+    */
+
+    const brightnessDensity =
+        veryBrightPixels /
+        Math.max(
+            1,
+            samples
+        );
+
+
+    /*
+        Calculate heuristic score.
+    */
+
+    let score =
+        clusters.length * 8 +
+        brightnessDensity * 100;
+
+
+    /*
+        If most of the image is bright,
+        it is probably a normal bright
+        scene rather than tiny points.
+    */
+
+    if (
+        brightnessDensity >
+        0.12
+    ) {
+
+        score *= 0.45;
+
+    }
+
+
+    score =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Math.round(score)
+            )
+        );
+
+
+    updateDetectionUI(
+        score,
+        clusters.length
+    );
+
+
+    /*
+        Manual frame analysis
+        gets added to history.
+    */
+
+    if (manual) {
+
+        addHistory(
+            score,
+            clusters.length
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LUMINANCE
+========================================================= */
+
+function getLuminance(
+    data,
+    index
+) {
+
+    return (
+        0.299 * data[index] +
+        0.587 * data[index + 1] +
+        0.114 * data[index + 2]
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateDetectionUI(
+    score,
+    candidateCount
+) {
+
+    scoreValue.textContent =
+        score + "%";
+
+
+    scoreProgress.style.width =
+        score + "%";
+
+
+    candidateValue.textContent =
+        candidateCount;
+
+
+    if (
+        score >= 65 ||
+        candidateCount >= 8
+    ) {
+
+        scoreProgress.style.background =
+            "var(--red)";
+
+
+        resultTitle.textContent =
+            "Multiple bright-point candidates";
+
+
+        resultTitle.className =
+            "result-title red-text";
+
+
+        resultDescription.textContent =
+            "Inspect these areas carefully. Bright LEDs, reflections and other normal objects can also produce this result.";
+
+
+        setStatus(
+            "Candidates detected",
+            "Inspect suspicious points manually.",
+            "red"
+        );
+
+    }
+
+    else if (
+        score >= 30 ||
+        candidateCount >= 3
+    ) {
+
+        scoreProgress.style.background =
+            "var(--yellow)";
+
+
+        resultTitle.textContent =
+            "Some bright-point candidates";
+
+
+        resultTitle.className =
+            "result-title yellow-text";
+
+
+        resultDescription.textContent =
+            "Move closer and scan from another angle. This result is not proof of a hidden camera.";
+
+
+        setStatus(
+            "Possible candidates",
+            "Continue scanning from different angles.",
+            "yellow"
+        );
+
+    }
+
+    else {
+
+        scoreProgress.style.background =
+            "var(--green)";
+
+
+        resultTitle.textContent =
+            "No strong candidate pattern";
+
+
+        resultTitle.className =
+            "result-title green-text";
+
+
+        resultDescription.textContent =
+            "No strong bright-point pattern was detected in the current frame. Continue checking the room manually.";
+
+
+        setStatus(
+            "Scanning",
+            "No strong candidate pattern.",
+            "green"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function addHistory(
+    score,
+    points
+) {
+
+    const time =
+        new Date()
+            .toLocaleTimeString(
+                [],
+                {
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit",
+
+                    second:
+                        "2-digit"
+                }
+            );
+
+
+    scanHistory.unshift({
+
+        time:
+            time,
+
+        score:
+            score,
+
+        points:
+            points
 
     });
 
 
-/* =========================================================
-   RENDER PDF
-========================================================= */
+    /*
+        Keep last 8 scans.
+    */
 
-async function renderPDF() {
-
-    const container =
-        document.getElementById("pdfContainer");
-
-    const thumbnails =
-        document.getElementById("thumbnails");
-
-    container.innerHTML = "";
-
-    thumbnails.innerHTML = "";
+    scanHistory =
+        scanHistory.slice(
+            0,
+            8
+        );
 
 
-    for (
-        let pageNumber = 1;
-        pageNumber <= pdfDocument.numPages;
-        pageNumber++
-    ) {
-
-        await renderPage(pageNumber);
-
-        await renderThumbnail(pageNumber);
-
-    }
-
-
-    updateZoomLabel();
+    renderHistory();
 
 }
 
 
 /* =========================================================
-   RENDER PAGE
+   RENDER HISTORY
 ========================================================= */
 
-async function renderPage(pageNumber) {
-
-    const page =
-        await pdfDocument.getPage(pageNumber);
-
-
-    const viewport =
-        page.getViewport({
-            scale: zoom
-        });
-
-
-    /*
-        PAGE
-    */
-
-    const pageDiv =
-        document.createElement("div");
-
-    pageDiv.className = "pdf-page";
-
-    pageDiv.dataset.page =
-        pageNumber;
-
-    pageDiv.style.width =
-        viewport.width + "px";
-
-    pageDiv.style.height =
-        viewport.height + "px";
-
-
-    /*
-        CANVAS
-    */
-
-    const canvas =
-        document.createElement("canvas");
-
-    canvas.width =
-        viewport.width;
-
-    canvas.height =
-        viewport.height;
-
-    canvas.style.width =
-        viewport.width + "px";
-
-    canvas.style.height =
-        viewport.height + "px";
-
-
-    const context =
-        canvas.getContext("2d");
-
-
-    await page.render({
-        canvasContext: context,
-        viewport: viewport
-    }).promise;
-
-
-    pageDiv.appendChild(canvas);
-
-
-    /*
-        TEXT LAYER
-    */
-
-    const textLayer =
-        document.createElement("div");
-
-    textLayer.className =
-        "text-layer";
-
-    pageDiv.appendChild(textLayer);
-
-
-    document
-        .getElementById("pdfContainer")
-        .appendChild(pageDiv);
-
-
-    /*
-        Existing PDF text
-    */
-
-    await renderExistingText(
-        page,
-        textLayer,
-        pageNumber
-    );
-
-
-    /*
-        Restore user-added text
-    */
-
-    restoreNewText(
-        pageNumber,
-        textLayer
-    );
-
-}
-
-
-/* =========================================================
-   EXISTING PDF TEXT
-========================================================= */
-
-async function renderExistingText(
-    page,
-    layer,
-    pageNumber
-) {
-
-    let textContent;
-
-    try {
-
-        textContent =
-            await page.getTextContent();
-
-    }
-    catch(error) {
-
-        console.error(error);
-
-        showError(
-            "Could not read the text layer of page " +
-            pageNumber
-        );
-
-        return;
-    }
-
-
-    /*
-        Use a scale=1 viewport to keep our
-        stored coordinates independent of zoom.
-    */
-
-    const baseViewport =
-        page.getViewport({
-            scale: 1
-        });
-
-
-    for (const item of textContent.items) {
-
-        if (!item.str || !item.str.trim()) {
-            continue;
-        }
-
-
-        const transform =
-            pdfjsLib.Util.transform(
-                baseViewport.transform,
-                item.transform
-            );
-
-
-        const x =
-            transform[4];
-
-        const y =
-            transform[5];
-
-
-        const fontSize =
-            Math.abs(transform[3]);
-
-
-        const width =
-            Math.max(
-                item.width || 20,
-                20
-            );
-
-
-        /*
-            PDF.js gives baseline coordinates.
-
-            Convert to top-left coordinate.
-        */
-
-        const top =
-            baseViewport.height -
-            y -
-            fontSize;
-
-
-        const id =
-            "existing-" +
-            (++objectId);
-
-
-        const edit = {
-
-            id,
-
-            type: "existing",
-
-            page: pageNumber,
-
-            x: x,
-
-            y: top,
-
-            width: width,
-
-            height: fontSize * 1.3,
-
-            originalText: item.str,
-
-            text: item.str,
-
-            fontSize: fontSize,
-
-            originalFontSize: fontSize,
-
-            changed: false
-
-        };
-
-
-        edits.push(edit);
-
-
-        /*
-            DOM
-        */
-
-        const div =
-            document.createElement("div");
-
-        div.className =
-            "existing-text";
-
-        div.dataset.id =
-            id;
-
-        div.textContent =
-            item.str;
-
-
-        div.style.left =
-            (x * zoom) + "px";
-
-        div.style.top =
-            (top * zoom) + "px";
-
-        div.style.width =
-            (width * zoom) + "px";
-
-        div.style.height =
-            (fontSize * 1.5 * zoom) + "px";
-
-        div.style.fontSize =
-            (fontSize * zoom) + "px";
-
-
-        /*
-            IMPORTANT:
-            Clicking existing text selects it.
-        */
-
-        div.addEventListener(
-            "click",
-            function(e) {
-
-                e.stopPropagation();
-
-                selectObject(edit);
-
-            }
-        );
-
-
-        /*
-            Double click automatically focuses
-            the text editor.
-        */
-
-        div.addEventListener(
-            "dblclick",
-            function(e) {
-
-                e.stopPropagation();
-
-                selectObject(edit);
-
-                setTimeout(() => {
-
-                    const input =
-                        document.getElementById(
-                            "textInput"
-                        );
-
-                    input.focus();
-
-                    input.select();
-
-                }, 50);
-
-            }
-        );
-
-
-        layer.appendChild(div);
-
-    }
-
-}
-
-
-/* =========================================================
-   RESTORE NEW TEXT
-========================================================= */
-
-function restoreNewText(
-    pageNumber,
-    layer
-) {
-
-    const pageEdits =
-        edits.filter(e =>
-            e.type === "new" &&
-            e.page === pageNumber
-        );
-
-
-    for (const edit of pageEdits) {
-
-        createNewTextElement(
-            edit,
-            layer
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   ADD TEXT
-========================================================= */
-
-function toggleAddText() {
-
-    if (!pdfDocument) {
-
-        showError(
-            "Please upload a PDF first."
-        );
-
-        return;
-    }
-
-
-    addTextMode =
-        !addTextMode;
-
-
-    const button =
-        document.getElementById(
-            "addTextButton"
-        );
-
-
-    if (addTextMode) {
-
-        button.classList.add("active");
-
-        button.textContent =
-            "Click PDF to Add Text";
-
-        document.body.style.cursor =
-            "crosshair";
-
-    }
-    else {
-
-        button.classList.remove("active");
-
-        button.textContent =
-            "+ Add Text";
-
-        document.body.style.cursor =
-            "default";
-
-    }
-
-}
-
-
-/* =========================================================
-   CLICK PDF TO ADD TEXT
-========================================================= */
-
-document.addEventListener(
-    "click",
-    function(e) {
-
-        if (!addTextMode) {
-            return;
-        }
-
-
-        const page =
-            e.target.closest(".pdf-page");
-
-
-        if (!page) {
-            return;
-        }
-
-
-        /*
-            Don't trigger when clicking an existing
-            or already-added text.
-        */
-
-        if (
-            e.target.closest(".existing-text") ||
-            e.target.closest(".added-text")
-        ) {
-
-            return;
-
-        }
-
-
-        const rect =
-            page.getBoundingClientRect();
-
-
-        /*
-            Convert screen coordinates to PDF
-            coordinates independent of zoom.
-        */
-
-        const x =
-            (e.clientX - rect.left) /
-            zoom;
-
-
-        const y =
-            (e.clientY - rect.top) /
-            zoom;
-
-
-        const newEdit = {
-
-            id:
-                "new-" +
-                (++objectId),
-
-            type: "new",
-
-            page:
-                Number(page.dataset.page),
-
-            x: x,
-
-            y: y,
-
-            text:
-                "New text",
-
-            fontSize:
-                16,
-
-            color:
-                "#000000"
-
-        };
-
-
-        edits.push(newEdit);
-
-
-        /*
-            Find layer
-        */
-
-        const layer =
-            page.querySelector(
-                ".text-layer"
-            );
-
-
-        createNewTextElement(
-            newEdit,
-            layer
-        );
-
-
-        selectObject(
-            newEdit
-        );
-
-
-        /*
-            Turn add mode off
-        */
-
-        toggleAddText();
-
-    }
-);
-
-
-/* =========================================================
-   CREATE NEW TEXT ELEMENT
-========================================================= */
-
-function createNewTextElement(
-    edit,
-    layer
-) {
-
-    const div =
-        document.createElement("div");
-
-
-    div.className =
-        "added-text";
-
-
-    div.dataset.id =
-        edit.id;
-
-
-    div.textContent =
-        edit.text;
-
-
-    div.style.left =
-        (edit.x * zoom) + "px";
-
-
-    div.style.top =
-        (edit.y * zoom) + "px";
-
-
-    div.style.fontSize =
-        (edit.fontSize * zoom) + "px";
-
-
-    div.style.color =
-        edit.color;
-
-
-    layer.appendChild(div);
-
-
-    /*
-        CLICK
-    */
-
-    div.addEventListener(
-        "click",
-        function(e) {
-
-            e.stopPropagation();
-
-            selectObject(edit);
-
-        }
-    );
-
-
-    /*
-        DOUBLE CLICK
-    */
-
-    div.addEventListener(
-        "dblclick",
-        function(e) {
-
-            e.stopPropagation();
-
-            selectObject(edit);
-
-            document
-                .getElementById("textInput")
-                .focus();
-
-        }
-    );
-
-
-    /*
-        DRAG
-    */
-
-    makeDraggable(
-        div,
-        edit
-    );
-
-}
-
-
-/* =========================================================
-   DRAG TEXT
-========================================================= */
-
-function makeDraggable(
-    element,
-    edit
-) {
-
-    let dragging = false;
-
-    let startX = 0;
-
-    let startY = 0;
-
-    let originalX = 0;
-
-    let originalY = 0;
-
-
-    element.addEventListener(
-        "pointerdown",
-        function(e) {
-
-            e.stopPropagation();
-
-            dragging = true;
-
-            element.setPointerCapture(
-                e.pointerId
-            );
-
-
-            startX =
-                e.clientX;
-
-            startY =
-                e.clientY;
-
-
-            originalX =
-                edit.x;
-
-            originalY =
-                edit.y;
-
-            selectObject(edit);
-
-        }
-    );
-
-
-    element.addEventListener(
-        "pointermove",
-        function(e) {
-
-            if (!dragging) {
-                return;
-            }
-
-
-            const dx =
-                (e.clientX - startX) /
-                zoom;
-
-
-            const dy =
-                (e.clientY - startY) /
-                zoom;
-
-
-            edit.x =
-                originalX + dx;
-
-
-            edit.y =
-                originalY + dy;
-
-
-            element.style.left =
-                (edit.x * zoom) + "px";
-
-
-            element.style.top =
-                (edit.y * zoom) + "px";
-
-        }
-    );
-
-
-    element.addEventListener(
-        "pointerup",
-        function(e) {
-
-            dragging = false;
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   SELECT OBJECT
-========================================================= */
-
-function selectObject(
-    edit
-) {
-
-    selectedObject =
-        edit;
-
-
-    /*
-        Remove previous selections
-    */
-
-    document
-        .querySelectorAll(
-            ".selected"
-        )
-        .forEach(el => {
-
-            el.classList.remove(
-                "selected"
-            );
-
-        });
-
-
-    /*
-        Select DOM object
-    */
-
-    const element =
-        document.querySelector(
-            `[data-id="${edit.id}"]`
-        );
-
-
-    if (element) {
-
-        element.classList.add(
-            "selected"
-        );
-
-    }
-
-
-    /*
-        Show property panel
-    */
-
-    document.getElementById(
-        "noSelection"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "propertyPanel"
-    ).style.display =
-        "block";
-
-
-    /*
-        Load values
-    */
-
-    document.getElementById(
-        "textInput"
-    ).value =
-        edit.text;
-
-
-    document.getElementById(
-        "fontSizeInput"
-    ).value =
-        edit.fontSize;
-
-
-    document.getElementById(
-        "colorInput"
-    ).value =
-        edit.color ||
-        "#000000";
-
-}
-
-
-/* =========================================================
-   TEXT INPUT
-========================================================= */
-
-document
-    .getElementById("textInput")
-    .addEventListener(
-        "input",
-        function() {
-
-            if (!selectedObject) {
-                return;
-            }
-
-
-            selectedObject.text =
-                this.value;
-
-
-            updateSelectedDOM();
-
-        }
-    );
-
-
-/* =========================================================
-   FONT SIZE
-========================================================= */
-
-document
-    .getElementById("fontSizeInput")
-    .addEventListener(
-        "input",
-        function() {
-
-            if (!selectedObject) {
-                return;
-            }
-
-
-            let size =
-                Number(this.value);
-
-
-            if (
-                !size ||
-                size < 5 ||
-                size > 100
-            ) {
-
-                return;
-
-            }
-
-
-            selectedObject.fontSize =
-                size;
-
-
-            if (
-                selectedObject.type ===
-                "existing"
-            ) {
-
-                selectedObject.changed =
-                    true;
-
-            }
-
-
-            updateSelectedDOM();
-
-        }
-    );
-
-
-/* =========================================================
-   COLOR
-========================================================= */
-
-document
-    .getElementById("colorInput")
-    .addEventListener(
-        "input",
-        function() {
-
-            if (!selectedObject) {
-                return;
-            }
-
-
-            selectedObject.color =
-                this.value;
-
-
-            if (
-                selectedObject.type ===
-                "existing"
-            ) {
-
-                selectedObject.changed =
-                    true;
-
-            }
-
-
-            updateSelectedDOM();
-
-        }
-    );
-
-
-/* =========================================================
-   UPDATE DOM
-========================================================= */
-
-function updateSelectedDOM() {
-
-    if (!selectedObject) {
-        return;
-    }
-
-
-    const element =
-        document.querySelector(
-            `[data-id="${selectedObject.id}"]`
-        );
-
-
-    if (!element) {
-        return;
-    }
-
-
-    element.textContent =
-        selectedObject.text;
-
-
-    element.style.fontSize =
-        (
-            selectedObject.fontSize *
-            zoom
-        ) + "px";
-
-
-    element.style.color =
-        selectedObject.color ||
-        "#000000";
-
+function renderHistory() {
 
     if (
-        selectedObject.type ===
-        "existing"
+        scanHistory.length ===
+        0
     ) {
 
-        element.style.color =
-            "#111";
-
-    }
-
-}
-
-
-/* =========================================================
-   DELETE
-========================================================= */
-
-function deleteSelected() {
-
-    if (!selectedObject) {
-
-        showError(
-            "Select some text first."
-        );
+        historyList.innerHTML =
+            `
+            <div class="result-description">
+                No scans yet.
+            </div>
+            `;
 
         return;
-    }
-
-
-    const index =
-        edits.findIndex(
-            e =>
-                e.id ===
-                selectedObject.id
-        );
-
-
-    if (index === -1) {
-
-        showError(
-            "Could not find the selected text."
-        );
-
-        return;
-    }
-
-
-    /*
-        New text:
-        completely remove it.
-    */
-
-    if (
-        selectedObject.type ===
-        "new"
-    ) {
-
-        edits.splice(
-            index,
-            1
-        );
 
     }
 
 
-    /*
-        Existing PDF text:
-        Mark as deleted.
-    */
+    historyList.innerHTML =
+        scanHistory
+            .map(
+                item => {
 
-    else {
+                    let className =
+                        "green-text";
 
-        selectedObject.text = "";
 
-        selectedObject.changed =
-            true;
+                    if (
+                        item.score >=
+                        65
+                    ) {
 
-    }
-
-
-    selectedObject =
-        null;
-
-
-    document.getElementById(
-        "propertyPanel"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "noSelection"
-    ).style.display =
-        "block";
-
-
-    /*
-        Re-render so deleted existing
-        text disappears.
-    */
-
-    renderPDF()
-        .catch(error => {
-
-            console.error(error);
-
-            showError(
-                "Could not refresh the PDF after deletion."
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   UNDO
-========================================================= */
-
-function undoSelected() {
-
-    if (!selectedObject) {
-
-        showError(
-            "Select some text first."
-        );
-
-        return;
-    }
-
-
-    if (
-        selectedObject.type ===
-        "new"
-    ) {
-
-        const index =
-            edits.findIndex(
-                e =>
-                    e.id ===
-                    selectedObject.id
-            );
-
-
-        if (index !== -1) {
-
-            edits.splice(
-                index,
-                1
-            );
-
-        }
-
-    }
-    else {
-
-        selectedObject.text =
-            selectedObject.originalText;
-
-        selectedObject.fontSize =
-            selectedObject.originalFontSize;
-
-        selectedObject.changed =
-            false;
-
-    }
-
-
-    selectedObject =
-        null;
-
-
-    document.getElementById(
-        "propertyPanel"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "noSelection"
-    ).style.display =
-        "block";
-
-
-    renderPDF()
-        .catch(error => {
-
-            console.error(error);
-
-            showError(
-                "Undo failed."
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   ZOOM
-========================================================= */
-
-async function zoomIn() {
-
-    zoom += 0.1;
-
-    if (zoom > 3) {
-        zoom = 3;
-    }
-
-    await rerender();
-
-}
-
-
-async function zoomOut() {
-
-    zoom -= 0.1;
-
-    if (zoom < 0.5) {
-        zoom = 0.5;
-    }
-
-    await rerender();
-
-}
-
-
-async function resetZoom() {
-
-    zoom = 1;
-
-    await rerender();
-
-}
-
-
-function updateZoomLabel() {
-
-    document.getElementById(
-        "zoomLabel"
-    ).textContent =
-        Math.round(zoom * 100) +
-        "%";
-
-}
-
-
-async function rerender() {
-
-    try {
-
-        setLoading(true);
-
-        await renderPDF();
-
-        updateZoomLabel();
-
-    }
-    catch(error) {
-
-        console.error(error);
-
-        showError(
-            "Could not render the PDF."
-        );
-
-    }
-    finally {
-
-        setLoading(false);
-
-    }
-
-}
-
-
-/* =========================================================
-   THUMBNAILS
-========================================================= */
-
-async function renderThumbnail(
-    pageNumber
-) {
-
-    const page =
-        await pdfDocument.getPage(
-            pageNumber
-        );
-
-
-    const viewport =
-        page.getViewport({
-            scale: 0.2
-        });
-
-
-    const canvas =
-        document.createElement("canvas");
-
-
-    canvas.width =
-        viewport.width;
-
-    canvas.height =
-        viewport.height;
-
-
-    await page.render({
-
-        canvasContext:
-            canvas.getContext("2d"),
-
-        viewport:
-            viewport
-
-    }).promise;
-
-
-    const wrapper =
-        document.createElement("div");
-
-
-    wrapper.className =
-        "thumbnail";
-
-
-    wrapper.appendChild(
-        canvas
-    );
-
-
-    wrapper.addEventListener(
-        "click",
-        function() {
-
-            const target =
-                document.querySelector(
-                    `.pdf-page[data-page="${pageNumber}"]`
-                );
-
-
-            if (target) {
-
-                target.scrollIntoView({
-                    behavior: "smooth"
-                });
-
-            }
-
-        }
-    );
-
-
-    document
-        .getElementById("thumbnails")
-        .appendChild(wrapper);
-
-}
-
-
-/* =========================================================
-   SAVE PDF
-========================================================= */
-
-async function savePDF() {
-
-    if (!originalPDFBytes) {
-
-        showError(
-            "Please upload a PDF first."
-        );
-
-        return;
-    }
-
-
-    try {
-
-        setLoading(true);
-
-
-        const {
-            PDFDocument,
-            rgb,
-            StandardFonts
-        } = PDFLib;
-
-
-        /*
-            Load original PDF
-        */
-
-        const pdfDoc =
-            await PDFDocument.load(
-                originalPDFBytes
-            );
-
-
-        const font =
-            await pdfDoc.embedFont(
-                StandardFonts.Helvetica
-            );
-
-
-        /*
-            Process edits
-        */
-
-        for (const edit of edits) {
-
-            const page =
-                pdfDoc.getPage(
-                    edit.page - 1
-                );
-
-
-            /*
-                NEW TEXT
-            */
-
-            if (
-                edit.type ===
-                "new"
-            ) {
-
-                if (
-                    !edit.text ||
-                    !edit.text.trim()
-                ) {
-
-                    continue;
-
-                }
-
-
-                const color =
-                    hexToRgb(
-                        edit.color ||
-                        "#000000"
-                    );
-
-
-                /*
-                    Convert top-left PDF.js
-                    coordinate to PDF
-                    bottom-left coordinate.
-                */
-
-                const pdfY =
-                    page.getHeight() -
-                    edit.y -
-                    edit.fontSize;
-
-
-                page.drawText(
-                    edit.text,
-                    {
-
-                        x:
-                            edit.x,
-
-                        y:
-                            pdfY,
-
-                        size:
-                            edit.fontSize,
-
-                        font:
-                            font,
-
-                        color:
-                            rgb(
-                                color.r / 255,
-                                color.g / 255,
-                                color.b / 255
-                            )
+                        className =
+                            "red-text";
 
                     }
-                );
 
-            }
+                    else if (
+                        item.score >=
+                        30
+                    ) {
 
+                        className =
+                            "yellow-text";
 
-            /*
-                EXISTING TEXT
-            */
-
-            if (
-                edit.type ===
-                "existing" &&
-                edit.changed
-            ) {
-
-                /*
-                    Cover original text with
-                    a white rectangle.
-
-                    This works for normal PDFs
-                    with white backgrounds.
-                */
-
-                const pdfY =
-                    page.getHeight() -
-                    edit.y -
-                    edit.height;
+                    }
 
 
-                page.drawRectangle({
+                    return `
 
-                    x:
-                        edit.x - 1,
+                    <div
+                        class="history-item"
+                    >
 
-                    y:
-                        pdfY - 1,
+                        <span>
+                            ${item.time}
+                        </span>
 
-                    width:
-                        edit.width + 4,
+                        <b
+                            class="${className}"
+                        >
+                            ${item.score}%
+                            ·
+                            ${item.points}
+                            points
+                        </b>
 
-                    height:
-                        edit.height + 4,
+                    </div>
 
-                    color:
-                        rgb(
-                            1,
-                            1,
-                            1
-                        )
-
-                });
-
-
-                /*
-                    If user deleted the text,
-                    don't draw replacement.
-                */
-
-                if (
-                    edit.text &&
-                    edit.text.trim()
-                ) {
-
-                    const color =
-                        hexToRgb(
-                            edit.color ||
-                            "#000000"
-                        );
-
-
-                    page.drawText(
-                        edit.text,
-                        {
-
-                            x:
-                                edit.x,
-
-                            y:
-                                page.getHeight() -
-                                edit.y -
-                                edit.fontSize,
-
-                            size:
-                                edit.fontSize,
-
-                            font:
-                                font,
-
-                            color:
-                                rgb(
-                                    color.r / 255,
-                                    color.g / 255,
-                                    color.b / 255
-                                )
-
-                        }
-                    );
+                    `;
 
                 }
-
-            }
-
-        }
-
-
-        /*
-            Save
-        */
-
-        const bytes =
-            await pdfDoc.save();
-
-
-        const blob =
-            new Blob(
-                [bytes],
-                {
-                    type:
-                        "application/pdf"
-                }
-            );
-
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-
-        const a =
-            document.createElement("a");
-
-
-        a.href =
-            url;
-
-
-        const baseName =
-            originalFileName
-                .replace(
-                    /\.pdf$/i,
-                    ""
-                );
-
-
-        a.download =
-            baseName +
-            "-edited.pdf";
-
-
-        document.body.appendChild(a);
-
-        a.click();
-
-        a.remove();
-
-
-        URL.revokeObjectURL(
-            url
-        );
-
-
-        showSuccess(
-            "PDF saved successfully."
-        );
-
-    }
-    catch(error) {
-
-        console.error(error);
-
-        showError(
-            "Could not save the PDF: " +
-            (error.message ||
-             "Unknown error.")
-        );
-
-    }
-    finally {
-
-        setLoading(false);
-
-    }
-
-}
-
-
-/* =========================================================
-   HEX → RGB
-========================================================= */
-
-function hexToRgb(hex) {
-
-    hex =
-        hex.replace(
-            "#",
-            ""
-        );
-
-
-    return {
-
-        r:
-            parseInt(
-                hex.substring(0, 2),
-                16
-            ),
-
-        g:
-            parseInt(
-                hex.substring(2, 4),
-                16
-            ),
-
-        b:
-            parseInt(
-                hex.substring(4, 6),
-                16
             )
-
-    };
+            .join("");
 
 }
 
 
 /* =========================================================
-   NEW PDF
+   FLIP CAMERA
 ========================================================= */
 
-function newPDF() {
+flipButton.addEventListener(
+    "click",
+    async function() {
 
-    if (
-        edits.length > 0
-    ) {
-
-        const confirmReset =
-            confirm(
-                "Start a new PDF? Unsaved changes will be lost."
-            );
+        cameraFacing =
+            cameraFacing ===
+            "environment"
+                ? "user"
+                : "environment";
 
 
-        if (!confirmReset) {
-            return;
-        }
+        await startCamera();
 
     }
-
-
-    pdfDocument = null;
-
-    originalPDFBytes = null;
-
-    edits = [];
-
-    selectedObject = null;
-
-    addTextMode = false;
-
-    zoom = 1;
-
-    document.getElementById(
-        "pdfContainer"
-    ).innerHTML = "";
-
-    document.getElementById(
-        "thumbnails"
-    ).innerHTML = "";
-
-    document.getElementById(
-        "editor"
-    ).style.display = "none";
-
-    document.getElementById(
-        "uploadScreen"
-    ).style.display = "flex";
-
-    document.getElementById(
-        "fileInput"
-    ).value = "";
-
-    document.body.style.cursor =
-        "default";
-
-}
+);
 
 
 /* =========================================================
-   ERROR HANDLING
+   BUTTON EVENTS
+========================================================= */
+
+startButton.addEventListener(
+    "click",
+    startCamera
+);
+
+
+stopButton.addEventListener(
+    "click",
+    function() {
+
+        stopCamera(
+            true
+        );
+
+    }
+);
+
+
+snapshotButton.addEventListener(
+    "click",
+    function() {
+
+        analyzeFrame(
+            true
+        );
+
+    }
+);
+
+
+flashButton.addEventListener(
+    "click",
+    toggleTorch
+);
+
+
+/* =========================================================
+   CLEANUP
 ========================================================= */
 
 window.addEventListener(
-    "error",
-    function(event) {
+    "pagehide",
+    function() {
 
-        console.error(
-            "JavaScript error:",
-            event.error
-        );
-
-        showError(
-            "A JavaScript error occurred. " +
-            "Open the browser console for details."
+        stopCamera(
+            false
         );
 
     }
@@ -2521,20 +2684,31 @@ window.addEventListener(
 
 
 window.addEventListener(
-    "unhandledrejection",
-    function(event) {
+    "beforeunload",
+    function() {
 
-        console.error(
-            "Unhandled promise rejection:",
-            event.reason
-        );
-
-        showError(
-            "An unexpected PDF processing error occurred."
+        stopCamera(
+            false
         );
 
     }
 );
+
+
+/* =========================================================
+   INITIAL CHECK
+========================================================= */
+
+if (
+    !cameraSupported()
+) {
+
+    setStatus(
+        "Camera unsupported",
+        "Please open this page in Safari on an iPhone."
+    );
+
+}
 
 </script>
 
