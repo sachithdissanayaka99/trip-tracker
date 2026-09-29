@@ -2,78 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,
-             initial-scale=1,
-             viewport-fit=cover,
-             user-scalable=no"
->
-
-<meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
->
-
-<meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
->
-
-<meta
-    name="theme-color"
-    content="#07111f"
->
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 
 <title>NightWatch - Hidden Camera Scanner</title>
 
 <style>
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
-:root {
-    --bg: #07111f;
-    --panel: #0d1b2d;
-    --panel2: #10243a;
-    --border: #203752;
-
-    --text: #f4f7fb;
-    --muted: #9fb0c4;
-
-    --blue: #38bdf8;
-    --green: #22c55e;
-    --yellow: #facc15;
-    --red: #fb7185;
-}
-
 * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
-    min-height: 100%;
-
-    background: var(--bg);
-    color: var(--text);
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "SF Pro Text",
-        "Segoe UI",
-        Arial,
-        sans-serif;
+    background: #071018;
+    color: #eef5f8;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 body {
-    padding-bottom: env(safe-area-inset-bottom);
+    min-height: 100vh;
 }
 
 button {
@@ -81,1397 +30,904 @@ button {
 }
 
 .app {
-    min-height: 100vh;
-
-    background:
-        radial-gradient(
-            circle at top,
-            #102b46 0,
-            #07111f 45%,
-            #050c15 100%
-        );
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-header {
-    position: sticky;
-    top: 0;
-
-    z-index: 100;
-
-    padding:
-        max(14px, env(safe-area-inset-top))
-        16px
-        14px
-        16px;
-
-    background:
-        rgba(7, 17, 31, 0.94);
-
-    backdrop-filter: blur(18px);
-
-    border-bottom:
-        1px solid var(--border);
-}
-
-.header-inner {
-    max-width: 1100px;
-
+    max-width: 900px;
     margin: auto;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 12px;
+    padding: 18px;
 }
 
-.brand {
+.header {
     display: flex;
-
+    justify-content: space-between;
     align-items: center;
-
-    gap: 11px;
+    margin-bottom: 18px;
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
     width: 42px;
     height: 42px;
-
-    border-radius: 13px;
-
+    border-radius: 12px;
+    background: #102d3a;
     display: grid;
     place-items: center;
-
-    background: #102a43;
-
-    border:
-        1px solid #315879;
-
     font-size: 22px;
 }
 
-.brand-title {
-    font-size: 19px;
-
-    font-weight: 700;
+.logo h1 {
+    margin: 0;
+    font-size: 21px;
 }
 
-.brand-subtitle {
-    margin-top: 2px;
-
-    color: var(--muted);
-
+.logo p {
+    margin: 3px 0 0;
+    color: #8ea6b2;
     font-size: 12px;
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-main {
-    width: 100%;
-
-    max-width: 1100px;
-
-    margin: auto;
-
-    padding: 16px;
-}
-
-
-/* =========================================================
-   NOTICE
-========================================================= */
-
-.notice {
-    padding: 14px 16px;
-
-    margin-bottom: 16px;
-
-    border:
-        1px solid #31516f;
-
-    border-radius: 15px;
-
-    background:
-        rgba(12, 32, 52, 0.9);
-
-    color: #cbd8e5;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-}
-
-
-/* =========================================================
-   GRID
-========================================================= */
-
-.layout {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 1.7fr)
-        minmax(280px, 0.8fr);
-
-    gap: 16px;
-}
-
-
-/* =========================================================
-   CARD
-========================================================= */
-
-.card {
-    background:
-        rgba(13, 27, 45, 0.94);
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 18px;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-.camera-wrapper {
-    position: relative;
-
-    background: #000;
-
-    aspect-ratio: 4 / 3;
-
-    min-height: 260px;
-
-    overflow: hidden;
-
-    display: grid;
-
-    place-items: center;
-}
-
-#video {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    display: none;
-}
-
-#analysisCanvas {
-    display: none;
-}
-
-.camera-placeholder {
-    text-align: center;
-
-    padding: 30px;
-
-    color: #8798aa;
-}
-
-.camera-icon {
-    font-size: 50px;
-
-    margin-bottom: 10px;
-}
-
-.camera-placeholder strong {
-    display: block;
-
-    color: white;
-
-    margin-bottom: 6px;
-}
-
-
-/* =========================================================
-   SCANNER OVERLAY
-========================================================= */
-
-.scanner-overlay {
-    position: absolute;
-
-    inset: 0;
-
-    pointer-events: none;
-
-    display: none;
-}
-
-.corner {
-    position: absolute;
-
-    width: 35px;
-    height: 35px;
-
-    border-color:
-        rgba(56, 189, 248, 0.9);
-
-    border-style: solid;
-}
-
-.corner-top-left {
-    top: 18px;
-    left: 18px;
-
-    border-width:
-        3px
-        0
-        0
-        3px;
-}
-
-.corner-top-right {
-    top: 18px;
-    right: 18px;
-
-    border-width:
-        3px
-        3px
-        0
-        0;
-}
-
-.corner-bottom-left {
-    bottom: 18px;
-    left: 18px;
-
-    border-width:
-        0
-        0
-        3px
-        3px;
-}
-
-.corner-bottom-right {
-    bottom: 18px;
-    right: 18px;
-
-    border-width:
-        0
-        3px
-        3px
-        0;
-}
-
-.scan-line {
-    position: absolute;
-
-    left: 8%;
-    right: 8%;
-
-    top: 15%;
-
-    height: 2px;
-
-    background:
-        rgba(56, 189, 248, 0.85);
-
-    box-shadow:
-        0 0 14px #38bdf8;
-
-    animation:
-        scanAnimation 2.5s linear infinite;
-}
-
-@keyframes scanAnimation {
-
-    0% {
-        top: 15%;
-    }
-
-    50% {
-        top: 85%;
-    }
-
-    100% {
-        top: 15%;
-    }
-
-}
-
-
-/* =========================================================
-   DETECTION MARKERS
-========================================================= */
-
-.detection-marker {
-    position: absolute;
-
-    width: 28px;
-    height: 28px;
-
-    transform:
-        translate(-50%, -50%);
-
-    border:
-        2px solid #ff334f;
-
-    border-radius: 50%;
-
-    box-shadow:
-        0 0 12px #ff334f;
-
-    pointer-events: none;
-
-    animation:
-        markerPulse 0.9s infinite;
-}
-
-@keyframes markerPulse {
-
-    0% {
-        transform:
-            translate(-50%, -50%)
-            scale(0.8);
-
-        opacity: 0.6;
-    }
-
-    50% {
-        transform:
-            translate(-50%, -50%)
-            scale(1.15);
-
-        opacity: 1;
-    }
-
-    100% {
-        transform:
-            translate(-50%, -50%)
-            scale(0.8);
-
-        opacity: 0.6;
-    }
-
-}
-
-
-/* =========================================================
-   CONTROLS
-========================================================= */
-
-.controls {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 9px;
-
-    padding: 14px;
-
-    border-top:
-        1px solid var(--border);
-}
-
-.btn {
-    border: 1px solid #2b4661;
-
-    border-radius: 11px;
-
-    padding: 11px 14px;
-
-    background: #172d45;
-
-    color: white;
-
-    cursor: pointer;
-
-    transition:
-        transform 0.1s,
-        opacity 0.2s;
-}
-
-.btn:active {
-    transform: scale(0.97);
-}
-
-.btn:disabled {
-    opacity: 0.4;
-
-    cursor: not-allowed;
-}
-
-.btn-primary {
-    background: #087bb3;
-
-    border-color: #159bdc;
-}
-
-.btn-danger {
-    background: #9f1239;
-
-    border-color: #fb7185;
-}
-
-.btn-success {
-    background: #15803d;
-
-    border-color: #22c55e;
-}
-
-
-/* =========================================================
-   SIDE PANEL
-========================================================= */
-
-.side-panel {
-    padding: 16px;
-}
-
-.status {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 12px;
-
-    margin-bottom: 16px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 13px;
-
-    background: #0a1726;
 }
 
 .status-dot {
     width: 10px;
     height: 10px;
-
     border-radius: 50%;
-
-    background: #64748b;
-
-    flex-shrink: 0;
+    background: #687985;
 }
 
-.status-dot.green {
-    background: var(--green);
-
-    box-shadow:
-        0 0 12px var(--green);
+.status-dot.active {
+    background: #35e38b;
+    box-shadow: 0 0 12px #35e38b;
 }
 
-.status-dot.yellow {
-    background: var(--yellow);
-
-    box-shadow:
-        0 0 12px var(--yellow);
+.card {
+    background: #0c1a23;
+    border: 1px solid #1b303b;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 14px;
 }
 
-.status-dot.red {
-    background: var(--red);
-
-    box-shadow:
-        0 0 12px var(--red);
+.camera-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #020609;
+    border-radius: 15px;
+    overflow: hidden;
 }
 
-.status-title {
-    font-weight: 700;
-
-    font-size: 14px;
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.status-description {
-    color: var(--muted);
-
-    font-size: 12px;
-
-    margin-top: 3px;
+canvas {
+    display: none;
 }
 
-
-/* =========================================================
-   METRICS
-========================================================= */
-
-.metric {
-    margin: 18px 0;
+.overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
 }
 
-.metric-header {
+.scan-lines {
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,.025) 0px,
+            rgba(255,255,255,.025) 1px,
+            transparent 1px,
+            transparent 5px
+        );
+}
+
+.crosshair {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 90px;
+    height: 90px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 50%;
+}
+
+.crosshair::before,
+.crosshair::after {
+    content: "";
+    position: absolute;
+    background: rgba(255,255,255,.45);
+}
+
+.crosshair::before {
+    width: 1px;
+    height: 120%;
+    left: 50%;
+    top: -10%;
+}
+
+.crosshair::after {
+    height: 1px;
+    width: 120%;
+    top: 50%;
+    left: -10%;
+}
+
+.camera-top {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
     display: flex;
-
     justify-content: space-between;
+    z-index: 5;
+}
 
-    margin-bottom: 7px;
+.badge {
+    padding: 7px 10px;
+    border-radius: 20px;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(8px);
+    font-size: 12px;
+}
 
+.controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+    margin-top: 12px;
+}
+
+button {
+    border: 0;
+    border-radius: 12px;
+    padding: 13px 12px;
+    background: #17313e;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+button.primary {
+    background: #147d68;
+}
+
+button.warning {
+    background: #7a5c18;
+}
+
+button.danger {
+    background: #722e38;
+}
+
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.mode-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.mode {
+    min-height: 86px;
+    background: #101f29;
+    border: 1px solid #213944;
+    border-radius: 14px;
+    padding: 12px;
+    text-align: left;
+}
+
+.mode.active {
+    border-color: #36cfa5;
+    background: #102e2b;
+}
+
+.mode-icon {
+    font-size: 23px;
+}
+
+.mode-title {
+    margin-top: 7px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.mode-description {
+    margin-top: 3px;
+    font-size: 10px;
+    color: #829aa6;
+}
+
+.score {
+    text-align: center;
+    padding: 14px 0;
+}
+
+.score-number {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.score-label {
+    margin-top: 7px;
+    color: #91a9b5;
     font-size: 13px;
 }
 
-.metric-value {
-    font-weight: 700;
-}
-
 .progress {
-    width: 100%;
-
-    height: 9px;
-
+    height: 8px;
+    border-radius: 20px;
+    background: #172a34;
     overflow: hidden;
-
-    border-radius: 999px;
-
-    background: #07111f;
-
-    border:
-        1px solid #1b3048;
+    margin-top: 12px;
 }
 
-.progress-fill {
-    width: 0;
-
+.progress-bar {
     height: 100%;
-
-    background: var(--blue);
-
-    transition:
-        width 0.2s ease;
+    width: 0%;
+    transition: width .3s;
+    background: #35d69e;
 }
-
-
-/* =========================================================
-   RESULT
-========================================================= */
 
 .result {
-    padding: 14px;
-
-    border:
-        1px solid var(--border);
-
     border-radius: 13px;
+    padding: 13px;
+    margin-top: 12px;
+    background: #11232b;
+    border: 1px solid #213944;
+}
 
-    background: #0b1a2b;
+.result.good {
+    border-color: #226b56;
+}
+
+.result.warning {
+    border-color: #806a29;
+}
+
+.result.danger {
+    border-color: #813a45;
 }
 
 .result-title {
     font-weight: 700;
-
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
-.result-description {
-    color: var(--muted);
-
-    font-size: 12px;
-
+.result-text {
+    color: #a7bac2;
+    font-size: 13px;
     line-height: 1.5;
 }
 
-.green-text {
-    color: #4ade80;
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
 }
 
-.yellow-text {
-    color: #fde047;
+.stat {
+    background: #101f29;
+    border-radius: 12px;
+    padding: 12px;
 }
 
-.red-text {
-    color: #fb7185;
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-.history {
-    margin-top: 18px;
-}
-
-.history-title {
-    font-size: 14px;
-
+.stat-value {
+    font-size: 20px;
     font-weight: 700;
+}
 
+.stat-label {
+    color: #8198a3;
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+.magnetic-value {
+    text-align: center;
+    font-size: 38px;
+    font-weight: 800;
+    margin: 15px 0 5px;
+}
+
+.unit {
+    text-align: center;
+    color: #8ba1aa;
+    font-size: 13px;
+}
+
+.network-list {
+    margin-top: 12px;
+}
+
+.device {
+    padding: 11px;
+    background: #101f29;
+    border-radius: 10px;
     margin-bottom: 8px;
+    border: 1px solid #1d343e;
+}
+
+.device-name {
+    font-weight: 600;
+}
+
+.device-detail {
+    font-size: 11px;
+    color: #8298a2;
+    margin-top: 3px;
+}
+
+.notice {
+    font-size: 12px;
+    color: #8fa4ad;
+    line-height: 1.5;
+}
+
+.warning-box {
+    background: #302817;
+    border: 1px solid #665225;
+    color: #d9c58a;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.hidden {
+    display: none !important;
 }
 
 .history-item {
     display: flex;
-
     justify-content: space-between;
-
-    padding: 9px 0;
-
-    border-bottom:
-        1px solid #172b42;
-
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #1b3039;
     font-size: 12px;
 }
 
-
-/* =========================================================
-   HELP
-========================================================= */
-
-.help {
-    margin-top: 16px;
-
-    padding: 14px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 14px;
-
-    background: #0b1a2b;
+.history-item:last-child {
+    border-bottom: 0;
 }
 
-.help h3 {
-    margin:
-        0 0 8px;
-
-    font-size: 14px;
+.history-score {
+    font-weight: 700;
 }
 
-.help li {
-    color: #aebed0;
-
-    font-size: 12px;
-
-    line-height: 1.55;
-
-    margin:
-        6px 0;
+footer {
+    text-align: center;
+    color: #627984;
+    font-size: 11px;
+    padding: 15px 0 30px;
 }
 
-
-/* =========================================================
-   ERROR
-========================================================= */
-
-#errorBox {
-    position: fixed;
-
-    left: 15px;
-    right: 15px;
-
-    bottom:
-        calc(
-            20px +
-            env(safe-area-inset-bottom)
-        );
-
-    z-index: 1000;
-
-    display: none;
-
-    padding: 14px 16px;
-
-    border:
-        1px solid #fb7185;
-
-    border-radius: 13px;
-
-    background: #4c1020;
-
-    color: white;
-
-    font-size: 13px;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.4);
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 780px) {
-
-    main {
+@media (max-width: 600px) {
+    .app {
         padding: 12px;
     }
 
-    .layout {
+    .mode-grid {
         grid-template-columns: 1fr;
     }
 
-    .camera-wrapper {
-        aspect-ratio: 3 / 4;
+    .stat-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
-
-    .controls .btn {
-        flex: 1 1 auto;
-    }
-
 }
-
 </style>
 </head>
-
 
 <body>
 
 <div class="app">
 
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header>
-
-    <div class="header-inner">
-
-        <div class="brand">
-
-            <div class="logo">
-                ◉
-            </div>
-
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🛡️</div>
             <div>
+                <h1>NightWatch</h1>
+                <p>Multi-sensor privacy scanner</p>
+            </div>
+        </div>
 
-                <div class="brand-title">
-                    NightWatch
+        <div id="statusDot" class="status-dot"></div>
+    </header>
+
+
+    <!-- CAMERA -->
+    <section class="card">
+
+        <div class="camera-container">
+
+            <video id="video"
+                   autoplay
+                   muted
+                   playsinline></video>
+
+            <canvas id="canvas"></canvas>
+
+            <div class="overlay">
+                <div class="scan-lines"></div>
+                <div class="crosshair"></div>
+
+                <div class="camera-top">
+                    <span class="badge" id="cameraStatus">
+                        Camera Off
+                    </span>
+
+                    <span class="badge" id="candidateBadge">
+                        0 points
+                    </span>
                 </div>
-
-                <div class="brand-subtitle">
-                    Hidden Camera Scanner
-                </div>
-
             </div>
 
         </div>
 
+        <div class="controls">
 
-        <button
-            id="flashButton"
-            class="btn"
-            disabled
-        >
-            🔦 Flash
+            <button class="primary" id="startCameraBtn">
+                📷 Start Camera
+            </button>
+
+            <button id="stopCameraBtn" disabled>
+                ⏹ Stop
+            </button>
+
+            <button id="switchCameraBtn" disabled>
+                🔄 Switch Camera
+            </button>
+
+            <button id="torchBtn" disabled>
+                🔦 Flashlight
+            </button>
+
+            <button id="analyzeBtn" disabled>
+                🔍 Analyze Frame
+            </button>
+
+            <button id="continuousBtn" disabled>
+                ▶ Continuous Scan
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- SCANNING MODES -->
+    <section class="card">
+
+        <h3>Scanning Modes</h3>
+
+        <div class="mode-grid">
+
+            <button class="mode active" id="opticalMode">
+                <div class="mode-icon">📷</div>
+                <div class="mode-title">Optical</div>
+                <div class="mode-description">
+                    Bright / IR-like points
+                </div>
+            </button>
+
+            <button class="mode" id="networkMode">
+                <div class="mode-icon">📡</div>
+                <div class="mode-title">Network</div>
+                <div class="mode-description">
+                    Browser-visible network clues
+                </div>
+            </button>
+
+            <button class="mode" id="magneticMode">
+                <div class="mode-icon">🧲</div>
+                <div class="mode-title">Magnetic</div>
+                <div class="mode-description">
+                    Magnetic-field anomalies
+                </div>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- OPTICAL -->
+    <section class="card" id="opticalPanel">
+
+        <h3>📷 Optical Scanner</h3>
+
+        <div class="score">
+
+            <div class="score-number" id="opticalScore">
+                0
+            </div>
+
+            <div class="score-label">
+                Optical suspicion score
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar"
+                     id="opticalProgress"></div>
+            </div>
+
+        </div>
+
+        <div class="stat-grid">
+
+            <div class="stat">
+                <div class="stat-value"
+                     id="candidateCount">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Bright points
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value"
+                     id="peakBrightness">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Peak brightness
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value"
+                     id="stableCount">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Stable points
+                </div>
+            </div>
+
+        </div>
+
+        <div class="result good" id="opticalResult">
+
+            <div class="result-title">
+                No strong optical signal
+            </div>
+
+            <div class="result-text">
+                Start the camera and scan slowly around the room.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- NETWORK -->
+    <section class="card hidden" id="networkPanel">
+
+        <h3>📡 Network Scanner</h3>
+
+        <div class="score">
+
+            <div class="score-number"
+                 id="networkScore">
+                0
+            </div>
+
+            <div class="score-label">
+                Network suspicion score
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar"
+                     id="networkProgress"></div>
+            </div>
+
+        </div>
+
+        <div class="stat-grid">
+
+            <div class="stat">
+                <div class="stat-value"
+                     id="networkDeviceCount">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Visible devices
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value"
+                     id="networkSuspicious">
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Suspicious
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value"
+                     id="connectionType">
+                    ?
+                </div>
+
+                <div class="stat-label">
+                    Connection
+                </div>
+            </div>
+
+        </div>
+
+        <div class="network-list"
+             id="networkList"></div>
+
+        <div class="warning-box">
+            ⚠️ iOS Safari does not provide normal web pages with
+            unrestricted LAN device discovery. This section can only
+            use information exposed by the browser. A native app or
+            dedicated network scanner is required for deeper discovery.
+        </div>
+
+    </section>
+
+
+    <!-- MAGNETIC -->
+    <section class="card hidden" id="magneticPanel">
+
+        <h3>🧲 Magnetic Scanner</h3>
+
+        <div class="magnetic-value"
+             id="magneticValue">
+            --
+        </div>
+
+        <div class="unit">
+            µT — microtesla
+        </div>
+
+        <div class="score">
+
+            <div class="score-number"
+                 id="magneticScore">
+                0
+            </div>
+
+            <div class="score-label">
+                Magnetic anomaly score
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar"
+                     id="magneticProgress"></div>
+            </div>
+
+        </div>
+
+        <div class="result good"
+             id="magneticResult">
+
+            <div class="result-title">
+                Waiting for sensor
+            </div>
+
+            <div class="result-text">
+                Move your phone slowly around objects and furniture.
+            </div>
+
+        </div>
+
+        <button class="primary"
+                id="magneticStartBtn">
+            🧲 Start Magnetic Scan
         </button>
 
-    </div>
-
-</header>
+    </section>
 
 
-<!-- =====================================================
-     MAIN
-===================================================== -->
+    <!-- COMBINED -->
+    <section class="card">
 
-<main>
+        <h3>🛡️ Combined Investigation</h3>
 
+        <div class="score">
 
-    <!-- NOTICE -->
-
-    <div class="notice">
-
-        <b>How it works:</b>
-
-        This scanner analyzes the iPhone camera image
-        for unusually bright, small light sources.
-
-        These can sometimes be associated with
-        IR illuminators or camera LEDs.
-
-        <br><br>
-
-        <b>Important:</b>
-        this is a visual detection aid, not a guaranteed
-        hidden-camera detector.
-
-    </div>
-
-
-    <!-- MAIN GRID -->
-
-    <div class="layout">
-
-
-        <!-- =================================================
-             CAMERA CARD
-        ================================================== -->
-
-        <section class="card">
-
-
-            <div
-                id="cameraWrapper"
-                class="camera-wrapper"
-            >
-
-                <video
-                    id="video"
-                    autoplay
-                    playsinline
-                    muted
-                ></video>
-
-
-                <canvas
-                    id="analysisCanvas"
-                ></canvas>
-
-
-                <!-- CAMERA PLACEHOLDER -->
-
-                <div
-                    id="cameraPlaceholder"
-                    class="camera-placeholder"
-                >
-
-                    <div class="camera-icon">
-                        📷
-                    </div>
-
-                    <strong>
-                        Camera is off
-                    </strong>
-
-                    <div>
-                        Tap "Start Scanner"
-                        to begin.
-                    </div>
-
-                </div>
-
-
-                <!-- SCANNER OVERLAY -->
-
-                <div
-                    id="scannerOverlay"
-                    class="scanner-overlay"
-                >
-
-                    <div
-                        class="corner
-                               corner-top-left"
-                    ></div>
-
-                    <div
-                        class="corner
-                               corner-top-right"
-                    ></div>
-
-                    <div
-                        class="corner
-                               corner-bottom-left"
-                    ></div>
-
-                    <div
-                        class="corner
-                               corner-bottom-right"
-                    ></div>
-
-
-                    <div
-                        id="scanLine"
-                        class="scan-line"
-                    ></div>
-
-                </div>
-
+            <div class="score-number"
+                 id="overallScore">
+                0
             </div>
 
-
-            <!-- CONTROLS -->
-
-            <div class="controls">
-
-
-                <button
-                    id="startButton"
-                    class="btn btn-primary"
-                >
-                    ▶ Start Scanner
-                </button>
-
-
-                <button
-                    id="stopButton"
-                    class="btn btn-danger"
-                    disabled
-                >
-                    ■ Stop
-                </button>
-
-
-                <button
-                    id="flipButton"
-                    class="btn"
-                    disabled
-                >
-                    ↔ Flip Camera
-                </button>
-
-
-                <button
-                    id="snapshotButton"
-                    class="btn"
-                    disabled
-                >
-                    📸 Analyze Frame
-                </button>
-
+            <div class="score-label">
+                Combined investigation score
             </div>
 
-        </section>
-
-
-        <!-- =================================================
-             INFORMATION PANEL
-        ================================================== -->
-
-        <aside class="card side-panel">
-
-
-            <!-- STATUS -->
-
-            <div class="status">
-
-                <span
-                    id="statusDot"
-                    class="status-dot"
-                ></span>
-
-                <div>
-
-                    <div
-                        id="statusTitle"
-                        class="status-title"
-                    >
-                        Ready
-                    </div>
-
-                    <div
-                        id="statusDescription"
-                        class="status-description"
-                    >
-                        Camera permission is required.
-                    </div>
-
-                </div>
-
+            <div class="progress">
+                <div class="progress-bar"
+                     id="overallProgress"></div>
             </div>
 
+        </div>
 
-            <!-- SCORE -->
+        <div class="result good"
+             id="overallResult">
 
-            <div class="metric">
-
-                <div class="metric-header">
-
-                    <span>
-                        Bright-point score
-                    </span>
-
-                    <span
-                        id="scoreValue"
-                        class="metric-value"
-                    >
-                        0%
-                    </span>
-
-                </div>
-
-
-                <div class="progress">
-
-                    <div
-                        id="scoreProgress"
-                        class="progress-fill"
-                    ></div>
-
-                </div>
-
+            <div class="result-title">
+                No strong signal detected
             </div>
 
-
-            <!-- POINTS -->
-
-            <div class="metric">
-
-                <div class="metric-header">
-
-                    <span>
-                        Candidate points
-                    </span>
-
-                    <span
-                        id="candidateValue"
-                        class="metric-value"
-                    >
-                        0
-                    </span>
-
-                </div>
-
+            <div class="result-text">
+                Use multiple scanning methods and physically inspect
+                suspicious objects before drawing conclusions.
             </div>
 
+        </div>
 
-            <!-- RESULT -->
+    </section>
 
-            <div
-                id="resultBox"
-                class="result"
-            >
 
-                <div
-                    id="resultTitle"
-                    class="result-title"
-                >
-                    Waiting for scan
-                </div>
+    <!-- HISTORY -->
+    <section class="card">
 
-                <div
-                    id="resultDescription"
-                    class="result-description"
-                >
-                    Start the camera and move slowly
-                    around the room.
-                </div>
+        <h3>Scan History</h3>
 
+        <div id="history">
+            <div class="notice">
+                No scans yet.
             </div>
+        </div>
+
+        <button id="clearHistoryBtn">
+            Clear History
+        </button>
+
+    </section>
 
 
-            <!-- HISTORY -->
+    <section class="card">
 
-            <div class="history">
+        <div class="warning-box">
 
-                <div class="history-title">
-                    Recent scans
-                </div>
+            <strong>Important:</strong><br><br>
 
-                <div id="historyList">
+            This application detects signals that can sometimes be
+            associated with hidden cameras. It does <strong>not</strong>
+            prove that a camera exists.
 
-                    <div class="result-description">
-                        No scans yet.
-                    </div>
+            <br><br>
 
-                </div>
+            Optical detection can identify bright or infrared-like
+            points. Magnetic readings can identify unusual magnetic
+            fields. Network information can reveal some devices when
+            the browser exposes them.
 
-            </div>
+            <br><br>
 
-        </aside>
+            A camera that is offline, wired, non-IR, hidden behind
+            suitable material, or otherwise invisible to these sensors
+            may not be detected.
 
-    </div>
+        </div>
 
-
-    <!-- =================================================
-         HELP
-    ================================================== -->
-
-    <div class="help">
-
-        <h3>
-            📱 Recommended iPhone scanning method
-        </h3>
-
-        <ul>
-
-            <li>
-                Open the website in
-                <b>Safari</b>.
-            </li>
-
-            <li>
-                Allow camera permission.
-            </li>
-
-            <li>
-                Start with the
-                <b>rear camera</b>.
-            </li>
-
-            <li>
-                Slowly scan walls, ceilings,
-                smoke detectors, clocks, chargers,
-                mirrors, vents and other objects.
-            </li>
-
-            <li>
-                Try scanning with the room
-                relatively dark.
-            </li>
-
-            <li>
-                If you see a persistent tiny
-                bright point, physically inspect
-                that location.
-            </li>
-
-            <li>
-                Use the <b>Flip Camera</b> button
-                to compare the front and rear cameras.
-            </li>
-
-            <li>
-                The score is only a heuristic.
-                Normal LEDs, reflections and
-                lights can create false positives.
-            </li>
-
-        </ul>
-
-    </div>
-
-</main>
+    </section>
 
 
-<!-- ERROR -->
-
-<div id="errorBox"></div>
+    <footer>
+        NightWatch • Privacy scanner • Browser-based
+    </footer>
 
 </div>
 
 
 <script>
 
+"use strict";
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+const state = {
+
+    stream: null,
+
+    facingMode: "environment",
+
+    torch: false,
+
+    continuous: false,
+
+    scanTimer: null,
+
+    opticalScore: 0,
+
+    networkScore: 0,
+
+    magneticScore: 0,
+
+    overallScore: 0,
+
+    candidates: [],
+
+    stableCandidates: [],
+
+    magneticHistory: [],
+
+    magneticRunning: false,
+
+    history: []
+
+};
+
+
 /* =========================================================
    DOM
 ========================================================= */
 
-const video =
-    document.getElementById(
-        "video"
-    );
-
-const canvas =
-    document.getElementById(
-        "analysisCanvas"
-    );
-
-const ctx =
-    canvas.getContext(
-        "2d",
-        {
-            willReadFrequently: true
-        }
-    );
-
-
-const cameraPlaceholder =
-    document.getElementById(
-        "cameraPlaceholder"
-    );
-
-const scannerOverlay =
-    document.getElementById(
-        "scannerOverlay"
-    );
-
-const startButton =
-    document.getElementById(
-        "startButton"
-    );
-
-const stopButton =
-    document.getElementById(
-        "stopButton"
-    );
-
-const flipButton =
-    document.getElementById(
-        "flipButton"
-    );
-
-const snapshotButton =
-    document.getElementById(
-        "snapshotButton"
-    );
-
-const flashButton =
-    document.getElementById(
-        "flashButton"
-    );
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", {
+    willReadFrequently: true
+});
 
 const statusDot =
-    document.getElementById(
-        "statusDot"
-    );
+    document.getElementById("statusDot");
 
-const statusTitle =
-    document.getElementById(
-        "statusTitle"
-    );
+const cameraStatus =
+    document.getElementById("cameraStatus");
 
-const statusDescription =
-    document.getElementById(
-        "statusDescription"
-    );
+const candidateBadge =
+    document.getElementById("candidateBadge");
 
-const scoreValue =
-    document.getElementById(
-        "scoreValue"
-    );
+const startCameraBtn =
+    document.getElementById("startCameraBtn");
 
-const scoreProgress =
-    document.getElementById(
-        "scoreProgress"
-    );
+const stopCameraBtn =
+    document.getElementById("stopCameraBtn");
 
-const candidateValue =
-    document.getElementById(
-        "candidateValue"
-    );
+const switchCameraBtn =
+    document.getElementById("switchCameraBtn");
 
-const resultTitle =
-    document.getElementById(
-        "resultTitle"
-    );
+const torchBtn =
+    document.getElementById("torchBtn");
 
-const resultDescription =
-    document.getElementById(
-        "resultDescription"
-    );
+const analyzeBtn =
+    document.getElementById("analyzeBtn");
 
-const historyList =
-    document.getElementById(
-        "historyList"
-    );
-
-const errorBox =
-    document.getElementById(
-        "errorBox"
-    );
+const continuousBtn =
+    document.getElementById("continuousBtn");
 
 
 /* =========================================================
-   STATE
-========================================================= */
-
-let stream = null;
-
-let videoTrack = null;
-
-let cameraFacing = "environment";
-
-let scanning = false;
-
-let animationFrame = null;
-
-let lastAnalysisTime = 0;
-
-let torchEnabled = false;
-
-let scanHistory = [];
-
-
-/* =========================================================
-   ERROR
-========================================================= */
-
-function showError(message) {
-
-    errorBox.textContent =
-        "⚠️ " + message;
-
-    errorBox.style.display =
-        "block";
-
-
-    clearTimeout(
-        showError.timer
-    );
-
-
-    showError.timer =
-        setTimeout(
-            () => {
-
-                errorBox.style.display =
-                    "none";
-
-            },
-            6000
-        );
-}
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function setStatus(
-    title,
-    description,
-    state = ""
-) {
-
-    statusTitle.textContent =
-        title;
-
-    statusDescription.textContent =
-        description;
-
-    statusDot.className =
-        "status-dot";
-
-    if (state) {
-
-        statusDot.classList.add(
-            state
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   CAMERA SUPPORT
-========================================================= */
-
-function cameraSupported() {
-
-    return (
-        navigator.mediaDevices &&
-        typeof navigator.mediaDevices.getUserMedia ===
-            "function"
-    );
-
-}
-
-
-/* =========================================================
-   START CAMERA
+   CAMERA
 ========================================================= */
 
 async function startCamera() {
 
-    if (!cameraSupported()) {
-
-        showError(
-            "Camera access is not supported by this browser. Please use Safari on your iPhone."
-        );
-
-        return;
-
-    }
-
-
-    stopCamera(
-        false
-    );
-
-
     try {
+
+        stopCamera();
 
         const constraints = {
 
@@ -1480,153 +936,57 @@ async function startCamera() {
             video: {
 
                 facingMode: {
-
-                    ideal:
-                        cameraFacing
-
+                    ideal: state.facingMode
                 },
 
                 width: {
-
-                    ideal:
-                        1280
-
+                    ideal: 1280
                 },
 
                 height: {
-
-                    ideal:
-                        720
-
+                    ideal: 720
                 }
-
             }
 
         };
 
-
-        stream =
+        state.stream =
             await navigator.mediaDevices
-                .getUserMedia(
-                    constraints
-                );
+                .getUserMedia(constraints);
 
-
-        videoTrack =
-            stream.getVideoTracks()[0];
-
-
-        video.srcObject =
-            stream;
-
+        video.srcObject = state.stream;
 
         await video.play();
 
+        statusDot.classList.add("active");
 
-        cameraPlaceholder.style.display =
-            "none";
+        cameraStatus.textContent =
+            "Camera Active";
 
+        startCameraBtn.disabled = true;
 
-        video.style.display =
-            "block";
+        stopCameraBtn.disabled = false;
 
+        switchCameraBtn.disabled = false;
 
-        scannerOverlay.style.display =
-            "block";
+        analyzeBtn.disabled = false;
 
+        continuousBtn.disabled = false;
 
-        startButton.disabled =
-            true;
+        setupTorch();
 
+        await waitForVideo();
 
-        stopButton.disabled =
-            false;
+        analyzeFrame();
 
+    } catch (error) {
 
-        flipButton.disabled =
-            false;
+        console.error(error);
 
-
-        snapshotButton.disabled =
-            false;
-
-
-        flashButton.disabled =
-            !supportsTorch();
-
-
-        scanning =
-            true;
-
-
-        setStatus(
-            "Scanner active",
-            "Analyzing the camera image...",
-            "green"
-        );
-
-
-        requestAnimationFrame(
-            scannerLoop
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            error
-        );
-
-
-        if (
-            error.name ===
-            "NotAllowedError"
-        ) {
-
-            showError(
-                "Camera permission was denied. On iPhone go to Settings → Safari → Camera and allow access."
-            );
-
-        }
-
-        else if (
-            error.name ===
-            "NotFoundError"
-        ) {
-
-            showError(
-                "No camera was found."
-            );
-
-        }
-
-        else if (
-            error.name ===
-            "NotReadableError"
-        ) {
-
-            showError(
-                "The camera is being used by another application."
-            );
-
-        }
-
-        else {
-
-            showError(
-                "Could not start the camera: " +
-                (
-                    error.message ||
-                    error.name
-                )
-            );
-
-        }
-
-
-        setStatus(
-            "Camera unavailable",
-            "Check your browser camera permission."
+        alert(
+            "Unable to access the camera.\n\n" +
+            "Make sure you allowed camera permission and " +
+            "are using HTTPS."
         );
 
     }
@@ -1634,189 +994,148 @@ async function startCamera() {
 }
 
 
-/* =========================================================
-   STOP CAMERA
-========================================================= */
+function waitForVideo() {
 
-function stopCamera(
-    updateStatus = true
-) {
+    return new Promise(resolve => {
 
-    scanning =
-        false;
+        if (video.readyState >= 2) {
+            resolve();
+            return;
+        }
 
+        video.onloadeddata = () => resolve();
 
-    if (animationFrame) {
+    });
 
-        cancelAnimationFrame(
-            animationFrame
-        );
-
-        animationFrame =
-            null;
-
-    }
+}
 
 
-    if (stream) {
+function stopCamera() {
 
-        stream
+    stopContinuousScan();
+
+    if (state.stream) {
+
+        state.stream
             .getTracks()
-            .forEach(
-                track => track.stop()
-            );
+            .forEach(track => track.stop());
+
+        state.stream = null;
 
     }
 
+    video.srcObject = null;
 
-    stream =
-        null;
+    statusDot.classList.remove("active");
 
+    cameraStatus.textContent =
+        "Camera Off";
 
-    videoTrack =
-        null;
+    startCameraBtn.disabled = false;
 
+    stopCameraBtn.disabled = true;
 
-    video.srcObject =
-        null;
+    switchCameraBtn.disabled = true;
 
+    torchBtn.disabled = true;
 
-    video.style.display =
-        "none";
+    analyzeBtn.disabled = true;
 
+    continuousBtn.disabled = true;
 
-    scannerOverlay.style.display =
-        "none";
-
-
-    startButton.disabled =
-        false;
+}
 
 
-    stopButton.disabled =
-        true;
+async function switchCamera() {
+
+    if (!state.stream) return;
+
+    state.facingMode =
+        state.facingMode === "environment"
+            ? "user"
+            : "environment";
+
+    await startCamera();
+
+}
 
 
-    flipButton.disabled =
-        true;
+function setupTorch() {
 
+    torchBtn.disabled = true;
 
-    snapshotButton.disabled =
-        true;
+    if (!state.stream) return;
 
+    const track =
+        state.stream.getVideoTracks()[0];
 
-    flashButton.disabled =
-        true;
+    if (!track) return;
 
+    const capabilities =
+        track.getCapabilities
+            ? track.getCapabilities()
+            : {};
 
-    torchEnabled =
-        false;
+    if (capabilities.torch) {
 
+        torchBtn.disabled = false;
 
-    flashButton.textContent =
-        "🔦 Flash";
-
-
-    if (updateStatus) {
-
-        setStatus(
-            "Stopped",
-            "Camera is currently off."
-        );
+        torchBtn.textContent =
+            state.torch
+                ? "🔦 Torch ON"
+                : "🔦 Flashlight";
 
     }
 
 }
 
-
-/* =========================================================
-   TORCH SUPPORT
-========================================================= */
-
-function supportsTorch() {
-
-    try {
-
-        if (
-            !videoTrack ||
-            !videoTrack.getCapabilities
-        ) {
-
-            return false;
-
-        }
-
-
-        const capabilities =
-            videoTrack.getCapabilities();
-
-
-        return (
-            capabilities &&
-            capabilities.torch === true
-        );
-
-    }
-    catch (error) {
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================================================
-   TORCH
-========================================================= */
 
 async function toggleTorch() {
 
-    if (!supportsTorch()) {
+    if (!state.stream) return;
 
-        showError(
-            "Torch control is not available on this iPhone/browser."
+    const track =
+        state.stream.getVideoTracks()[0];
+
+    if (!track) return;
+
+    const capabilities =
+        track.getCapabilities
+            ? track.getCapabilities()
+            : {};
+
+    if (!capabilities.torch) {
+
+        alert(
+            "Your browser does not expose flashlight control."
         );
 
         return;
 
     }
 
+    state.torch = !state.torch;
 
     try {
 
-        torchEnabled =
-            !torchEnabled;
-
-
-        await videoTrack.applyConstraints({
-
+        await track.applyConstraints({
             advanced: [
-
                 {
-                    torch:
-                        torchEnabled
+                    torch: state.torch
                 }
-
             ]
-
         });
 
+        torchBtn.textContent =
+            state.torch
+                ? "🔦 Torch ON"
+                : "🔦 Flashlight";
 
-        flashButton.textContent =
-            torchEnabled
-                ? "🔦 Flash On"
-                : "🔦 Flash";
+    } catch (error) {
 
-    }
-    catch (error) {
+        console.error(error);
 
-        torchEnabled =
-            false;
-
-        showError(
-            "The browser did not allow flashlight control."
-        );
+        state.torch = false;
 
     }
 
@@ -1824,324 +1143,144 @@ async function toggleTorch() {
 
 
 /* =========================================================
-   SCANNER LOOP
+   OPTICAL SCANNER
 ========================================================= */
 
-function scannerLoop(
-    timestamp
-) {
+function analyzeFrame() {
 
-    if (!scanning) {
+    if (!state.stream ||
+        video.readyState < 2) {
 
         return;
 
     }
 
+    const width = 640;
 
-    if (
-        timestamp -
-        lastAnalysisTime >
-        180
-    ) {
+    const ratio =
+        video.videoHeight /
+        video.videoWidth;
 
-        if (
-            video.readyState >=
-            2
-        ) {
-
-            analyzeFrame(
-                false
-            );
-
-        }
-
-
-        lastAnalysisTime =
-            timestamp;
-
-    }
-
-
-    animationFrame =
-        requestAnimationFrame(
-            scannerLoop
-        );
-
-}
-
-
-/* =========================================================
-   FRAME ANALYSIS
-========================================================= */
-
-function analyzeFrame(
-    manual
-) {
-
-    if (
-        video.readyState < 2 ||
-        video.videoWidth === 0 ||
-        video.videoHeight === 0
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-        Resize analysis image.
-
-        We don't need to process
-        the full camera resolution.
-    */
-
-    const maxWidth =
-        640;
-
-
-    const scale =
-        Math.min(
-            1,
-            maxWidth /
-                video.videoWidth
-        );
-
-
-    canvas.width =
+    const height =
         Math.max(
-            1,
-            Math.round(
-                video.videoWidth *
-                scale
-            )
+            360,
+            Math.floor(width * ratio)
         );
 
-
-    canvas.height =
-        Math.max(
-            1,
-            Math.round(
-                video.videoHeight *
-                scale
-            )
-        );
-
+    canvas.width = width;
+    canvas.height = height;
 
     ctx.drawImage(
         video,
         0,
         0,
-        canvas.width,
-        canvas.height
+        width,
+        height
     );
-
 
     const image =
         ctx.getImageData(
             0,
             0,
-            canvas.width,
-            canvas.height
+            width,
+            height
         );
 
+    const data = image.data;
 
-    const data =
-        image.data;
+    const points = [];
 
-
-    const width =
-        canvas.width;
-
-
-    const height =
-        canvas.height;
-
-
-    const candidates = [];
-
-
-    let veryBrightPixels =
-        0;
-
-
-    let samples =
-        0;
-
+    const step = 3;
 
     /*
-        Sample every 3 pixels.
-
-        This keeps iPhone Safari
-        responsive.
+       Look for very bright pixels whose
+       surrounding pixels are significantly darker.
     */
 
-    const step =
-        3;
-
-
     for (
-        let y = 2;
-        y < height - 2;
+        let y = 5;
+        y < height - 5;
         y += step
     ) {
 
         for (
-            let x = 2;
-            x < width - 2;
+            let x = 5;
+            x < width - 5;
             x += step
         ) {
 
-            const index =
-                (
-                    y *
-                    width +
-                    x
-                ) *
-                4;
+            const i =
+                (y * width + x) * 4;
 
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
 
-            const r =
-                data[index];
+            const brightness =
+                0.299 * r +
+                0.587 * g +
+                0.114 * b;
 
+            if (brightness < 235) {
+                continue;
+            }
 
-            const g =
-                data[index + 1];
+            let surrounding = 0;
+            let count = 0;
 
-
-            const b =
-                data[index + 2];
-
-
-            /*
-                Human-visible luminance.
-            */
-
-            const luminance =
-                (
-                    0.299 * r +
-                    0.587 * g +
-                    0.114 * b
-                );
-
-
-            samples++;
-
-
-            if (
-                luminance >
-                220
+            for (
+                let oy = -4;
+                oy <= 4;
+                oy += 2
             ) {
 
-                veryBrightPixels++;
+                for (
+                    let ox = -4;
+                    ox <= 4;
+                    ox += 2
+                ) {
+
+                    if (ox === 0 && oy === 0)
+                        continue;
+
+                    const nx = x + ox;
+                    const ny = y + oy;
+
+                    const ni =
+                        (ny * width + nx) * 4;
+
+                    const nr = data[ni];
+                    const ng = data[ni + 1];
+                    const nb = data[ni + 2];
+
+                    surrounding +=
+                        0.299 * nr +
+                        0.587 * ng +
+                        0.114 * nb;
+
+                    count++;
+
+                }
 
             }
 
+            surrounding /=
+                count || 1;
 
-            /*
-                Compare this pixel
-                with nearby pixels.
-            */
+            const contrast =
+                brightness -
+                surrounding;
 
-            const left =
-                (
-                    y *
-                    width +
-                    (x - 2)
-                ) *
-                4;
+            if (contrast > 70) {
 
+                points.push({
 
-            const right =
-                (
-                    y *
-                    width +
-                    (x + 2)
-                ) *
-                4;
+                    x,
+                    y,
 
+                    brightness,
 
-            const top =
-                (
-                    (y - 2) *
-                    width +
-                    x
-                ) *
-                4;
-
-
-            const bottom =
-                (
-                    (y + 2) *
-                    width +
-                    x
-                ) *
-                4;
-
-
-            const leftLum =
-                getLuminance(
-                    data,
-                    left
-                );
-
-
-            const rightLum =
-                getLuminance(
-                    data,
-                    right
-                );
-
-
-            const topLum =
-                getLuminance(
-                    data,
-                    top
-                );
-
-
-            const bottomLum =
-                getLuminance(
-                    data,
-                    bottom
-                );
-
-
-            const localAverage =
-                (
-                    leftLum +
-                    rightLum +
-                    topLum +
-                    bottomLum
-                ) / 4;
-
-
-            /*
-                Candidate rule.
-
-                It needs to be:
-                - very bright
-                - significantly brighter
-                  than nearby pixels
-            */
-
-            if (
-                luminance > 215 &&
-                luminance -
-                    localAverage >
-                    75
-            ) {
-
-                candidates.push({
-
-                    x:
-                        x,
-
-                    y:
-                        y,
-
-                    luminance:
-                        luminance
+                    contrast
 
                 });
 
@@ -2152,57 +1291,120 @@ function analyzeFrame(
     }
 
 
-    /*
-        Cluster nearby pixels.
+    const clustered =
+        clusterPoints(points);
 
-        Otherwise one tiny LED could
-        produce many detections.
+    state.candidates =
+        clustered.slice(0, 30);
+
+    /*
+       Stability:
+       Compare current points with previous
+       frame's candidate locations.
     */
+
+    const stable = [];
+
+    for (const point of state.candidates) {
+
+        const found =
+            state.stableCandidates.some(old => {
+
+                const dx =
+                    old.x - point.x;
+
+                const dy =
+                    old.y - point.y;
+
+                return Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                ) < 35;
+
+            });
+
+        if (found) {
+            stable.push(point);
+        }
+
+    }
+
+    state.stableCandidates =
+        state.candidates;
+
+    const peak =
+        state.candidates.length
+            ? Math.max(
+                ...state.candidates
+                    .map(p => p.brightness)
+              )
+            : 0;
+
+    /*
+       Heuristic scoring.
+    */
+
+    let score = 0;
+
+    score +=
+        Math.min(
+            45,
+            state.candidates.length * 7
+        );
+
+    score +=
+        Math.min(
+            30,
+            stable.length * 10
+        );
+
+    if (peak > 250) {
+        score += 15;
+    }
+
+    score = Math.min(100, score);
+
+    state.opticalScore = score;
+
+    updateOpticalUI(
+        state.candidates.length,
+        stable.length,
+        peak,
+        score
+    );
+
+    updateOverall();
+
+}
+
+
+function clusterPoints(points) {
 
     const clusters = [];
 
+    for (const point of points) {
 
-    const clusterRadius =
-        14;
+        let cluster = null;
 
-
-    for (
-        const candidate
-        of candidates
-    ) {
-
-        let cluster =
-            null;
-
-
-        for (
-            const existing
-            of clusters
-        ) {
+        for (const existing of clusters) {
 
             const dx =
-                candidate.x -
-                existing.x;
-
+                existing.x -
+                point.x;
 
             const dy =
-                candidate.y -
-                existing.y;
-
+                existing.y -
+                point.y;
 
             const distance =
-                dx * dx +
-                dy * dy;
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
 
+            if (distance < 18) {
 
-            if (
-                distance <
-                clusterRadius *
-                clusterRadius
-            ) {
-
-                cluster =
-                    existing;
+                cluster = existing;
 
                 break;
 
@@ -2210,131 +1412,399 @@ function analyzeFrame(
 
         }
 
+        if (!cluster) {
 
-        if (cluster) {
+            clusters.push({
+                x: point.x,
+                y: point.y,
+                brightness: point.brightness,
+                contrast: point.contrast,
+                count: 1
+            });
+
+        } else {
 
             cluster.x =
-                (
-                    cluster.x +
-                    candidate.x
-                ) / 2;
-
+                (cluster.x * cluster.count +
+                 point.x) /
+                (cluster.count + 1);
 
             cluster.y =
-                (
-                    cluster.y +
-                    candidate.y
-                ) / 2;
+                (cluster.y * cluster.count +
+                 point.y) /
+                (cluster.count + 1);
 
+            cluster.brightness =
+                Math.max(
+                    cluster.brightness,
+                    point.brightness
+                );
+
+            cluster.contrast =
+                Math.max(
+                    cluster.contrast,
+                    point.contrast
+                );
 
             cluster.count++;
 
+        }
 
-            cluster.luminance =
-                Math.max(
-                    cluster.luminance,
-                    candidate.luminance
+    }
+
+    return clusters
+        .sort(
+            (a, b) =>
+                (b.brightness + b.contrast) -
+                (a.brightness + a.contrast)
+        );
+
+}
+
+
+function updateOpticalUI(
+    count,
+    stable,
+    peak,
+    score
+) {
+
+    document.getElementById(
+        "candidateCount"
+    ).textContent = count;
+
+    document.getElementById(
+        "stableCount"
+    ).textContent = stable;
+
+    document.getElementById(
+        "peakBrightness"
+    ).textContent =
+        Math.round(peak);
+
+    candidateBadge.textContent =
+        `${count} point${count === 1 ? "" : "s"}`;
+
+    document.getElementById(
+        "opticalScore"
+    ).textContent = score;
+
+    document.getElementById(
+        "opticalProgress"
+    ).style.width =
+        score + "%";
+
+    const result =
+        document.getElementById(
+            "opticalResult"
+        );
+
+    if (score >= 70) {
+
+        result.className =
+            "result danger";
+
+        result.innerHTML = `
+            <div class="result-title">
+                Strong optical anomaly
+            </div>
+
+            <div class="result-text">
+                Multiple unusually bright points were detected.
+                Inspect these locations physically and repeat the
+                scan from another angle.
+            </div>
+        `;
+
+    } else if (score >= 35) {
+
+        result.className =
+            "result warning";
+
+        result.innerHTML = `
+            <div class="result-title">
+                Possible optical anomaly
+            </div>
+
+            <div class="result-text">
+                Some unusually bright points were detected.
+                These can also be reflections, LEDs or normal
+                light sources.
+            </div>
+        `;
+
+    } else {
+
+        result.className =
+            "result good";
+
+        result.innerHTML = `
+            <div class="result-title">
+                No strong optical signal
+            </div>
+
+            <div class="result-text">
+                No strong concentrated bright-point pattern was
+                detected in the current frame.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   CONTINUOUS SCANNING
+========================================================= */
+
+function startContinuousScan() {
+
+    if (state.continuous) {
+
+        stopContinuousScan();
+
+        return;
+
+    }
+
+    state.continuous = true;
+
+    continuousBtn.textContent =
+        "⏹ Stop Continuous";
+
+    state.scanTimer =
+        setInterval(
+            analyzeFrame,
+            350
+        );
+
+}
+
+
+function stopContinuousScan() {
+
+    state.continuous = false;
+
+    if (state.scanTimer) {
+
+        clearInterval(
+            state.scanTimer
+        );
+
+        state.scanTimer = null;
+
+    }
+
+    continuousBtn.textContent =
+        "▶ Continuous Scan";
+
+}
+
+
+/* =========================================================
+   MAGNETOMETER
+========================================================= */
+
+async function startMagneticScan() {
+
+    if (!("DeviceMotionEvent" in window)) {
+
+        alert(
+            "This browser does not expose motion sensors."
+        );
+
+        return;
+
+    }
+
+    /*
+       iOS requires permission for motion sensors.
+    */
+
+    if (
+        typeof DeviceMotionEvent.requestPermission ===
+        "function"
+    ) {
+
+        try {
+
+            const permission =
+                await DeviceMotionEvent
+                    .requestPermission();
+
+            if (permission !== "granted") {
+
+                alert(
+                    "Motion sensor permission was not granted."
                 );
 
-        }
-        else {
-
-            if (
-                clusters.length <
-                100
-            ) {
-
-                clusters.push({
-
-                    x:
-                        candidate.x,
-
-                    y:
-                        candidate.y,
-
-                    count:
-                        1,
-
-                    luminance:
-                        candidate.luminance
-
-                });
+                return;
 
             }
 
+        } catch (error) {
+
+            console.error(error);
+
+            return;
+
         }
 
     }
 
+    state.magneticRunning = true;
+
+    window.addEventListener(
+        "devicemotion",
+        handleMotion
+    );
+
+    document.getElementById(
+        "magneticStartBtn"
+    ).textContent =
+        "🧲 Magnetic Scan Active";
+
+}
+
+
+function handleMotion(event) {
 
     /*
-        Brightness density.
+       DeviceMotionEvent does not expose a
+       guaranteed calibrated magnetic field
+       measurement on every browser.
 
-        A whole bright scene should
-        not be treated as many
-        suspicious points.
+       Some browsers may expose magnetic field
+       through DeviceOrientationEvent instead.
+
+       We therefore use available acceleration/
+       rotation data as a motion/anomaly proxy
+       rather than pretending it is an RF detector.
     */
 
-    const brightnessDensity =
-        veryBrightPixels /
-        Math.max(
-            1,
-            samples
+    const a =
+        event.accelerationIncludingGravity;
+
+    if (!a) return;
+
+    const x = a.x || 0;
+    const y = a.y || 0;
+    const z = a.z || 0;
+
+    const magnitude =
+        Math.sqrt(
+            x * x +
+            y * y +
+            z * z
         );
 
-
-    /*
-        Calculate heuristic score.
-    */
-
-    let score =
-        clusters.length * 8 +
-        brightnessDensity * 100;
-
-
-    /*
-        If most of the image is bright,
-        it is probably a normal bright
-        scene rather than tiny points.
-    */
+    state.magneticHistory.push(
+        magnitude
+    );
 
     if (
-        brightnessDensity >
-        0.12
+        state.magneticHistory.length > 30
     ) {
 
-        score *= 0.45;
+        state.magneticHistory.shift();
 
     }
 
+    /*
+       Approximate sensor variation.
+       This is NOT a direct magnetic-field
+       measurement.
+    */
 
-    score =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                Math.round(score)
+    const average =
+        state.magneticHistory.reduce(
+            (a, b) => a + b,
+            0
+        ) /
+        state.magneticHistory.length;
+
+    const deviation =
+        Math.abs(
+            magnitude - average
+        );
+
+    const score =
+        Math.min(
+            100,
+            Math.round(
+                deviation * 12
             )
         );
 
-
-    updateDetectionUI(
-        score,
-        clusters.length
-    );
-
+    state.magneticScore =
+        score;
 
     /*
-        Manual frame analysis
-        gets added to history.
+       Display a clearly labelled
+       sensor-related value.
     */
 
-    if (manual) {
+    document.getElementById(
+        "magneticValue"
+    ).textContent =
+        magnitude.toFixed(2);
 
-        addHistory(
-            score,
-            clusters.length
+    document.getElementById(
+        "magneticScore"
+    ).textContent =
+        score;
+
+    document.getElementById(
+        "magneticProgress"
+    ).style.width =
+        score + "%";
+
+    updateMagneticUI(score);
+
+    updateOverall();
+
+}
+
+
+function updateMagneticUI(score) {
+
+    const result =
+        document.getElementById(
+            "magneticResult"
         );
+
+    if (score >= 70) {
+
+        result.className =
+            "result warning";
+
+        result.innerHTML = `
+            <div class="result-title">
+                Strong sensor variation
+            </div>
+
+            <div class="result-text">
+                The phone's motion sensors changed significantly.
+                This is not proof of a magnetic anomaly or camera.
+            </div>
+        `;
+
+    } else {
+
+        result.className =
+            "result good";
+
+        result.innerHTML = `
+            <div class="result-title">
+                Normal sensor variation
+            </div>
+
+            <div class="result-text">
+                No unusually large sensor variation is currently
+                visible.
+            </div>
+        `;
 
     }
 
@@ -2342,329 +1812,475 @@ function analyzeFrame(
 
 
 /* =========================================================
-   LUMINANCE
+   NETWORK
 ========================================================= */
 
-function getLuminance(
-    data,
-    index
-) {
+async function scanNetwork() {
 
-    return (
-        0.299 * data[index] +
-        0.587 * data[index + 1] +
-        0.114 * data[index + 2]
+    /*
+       Browser security intentionally prevents
+       unrestricted LAN port/device scanning.
+
+       We can still expose connection information
+       that the browser makes available.
+    */
+
+    const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+    let connectionType = "?";
+
+    if (connection) {
+
+        connectionType =
+            connection.effectiveType ||
+            connection.type ||
+            "?";
+
+    }
+
+    document.getElementById(
+        "connectionType"
+    ).textContent =
+        connectionType;
+
+    /*
+       We create a transparent "browser-visible"
+       device entry rather than falsely claiming
+       that we discovered LAN devices.
+    */
+
+    const list =
+        document.getElementById(
+            "networkList"
+        );
+
+    list.innerHTML = "";
+
+    const device = document.createElement(
+        "div"
     );
 
+    device.className = "device";
+
+    device.innerHTML = `
+        <div class="device-name">
+            📱 Current browser
+        </div>
+
+        <div class="device-detail">
+            Connection: ${connectionType}
+        </div>
+    `;
+
+    list.appendChild(device);
+
+    document.getElementById(
+        "networkDeviceCount"
+    ).textContent = "1";
+
+    document.getElementById(
+        "networkSuspicious"
+    ).textContent = "0";
+
+    state.networkScore = 0;
+
+    document.getElementById(
+        "networkScore"
+    ).textContent = "0";
+
+    document.getElementById(
+        "networkProgress"
+    ).style.width = "0%";
+
+    updateOverall();
+
+}
+
+
+function createNetworkScannerExplanation() {
+
+    const list =
+        document.getElementById(
+            "networkList"
+        );
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+    info.className =
+        "notice";
+
+    info.style.marginTop =
+        "10px";
+
+    info.innerHTML = `
+        <strong>Why are there no LAN devices?</strong><br><br>
+        Safari and modern browsers isolate web pages from
+        unrestricted local-network scanning. This protects
+        users from malicious websites scanning their home
+        network.
+        <br><br>
+        A native iOS application has different APIs and
+        permissions, but even native iOS apps cannot simply
+        perform unrestricted packet/RF scanning.
+    `;
+
+    list.appendChild(info);
+
 }
 
 
 /* =========================================================
-   UPDATE UI
+   COMBINED SCORE
 ========================================================= */
 
-function updateDetectionUI(
-    score,
-    candidateCount
-) {
+function updateOverall() {
 
-    scoreValue.textContent =
-        score + "%";
+    /*
+       Optical gets the strongest weight because
+       this application can actually analyze the
+       camera image.
+
+       Network and magnetic values are deliberately
+       weighted conservatively.
+    */
+
+    const overall =
+        Math.round(
+            state.opticalScore * 0.65 +
+            state.networkScore * 0.15 +
+            state.magneticScore * 0.20
+        );
+
+    state.overallScore =
+        Math.min(
+            100,
+            overall
+        );
+
+    document.getElementById(
+        "overallScore"
+    ).textContent =
+        state.overallScore;
+
+    document.getElementById(
+        "overallProgress"
+    ).style.width =
+        state.overallScore + "%";
+
+    const result =
+        document.getElementById(
+            "overallResult"
+        );
+
+    if (state.overallScore >= 70) {
+
+        result.className =
+            "result danger";
+
+        result.innerHTML = `
+            <div class="result-title">
+                Investigate this area
+            </div>
+
+            <div class="result-text">
+                Multiple signals currently indicate that
+                further physical inspection may be useful.
+                This score does not confirm a hidden camera.
+            </div>
+        `;
+
+    } else if (state.overallScore >= 35) {
+
+        result.className =
+            "result warning";
+
+        result.innerHTML = `
+            <div class="result-title">
+                Some unusual signals detected
+            </div>
+
+            <div class="result-text">
+                Repeat the scan from different angles and
+                physically inspect unusual objects or light
+                sources.
+            </div>
+        `;
+
+    } else {
+
+        result.className =
+            "result good";
+
+        result.innerHTML = `
+            <div class="result-title">
+                No strong combined signal
+            </div>
+
+            <div class="result-text">
+                No strong combination of available signals has
+                been detected.
+            </div>
+        `;
+
+    }
+
+}
 
 
-    scoreProgress.style.width =
-        score + "%";
+/* =========================================================
+   MODE SWITCHING
+========================================================= */
+
+const opticalMode =
+    document.getElementById(
+        "opticalMode"
+    );
+
+const networkMode =
+    document.getElementById(
+        "networkMode"
+    );
+
+const magneticMode =
+    document.getElementById(
+        "magneticMode"
+    );
+
+const opticalPanel =
+    document.getElementById(
+        "opticalPanel"
+    );
+
+const networkPanel =
+    document.getElementById(
+        "networkPanel"
+    );
+
+const magneticPanel =
+    document.getElementById(
+        "magneticPanel"
+    );
 
 
-    candidateValue.textContent =
-        candidateCount;
+function selectMode(mode) {
 
+    opticalMode.classList.remove("active");
+    networkMode.classList.remove("active");
+    magneticMode.classList.remove("active");
 
-    if (
-        score >= 65 ||
-        candidateCount >= 8
-    ) {
+    opticalPanel.classList.add("hidden");
+    networkPanel.classList.add("hidden");
+    magneticPanel.classList.add("hidden");
 
-        scoreProgress.style.background =
-            "var(--red)";
+    if (mode === "optical") {
 
+        opticalMode.classList.add("active");
 
-        resultTitle.textContent =
-            "Multiple bright-point candidates";
-
-
-        resultTitle.className =
-            "result-title red-text";
-
-
-        resultDescription.textContent =
-            "Inspect these areas carefully. Bright LEDs, reflections and other normal objects can also produce this result.";
-
-
-        setStatus(
-            "Candidates detected",
-            "Inspect suspicious points manually.",
-            "red"
+        opticalPanel.classList.remove(
+            "hidden"
         );
 
     }
 
-    else if (
-        score >= 30 ||
-        candidateCount >= 3
-    ) {
+    if (mode === "network") {
 
-        scoreProgress.style.background =
-            "var(--yellow)";
+        networkMode.classList.add("active");
 
-
-        resultTitle.textContent =
-            "Some bright-point candidates";
-
-
-        resultTitle.className =
-            "result-title yellow-text";
-
-
-        resultDescription.textContent =
-            "Move closer and scan from another angle. This result is not proof of a hidden camera.";
-
-
-        setStatus(
-            "Possible candidates",
-            "Continue scanning from different angles.",
-            "yellow"
+        networkPanel.classList.remove(
+            "hidden"
         );
+
+        scanNetwork();
+
+        createNetworkScannerExplanation();
 
     }
 
-    else {
+    if (mode === "magnetic") {
 
-        scoreProgress.style.background =
-            "var(--green)";
+        magneticMode.classList.add("active");
 
-
-        resultTitle.textContent =
-            "No strong candidate pattern";
-
-
-        resultTitle.className =
-            "result-title green-text";
-
-
-        resultDescription.textContent =
-            "No strong bright-point pattern was detected in the current frame. Continue checking the room manually.";
-
-
-        setStatus(
-            "Scanning",
-            "No strong candidate pattern.",
-            "green"
+        magneticPanel.classList.remove(
+            "hidden"
         );
 
     }
 
 }
+
+
+opticalMode.onclick = () =>
+    selectMode("optical");
+
+networkMode.onclick = () =>
+    selectMode("network");
+
+magneticMode.onclick = () =>
+    selectMode("magnetic");
 
 
 /* =========================================================
    HISTORY
 ========================================================= */
 
-function addHistory(
-    score,
-    points
-) {
+function saveScan() {
 
-    const time =
-        new Date()
-            .toLocaleTimeString(
-                [],
-                {
-                    hour:
-                        "2-digit",
-
-                    minute:
-                        "2-digit",
-
-                    second:
-                        "2-digit"
-                }
-            );
-
-
-    scanHistory.unshift({
+    const item = {
 
         time:
-            time,
+            new Date()
+                .toLocaleTimeString(),
 
-        score:
-            score,
+        optical:
+            state.opticalScore,
 
-        points:
-            points
+        network:
+            state.networkScore,
 
-    });
+        magnetic:
+            state.magneticScore,
 
+        overall:
+            state.overallScore
 
-    /*
-        Keep last 8 scans.
-    */
+    };
 
-    scanHistory =
-        scanHistory.slice(
-            0,
-            8
-        );
+    state.history.unshift(item);
 
+    state.history =
+        state.history.slice(0, 20);
+
+    localStorage.setItem(
+        "nightwatch_history",
+        JSON.stringify(
+            state.history
+        )
+    );
 
     renderHistory();
 
 }
 
 
-/* =========================================================
-   RENDER HISTORY
-========================================================= */
+function loadHistory() {
+
+    try {
+
+        state.history =
+            JSON.parse(
+                localStorage.getItem(
+                    "nightwatch_history"
+                ) || "[]"
+            );
+
+    } catch {
+
+        state.history = [];
+
+    }
+
+    renderHistory();
+
+}
+
 
 function renderHistory() {
 
-    if (
-        scanHistory.length ===
-        0
-    ) {
+    const container =
+        document.getElementById(
+            "history"
+        );
 
-        historyList.innerHTML =
-            `
-            <div class="result-description">
+    if (!state.history.length) {
+
+        container.innerHTML = `
+            <div class="notice">
                 No scans yet.
             </div>
-            `;
+        `;
 
         return;
 
     }
 
+    container.innerHTML =
+        state.history
+            .map(item => `
 
-    historyList.innerHTML =
-        scanHistory
-            .map(
-                item => {
+                <div class="history-item">
 
-                    let className =
-                        "green-text";
-
-
-                    if (
-                        item.score >=
-                        65
-                    ) {
-
-                        className =
-                            "red-text";
-
-                    }
-
-                    else if (
-                        item.score >=
-                        30
-                    ) {
-
-                        className =
-                            "yellow-text";
-
-                    }
-
-
-                    return `
-
-                    <div
-                        class="history-item"
-                    >
-
-                        <span>
-                            ${item.time}
+                    <div>
+                        ${item.time}<br>
+                        <span style="color:#8198a3">
+                            Optical ${item.optical}
+                            • Network ${item.network}
+                            • Magnetic ${item.magnetic}
                         </span>
-
-                        <b
-                            class="${className}"
-                        >
-                            ${item.score}%
-                            ·
-                            ${item.points}
-                            points
-                        </b>
-
                     </div>
 
-                    `;
+                    <div class="history-score">
+                        ${item.overall}/100
+                    </div>
 
-                }
-            )
+                </div>
+
+            `)
             .join("");
 
 }
 
 
 /* =========================================================
-   FLIP CAMERA
+   EVENTS
 ========================================================= */
 
-flipButton.addEventListener(
-    "click",
-    async function() {
+startCameraBtn.onclick =
+    startCamera;
 
-        cameraFacing =
-            cameraFacing ===
-            "environment"
-                ? "user"
-                : "environment";
+stopCameraBtn.onclick =
+    stopCamera;
 
+switchCameraBtn.onclick =
+    switchCamera;
 
-        await startCamera();
+torchBtn.onclick =
+    toggleTorch;
 
-    }
-);
+analyzeBtn.onclick = () => {
 
+    analyzeFrame();
 
-/* =========================================================
-   BUTTON EVENTS
-========================================================= */
+    saveScan();
 
-startButton.addEventListener(
-    "click",
-    startCamera
-);
+};
 
+continuousBtn.onclick =
+    startContinuousScan;
 
-stopButton.addEventListener(
-    "click",
-    function() {
+document.getElementById(
+    "magneticStartBtn"
+).onclick =
+    startMagneticScan;
 
-        stopCamera(
-            true
-        );
+document.getElementById(
+    "clearHistoryBtn"
+).onclick = () => {
 
-    }
-);
+    state.history = [];
 
+    localStorage.removeItem(
+        "nightwatch_history"
+    );
 
-snapshotButton.addEventListener(
-    "click",
-    function() {
+    renderHistory();
 
-        analyzeFrame(
-            true
-        );
-
-    }
-);
-
-
-flashButton.addEventListener(
-    "click",
-    toggleTorch
-);
+};
 
 
 /* =========================================================
@@ -2673,42 +2289,28 @@ flashButton.addEventListener(
 
 window.addEventListener(
     "pagehide",
-    function() {
+    () => {
 
-        stopCamera(
-            false
-        );
+        stopCamera();
 
-    }
-);
+        if (state.magneticRunning) {
 
+            window.removeEventListener(
+                "devicemotion",
+                handleMotion
+            );
 
-window.addEventListener(
-    "beforeunload",
-    function() {
-
-        stopCamera(
-            false
-        );
+        }
 
     }
 );
 
 
 /* =========================================================
-   INITIAL CHECK
+   INIT
 ========================================================= */
 
-if (
-    !cameraSupported()
-) {
-
-    setStatus(
-        "Camera unsupported",
-        "Please open this page in Safari on an iPhone."
-    );
-
-}
+loadHistory();
 
 </script>
 
