@@ -2,2317 +2,1147 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-
-<title>NightWatch - Hidden Camera Scanner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b14">
+<title>WAVE//LAB — Wireless Environment Intelligence</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+:root {
+  color-scheme: dark;
+  --bg:#080b14;
+  --panel:#101625;
+  --panel2:#141d2e;
+  --border:#253149;
+  --text:#eaf1ff;
+  --muted:#8999b6;
+  --cyan:#43f5df;
+  --blue:#729bff;
+  --green:#61f6a6;
+  --red:#ff637e;
+  --yellow:#ffd36b;
+  --purple:#b99aff;
 }
-
-html, body {
-    margin: 0;
-    padding: 0;
-    background: #071018;
-    color: #eef5f8;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
+* {box-sizing:border-box}
 body {
-    min-height: 100vh;
+  margin:0;
+  background:
+    radial-gradient(ellipse at 50% -20%,#19324d 0,transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;
 }
-
+button,input,select {font:inherit}
 button {
-    font: inherit;
+  cursor:pointer;
+  color:var(--text);
+  background:#19243a;
+  border:1px solid #334562;
+  border-radius:9px;
+  padding:9px 12px;
+  transition:.15s;
 }
-
-.app {
-    max-width: 900px;
-    margin: auto;
-    padding: 18px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: #102d3a;
-    display: grid;
-    place-items: center;
-    font-size: 22px;
-}
-
-.logo h1 {
-    margin: 0;
-    font-size: 21px;
-}
-
-.logo p {
-    margin: 3px 0 0;
-    color: #8ea6b2;
-    font-size: 12px;
-}
-
-.status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #687985;
-}
-
-.status-dot.active {
-    background: #35e38b;
-    box-shadow: 0 0 12px #35e38b;
-}
-
-.card {
-    background: #0c1a23;
-    border: 1px solid #1b303b;
-    border-radius: 18px;
-    padding: 16px;
-    margin-bottom: 14px;
-}
-
-.camera-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    background: #020609;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-canvas {
-    display: none;
-}
-
-.overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-}
-
-.scan-lines {
-    position: absolute;
-    inset: 0;
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(255,255,255,.025) 0px,
-            rgba(255,255,255,.025) 1px,
-            transparent 1px,
-            transparent 5px
-        );
-}
-
-.crosshair {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 90px;
-    height: 90px;
-    transform: translate(-50%, -50%);
-    border: 1px solid rgba(255,255,255,.35);
-    border-radius: 50%;
-}
-
-.crosshair::before,
-.crosshair::after {
-    content: "";
-    position: absolute;
-    background: rgba(255,255,255,.45);
-}
-
-.crosshair::before {
-    width: 1px;
-    height: 120%;
-    left: 50%;
-    top: -10%;
-}
-
-.crosshair::after {
-    height: 1px;
-    width: 120%;
-    top: 50%;
-    left: -10%;
-}
-
-.camera-top {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    display: flex;
-    justify-content: space-between;
-    z-index: 5;
-}
-
-.badge {
-    padding: 7px 10px;
-    border-radius: 20px;
-    background: rgba(0,0,0,.55);
-    backdrop-filter: blur(8px);
-    font-size: 12px;
-}
-
-.controls {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 9px;
-    margin-top: 12px;
-}
-
-button {
-    border: 0;
-    border-radius: 12px;
-    padding: 13px 12px;
-    background: #17313e;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-button:active {
-    transform: scale(.98);
-}
-
+button:hover {border-color:var(--cyan);filter:brightness(1.1)}
+button:disabled {opacity:.4;cursor:not-allowed}
 button.primary {
-    background: #147d68;
+  color:#031613;
+  background:var(--cyan);
+  border-color:var(--cyan);
+  font-weight:750;
 }
-
-button.warning {
-    background: #7a5c18;
+button.danger {border-color:#713449;color:#ff9bad}
+input,select {
+  width:100%;
+  color:var(--text);
+  background:#0a1120;
+  border:1px solid #30405a;
+  border-radius:8px;
+  padding:9px;
+  outline:none;
 }
-
-button.danger {
-    background: #722e38;
+input:focus,select:focus {border-color:var(--cyan)}
+label {display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
+header {
+  padding:25px max(18px,calc((100% - 1280px)/2)) 20px;
+  border-bottom:1px solid #1e2b41;
 }
-
-button:disabled {
-    opacity: .4;
-    cursor: not-allowed;
+.brandrow {display:flex;justify-content:space-between;gap:15px;align-items:center}
+.brand {font-size:12px;letter-spacing:3px;color:var(--cyan);font-weight:800}
+h1 {font-size:clamp(25px,4vw,39px);line-height:1.15;margin:8px 0}
+h2 {font-size:15px;margin:0 0 14px}
+h3 {font-size:13px;margin:0 0 10px}
+p {margin:7px 0}
+.muted {color:var(--muted)}
+.tiny {font-size:11px;color:var(--muted)}
+.statuspill {
+  display:inline-flex;align-items:center;gap:7px;
+  border:1px solid var(--border);border-radius:20px;
+  padding:5px 10px;font-size:11px;
 }
-
-.mode-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 9px;
+.dot {width:7px;height:7px;border-radius:50%;background:var(--green)}
+.dot.off {background:var(--red)}
+.container {max-width:1280px;margin:auto;padding:20px 16px 45px}
+.toolbar {display:flex;flex-wrap:wrap;gap:8px;margin-bottom:17px}
+.toolbar .spacer {flex:1}
+.grid {display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.card {
+  grid-column:span 4;
+  min-width:0;padding:17px;
+  background:linear-gradient(145deg,#141e30,#0d1321);
+  border:1px solid var(--border);
+  border-radius:15px;
+  box-shadow:0 12px 30px #00000010;
 }
-
-.mode {
-    min-height: 86px;
-    background: #101f29;
-    border: 1px solid #213944;
-    border-radius: 14px;
-    padding: 12px;
-    text-align: left;
+.span3 {grid-column:span 3}
+.span4 {grid-column:span 4}
+.span5 {grid-column:span 5}
+.span6 {grid-column:span 6}
+.span7 {grid-column:span 7}
+.span8 {grid-column:span 8}
+.span12 {grid-column:span 12}
+.eyebrow {font-size:10px;letter-spacing:1.7px;color:var(--muted);text-transform:uppercase}
+.value {font-size:clamp(25px,3vw,35px);font-weight:780;letter-spacing:-1px;margin:5px 0}
+.unit {font-size:12px;color:var(--muted);font-weight:500;letter-spacing:0}
+.row {display:flex;justify-content:space-between;align-items:center;gap:10px}
+.statrow {
+  display:flex;justify-content:space-between;gap:10px;
+  padding:9px 0;border-bottom:1px solid #202c40;font-size:12px;
 }
-
-.mode.active {
-    border-color: #36cfa5;
-    background: #102e2b;
+.statrow:last-child {border-bottom:0}
+.statrow strong {text-align:right;overflow-wrap:anywhere}
+.cyan {color:var(--cyan)}
+.green {color:var(--green)}
+.yellow {color:var(--yellow)}
+.red {color:var(--red)}
+.purple {color:var(--purple)}
+.chart {display:block;width:100%;height:200px;margin-top:9px}
+.chart.short {height:120px}
+.meter {
+  height:7px;background:#253149;border-radius:20px;overflow:hidden;margin:8px 0 13px
 }
-
-.mode-icon {
-    font-size: 23px;
+.meter span {
+  display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  transition:width .3s
 }
-
-.mode-title {
-    margin-top: 7px;
-    font-size: 13px;
-    font-weight: 700;
+.metricgrid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mini {
+  background:#0a1120;border:1px solid #202c40;
+  padding:11px;border-radius:10px;min-width:0
 }
-
-.mode-description {
-    margin-top: 3px;
-    font-size: 10px;
-    color: #829aa6;
-}
-
-.score {
-    text-align: center;
-    padding: 14px 0;
-}
-
-.score-number {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.score-label {
-    margin-top: 7px;
-    color: #91a9b5;
-    font-size: 13px;
-}
-
-.progress {
-    height: 8px;
-    border-radius: 20px;
-    background: #172a34;
-    overflow: hidden;
-    margin-top: 12px;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    transition: width .3s;
-    background: #35d69e;
-}
-
-.result {
-    border-radius: 13px;
-    padding: 13px;
-    margin-top: 12px;
-    background: #11232b;
-    border: 1px solid #213944;
-}
-
-.result.good {
-    border-color: #226b56;
-}
-
-.result.warning {
-    border-color: #806a29;
-}
-
-.result.danger {
-    border-color: #813a45;
-}
-
-.result-title {
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.result-text {
-    color: #a7bac2;
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 9px;
-}
-
-.stat {
-    background: #101f29;
-    border-radius: 12px;
-    padding: 12px;
-}
-
-.stat-value {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.stat-label {
-    color: #8198a3;
-    font-size: 10px;
-    margin-top: 3px;
-}
-
-.magnetic-value {
-    text-align: center;
-    font-size: 38px;
-    font-weight: 800;
-    margin: 15px 0 5px;
-}
-
-.unit {
-    text-align: center;
-    color: #8ba1aa;
-    font-size: 13px;
-}
-
-.network-list {
-    margin-top: 12px;
-}
-
-.device {
-    padding: 11px;
-    background: #101f29;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    border: 1px solid #1d343e;
-}
-
-.device-name {
-    font-weight: 600;
-}
-
-.device-detail {
-    font-size: 11px;
-    color: #8298a2;
-    margin-top: 3px;
-}
-
+.mini .value {font-size:22px}
+.actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.formgrid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .notice {
-    font-size: 12px;
-    color: #8fa4ad;
-    line-height: 1.5;
+  padding:11px 12px;background:#102331;border:1px solid #204154;
+  border-left:3px solid var(--cyan);border-radius:8px;
+  color:#c7d9ed;font-size:12px;line-height:1.7
 }
-
-.warning-box {
-    background: #302817;
-    border: 1px solid #665225;
-    color: #d9c58a;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    line-height: 1.5;
+.warning {
+  border-color:#574b30;border-left-color:var(--yellow);
+  background:#211d13
 }
-
-.hidden {
-    display: none !important;
+.log {
+  background:#080e19;border:1px solid #202c40;border-radius:9px;
+  padding:10px;max-height:245px;overflow:auto;
+  font:11px/1.8 ui-monospace,SFMono-Regular,monospace
 }
-
-.history-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid #1b3039;
-    font-size: 12px;
+.logline {padding:3px 0;border-bottom:1px solid #192438;overflow-wrap:anywhere}
+.badge {
+  display:inline-block;padding:3px 7px;border-radius:6px;
+  background:#1c2940;color:var(--cyan);font-size:10px
 }
-
-.history-item:last-child {
-    border-bottom: 0;
+.tablewrap {overflow:auto}
+table {border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}
+th,td {padding:10px;text-align:left;border-bottom:1px solid #243047}
+th {color:var(--muted);font-weight:600}
+.empty {color:var(--muted);padding:20px;text-align:center}
+footer {text-align:center;padding:20px;color:var(--muted);font-size:11px}
+@media(max-width:850px) {
+  .card,.span3,.span4,.span5,.span6,.span7,.span8 {grid-column:span 6}
+  .span12 {grid-column:span 12}
+  .formgrid {grid-template-columns:1fr 1fr}
 }
-
-.history-score {
-    font-weight: 700;
-}
-
-footer {
-    text-align: center;
-    color: #627984;
-    font-size: 11px;
-    padding: 15px 0 30px;
-}
-
-@media (max-width: 600px) {
-    .app {
-        padding: 12px;
-    }
-
-    .mode-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stat-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+@media(max-width:560px) {
+  .card,.span3,.span4,.span5,.span6,.span7,.span8,.span12 {grid-column:span 12}
+  .formgrid {grid-template-columns:1fr}
+  header {padding-top:18px}
+  .chart {height:175px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<header>
+  <div class="brandrow">
+    <div class="brand">WAVE//LAB <span class="muted">v2.0</span></div>
+    <span class="statuspill"><span class="dot" id="statusDot"></span><span id="statusText">INITIALIZING</span></span>
+  </div>
+  <h1>Wireless Environment Intelligence</h1>
+  <p class="muted">Experimental network telemetry · Time-series analysis · Anomaly detection</p>
+</header>
 
-    <header class="header">
-        <div class="logo">
-            <div class="logo-icon">🛡️</div>
-            <div>
-                <h1>NightWatch</h1>
-                <p>Multi-sensor privacy scanner</p>
-            </div>
-        </div>
+<main class="container">
 
-        <div id="statusDot" class="status-dot"></div>
-    </header>
+  <div class="toolbar">
+    <button class="primary" id="startBtn">▶ Start Monitoring</button>
+    <button id="sampleBtn">Take Sample</button>
+    <button id="markBtn">＋ Mark Event</button>
+    <button id="exportBtn">Export CSV</button>
+    <button id="jsonBtn">Export JSON</button>
+    <span class="spacer"></span>
+    <button id="settingsBtn">⚙ Settings</button>
+  </div>
 
+  <div class="grid">
 
-    <!-- CAMERA -->
-    <section class="card">
-
-        <div class="camera-container">
-
-            <video id="video"
-                   autoplay
-                   muted
-                   playsinline></video>
-
-            <canvas id="canvas"></canvas>
-
-            <div class="overlay">
-                <div class="scan-lines"></div>
-                <div class="crosshair"></div>
-
-                <div class="camera-top">
-                    <span class="badge" id="cameraStatus">
-                        Camera Off
-                    </span>
-
-                    <span class="badge" id="candidateBadge">
-                        0 points
-                    </span>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="controls">
-
-            <button class="primary" id="startCameraBtn">
-                📷 Start Camera
-            </button>
-
-            <button id="stopCameraBtn" disabled>
-                ⏹ Stop
-            </button>
-
-            <button id="switchCameraBtn" disabled>
-                🔄 Switch Camera
-            </button>
-
-            <button id="torchBtn" disabled>
-                🔦 Flashlight
-            </button>
-
-            <button id="analyzeBtn" disabled>
-                🔍 Analyze Frame
-            </button>
-
-            <button id="continuousBtn" disabled>
-                ▶ Continuous Scan
-            </button>
-
-        </div>
-
+    <section class="card span3">
+      <div class="eyebrow">Browser Connectivity</div>
+      <div class="value" id="onlineValue">UNKNOWN</div>
+      <div class="muted">Browser online status</div>
+      <div class="meter"><span id="onlineMeter"></span></div>
+      <div class="statrow"><span>Page visibility</span><strong id="visibility">Visible</strong></div>
+      <div class="statrow"><span>Connection API</span><strong id="apiSupport">Checking</strong></div>
+      <div class="statrow"><span>Effective type</span><strong id="effectiveType">Unknown</strong></div>
     </section>
 
-
-    <!-- SCANNING MODES -->
-    <section class="card">
-
-        <h3>Scanning Modes</h3>
-
-        <div class="mode-grid">
-
-            <button class="mode active" id="opticalMode">
-                <div class="mode-icon">📷</div>
-                <div class="mode-title">Optical</div>
-                <div class="mode-description">
-                    Bright / IR-like points
-                </div>
-            </button>
-
-            <button class="mode" id="networkMode">
-                <div class="mode-icon">📡</div>
-                <div class="mode-title">Network</div>
-                <div class="mode-description">
-                    Browser-visible network clues
-                </div>
-            </button>
-
-            <button class="mode" id="magneticMode">
-                <div class="mode-icon">🧲</div>
-                <div class="mode-title">Magnetic</div>
-                <div class="mode-description">
-                    Magnetic-field anomalies
-                </div>
-            </button>
-
-        </div>
-
+    <section class="card span3">
+      <div class="eyebrow">Request Latency</div>
+      <div class="value" id="latencyValue">— <span class="unit">ms</span></div>
+      <div class="muted">HTTPS endpoint response time</div>
+      <div class="meter"><span id="latencyMeter"></span></div>
+      <div class="statrow"><span>Last result</span><strong id="lastResult">No sample</strong></div>
+      <div class="statrow"><span>Successful requests</span><strong id="successValue">0</strong></div>
+      <div class="statrow"><span>Failed requests</span><strong id="failureValue">0</strong></div>
     </section>
 
-
-    <!-- OPTICAL -->
-    <section class="card" id="opticalPanel">
-
-        <h3>📷 Optical Scanner</h3>
-
-        <div class="score">
-
-            <div class="score-number" id="opticalScore">
-                0
-            </div>
-
-            <div class="score-label">
-                Optical suspicion score
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar"
-                     id="opticalProgress"></div>
-            </div>
-
-        </div>
-
-        <div class="stat-grid">
-
-            <div class="stat">
-                <div class="stat-value"
-                     id="candidateCount">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Bright points
-                </div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-value"
-                     id="peakBrightness">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Peak brightness
-                </div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-value"
-                     id="stableCount">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Stable points
-                </div>
-            </div>
-
-        </div>
-
-        <div class="result good" id="opticalResult">
-
-            <div class="result-title">
-                No strong optical signal
-            </div>
-
-            <div class="result-text">
-                Start the camera and scan slowly around the room.
-            </div>
-
-        </div>
-
+    <section class="card span3">
+      <div class="eyebrow">Network Jitter</div>
+      <div class="value" id="jitterValue">— <span class="unit">ms</span></div>
+      <div class="muted">Mean absolute change between consecutive response times</div>
+      <div class="statrow"><span>Mean latency</span><strong id="meanValue">—</strong></div>
+      <div class="statrow"><span>Median latency</span><strong id="medianValue">—</strong></div>
+      <div class="statrow"><span>95th percentile</span><strong id="p95Value">—</strong></div>
     </section>
 
-
-    <!-- NETWORK -->
-    <section class="card hidden" id="networkPanel">
-
-        <h3>📡 Network Scanner</h3>
-
-        <div class="score">
-
-            <div class="score-number"
-                 id="networkScore">
-                0
-            </div>
-
-            <div class="score-label">
-                Network suspicion score
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar"
-                     id="networkProgress"></div>
-            </div>
-
-        </div>
-
-        <div class="stat-grid">
-
-            <div class="stat">
-                <div class="stat-value"
-                     id="networkDeviceCount">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Visible devices
-                </div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-value"
-                     id="networkSuspicious">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Suspicious
-                </div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-value"
-                     id="connectionType">
-                    ?
-                </div>
-
-                <div class="stat-label">
-                    Connection
-                </div>
-            </div>
-
-        </div>
-
-        <div class="network-list"
-             id="networkList"></div>
-
-        <div class="warning-box">
-            ⚠️ iOS Safari does not provide normal web pages with
-            unrestricted LAN device discovery. This section can only
-            use information exposed by the browser. A native app or
-            dedicated network scanner is required for deeper discovery.
-        </div>
-
+    <section class="card span3">
+      <div class="eyebrow">Anomaly Detector</div>
+      <div class="value cyan" id="anomalyValue">READY</div>
+      <div class="muted" id="anomalyDescription">Waiting for baseline samples</div>
+      <div class="meter"><span id="anomalyMeter"></span></div>
+      <div class="statrow"><span>Recent anomalies</span><strong id="anomalyCount">0</strong></div>
+      <div class="statrow"><span>Baseline median</span><strong id="baselineValue">—</strong></div>
+      <div class="tiny">Detects unusual latency, not physical movement.</div>
     </section>
 
-
-    <!-- MAGNETIC -->
-    <section class="card hidden" id="magneticPanel">
-
-        <h3>🧲 Magnetic Scanner</h3>
-
-        <div class="magnetic-value"
-             id="magneticValue">
-            --
-        </div>
-
-        <div class="unit">
-            µT — microtesla
-        </div>
-
-        <div class="score">
-
-            <div class="score-number"
-                 id="magneticScore">
-                0
-            </div>
-
-            <div class="score-label">
-                Magnetic anomaly score
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar"
-                     id="magneticProgress"></div>
-            </div>
-
-        </div>
-
-        <div class="result good"
-             id="magneticResult">
-
-            <div class="result-title">
-                Waiting for sensor
-            </div>
-
-            <div class="result-text">
-                Move your phone slowly around objects and furniture.
-            </div>
-
-        </div>
-
-        <button class="primary"
-                id="magneticStartBtn">
-            🧲 Start Magnetic Scan
-        </button>
-
+    <section class="card span8">
+      <div class="row">
+        <h2>Response-Time Telemetry</h2>
+        <span class="badge" id="chartCount">0 samples</span>
+      </div>
+      <canvas class="chart" id="latencyChart"></canvas>
+      <div class="row tiny"><span>Older samples ←</span><span>Milliseconds</span><span>→ Newer samples</span></div>
     </section>
 
-
-    <!-- COMBINED -->
-    <section class="card">
-
-        <h3>🛡️ Combined Investigation</h3>
-
-        <div class="score">
-
-            <div class="score-number"
-                 id="overallScore">
-                0
-            </div>
-
-            <div class="score-label">
-                Combined investigation score
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar"
-                     id="overallProgress"></div>
-            </div>
-
+    <section class="card span4">
+      <h2>Network Characteristics</h2>
+      <div class="metricgrid">
+        <div class="mini">
+          <div class="eyebrow">Downlink Estimate</div>
+          <div class="value" id="downlinkValue">—</div>
+          <div class="tiny">Mbps · if exposed</div>
         </div>
-
-        <div class="result good"
-             id="overallResult">
-
-            <div class="result-title">
-                No strong signal detected
-            </div>
-
-            <div class="result-text">
-                Use multiple scanning methods and physically inspect
-                suspicious objects before drawing conclusions.
-            </div>
-
+        <div class="mini">
+          <div class="eyebrow">RTT Estimate</div>
+          <div class="value" id="rttValue">—</div>
+          <div class="tiny">ms · if exposed</div>
         </div>
-
+        <div class="mini">
+          <div class="eyebrow">Data Saver</div>
+          <div class="value" id="saveValue" style="font-size:18px">Unknown</div>
+        </div>
+        <div class="mini">
+          <div class="eyebrow">Samples</div>
+          <div class="value" id="sampleCount">0</div>
+        </div>
+      </div>
+      <div class="notice warning" style="margin-top:13px">
+        These browser metrics are not Wi-Fi RSSI, radio power, tower distance, or CSI.
+      </div>
     </section>
 
-
-    <!-- HISTORY -->
-    <section class="card">
-
-        <h3>Scan History</h3>
-
-        <div id="history">
-            <div class="notice">
-                No scans yet.
-            </div>
-        </div>
-
-        <button id="clearHistoryBtn">
-            Clear History
-        </button>
-
+    <section class="card span6">
+      <h2>Response Variation</h2>
+      <canvas class="chart short" id="variationChart"></canvas>
+      <p class="tiny">Differences between adjacent successful measurements. Spikes may result from congestion or server response variation.</p>
     </section>
 
-
-    <section class="card">
-
-        <div class="warning-box">
-
-            <strong>Important:</strong><br><br>
-
-            This application detects signals that can sometimes be
-            associated with hidden cameras. It does <strong>not</strong>
-            prove that a camera exists.
-
-            <br><br>
-
-            Optical detection can identify bright or infrared-like
-            points. Magnetic readings can identify unusual magnetic
-            fields. Network information can reveal some devices when
-            the browser exposes them.
-
-            <br><br>
-
-            A camera that is offline, wired, non-IR, hidden behind
-            suitable material, or otherwise invisible to these sensors
-            may not be detected.
-
-        </div>
-
+    <section class="card span6">
+      <h2>Experiment Timeline</h2>
+      <canvas class="chart short" id="timelineChart"></canvas>
+      <p class="tiny">Green points indicate normal measurements; red points indicate latency anomalies. Event markers are shown separately.</p>
     </section>
 
+    <section class="card span12" id="settingsPanel" hidden>
+      <h2>⚙ Monitoring Configuration</h2>
+      <div class="formgrid">
+        <div>
+          <label for="intervalInput">Sampling interval</label>
+          <select id="intervalInput">
+            <option value="2000">2 seconds</option>
+            <option value="3000" selected>3 seconds</option>
+            <option value="5000">5 seconds</option>
+            <option value="10000">10 seconds</option>
+            <option value="30000">30 seconds</option>
+          </select>
+        </div>
+        <div>
+          <label for="maxInput">Maximum stored samples</label>
+          <select id="maxInput">
+            <option value="100">100</option>
+            <option value="300" selected>300</option>
+            <option value="1000">1000</option>
+            <option value="3000">3000</option>
+          </select>
+        </div>
+        <div>
+          <label for="thresholdInput">Anomaly threshold</label>
+          <select id="thresholdInput">
+            <option value="2">2 × robust deviation</option>
+            <option value="3" selected>3 × robust deviation</option>
+            <option value="4">4 × robust deviation</option>
+            <option value="5">5 × robust deviation</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="applySettings">Apply Settings</button>
+      </div>
+      <p class="tiny">Frequent tests generate more network requests. Background tabs may be throttled by your browser.</p>
+    </section>
 
-    <footer>
-        NightWatch • Privacy scanner • Browser-based
-    </footer>
+    <section class="card span7">
+      <h2>Controlled Environment Experiment</h2>
+      <p class="muted">Test whether changing your environment coincides with changes in network latency.</p>
 
-</div>
+      <div class="formgrid">
+        <div>
+          <label for="experimentName">Experiment name</label>
+          <input id="experimentName" value="Room movement test" maxlength="80">
+        </div>
+        <div>
+          <label for="condition">Current condition</label>
+          <select id="condition">
+            <option>Room empty</option>
+            <option>Person walking</option>
+            <option>Door opened</option>
+            <option>Fan running</option>
+            <option>Different position</option>
+            <option>Control condition</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="experimentNotes">Notes</label>
+          <input id="experimentNotes" placeholder="Optional notes" maxlength="150">
+        </div>
+      </div>
 
+      <div class="actions">
+        <button class="primary" id="beginExperiment">Begin Experiment</button>
+        <button id="recordCondition">Record Condition</button>
+        <button id="endExperiment" disabled>Finish Experiment</button>
+      </div>
+
+      <div class="metricgrid" style="margin-top:15px">
+        <div class="mini">
+          <div class="eyebrow">Experiment Status</div>
+          <div class="value" id="experimentStatus" style="font-size:20px">Idle</div>
+        </div>
+        <div class="mini">
+          <div class="eyebrow">Experiment Duration</div>
+          <div class="value" id="experimentDuration" style="font-size:20px">00:00</div>
+        </div>
+      </div>
+
+      <div class="notice" style="margin-top:13px">
+        For a useful experiment, collect a control period first, repeat each condition several times, and keep the phone in the same location. A latency change alone does not demonstrate radio-reflection sensing.
+      </div>
+    </section>
+
+    <section class="card span5">
+      <h2>Statistics & Reliability</h2>
+      <div class="statrow"><span>Successful sample rate</span><strong id="successRate">—</strong></div>
+      <div class="statrow"><span>Minimum latency</span><strong id="minValue">—</strong></div>
+      <div class="statrow"><span>Maximum latency</span><strong id="maxValue">—</strong></div>
+      <div class="statrow"><span>Standard deviation</span><strong id="stdValue">—</strong></div>
+      <div class="statrow"><span>Median absolute deviation</span><strong id="madValue">—</strong></div>
+      <div class="statrow"><span>Session duration</span><strong id="sessionDuration">00:00</strong></div>
+      <div class="actions">
+        <button id="resetStats" class="danger">Reset Session</button>
+      </div>
+    </section>
+
+    <section class="card span12">
+      <div class="row">
+        <h2>Measurement History</h2>
+        <span class="badge">LOCAL SESSION</span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Latency</th>
+              <th>Jitter</th>
+              <th>Status</th>
+              <th>Condition</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable">
+            <tr><td colspan="6" class="empty">No measurements yet. Start monitoring.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card span12">
+      <div class="row">
+        <h2>System Event Log</h2>
+        <button id="clearLog">Clear Log</button>
+      </div>
+      <div class="log" id="eventLog" aria-live="polite"></div>
+    </section>
+
+    <section class="card span12">
+      <h2>Research Boundaries</h2>
+      <div class="grid">
+        <div class="card span4">
+          <h3 class="green">Available in this app</h3>
+          <p class="tiny">HTTPS request timings, browser connectivity, exposed network estimates, local experiment records, charts, statistical summaries, and CSV/JSON exports.</p>
+        </div>
+        <div class="card span4">
+          <h3 class="yellow">Requires additional hardware or software</h3>
+          <p class="tiny">Actual Wi-Fi signal strength, CSI, raw radio samples, frequency spectra, and detailed channel measurements require appropriate device or operating-system access.</p>
+        </div>
+        <div class="card span4">
+          <h3 class="red">Not inferred by this app</h3>
+          <p class="tiny">The presence of a person, their location, movements through walls, private communications, or the physical cause of a network anomaly.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>WAVE//LAB · Experimental network telemetry · Browser-only · No backend</footer>
 
 <script>
-
+(() => {
 "use strict";
 
-
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
+const $ = id => document.getElementById(id);
+const connection = navigator.connection ||
+  navigator.mozConnection || navigator.webkitConnection;
 
 const state = {
-
-    stream: null,
-
-    facingMode: "environment",
-
-    torch: false,
-
-    continuous: false,
-
-    scanTimer: null,
-
-    opticalScore: 0,
-
-    networkScore: 0,
-
-    magneticScore: 0,
-
-    overallScore: 0,
-
-    candidates: [],
-
-    stableCandidates: [],
-
-    magneticHistory: [],
-
-    magneticRunning: false,
-
-    history: []
-
+  running: false,
+  inFlight: false,
+  timer: null,
+  startedAt: null,
+  samples: [],
+  events: [],
+  logs: [],
+  successes: 0,
+  failures: 0,
+  anomalies: 0,
+  lastLatency: null,
+  lastSampleTime: null,
+  experiment: null,
+  experimentTimer: null,
+  interval: 3000,
+  maxSamples: 300,
+  threshold: 3,
+  endpoint: "https://www.gstatic.com/generate_204"
 };
 
+const fmt = (n, digits=1) =>
+  Number.isFinite(n) ? n.toFixed(digits) : "—";
 
-/* =========================================================
-   DOM
-========================================================= */
+const median = values => {
+  if (!values.length) return NaN;
+  const a = [...values].sort((x,y)=>x-y);
+  const m = Math.floor(a.length/2);
+  return a.length % 2 ? a[m] : (a[m-1]+a[m])/2;
+};
 
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", {
-    willReadFrequently: true
-});
+const mean = a => a.length ? a.reduce((s,v)=>s+v,0)/a.length : NaN;
 
-const statusDot =
-    document.getElementById("statusDot");
+function log(message) {
+  const entry = {time:new Date().toISOString(), message};
+  state.logs.push(entry);
+  if (state.logs.length > 500) state.logs.shift();
 
-const cameraStatus =
-    document.getElementById("cameraStatus");
+  const div = document.createElement("div");
+  div.className = "logline";
+  div.textContent = new Date(entry.time).toLocaleTimeString() + " · " + message;
+  $("eventLog").prepend(div);
 
-const candidateBadge =
-    document.getElementById("candidateBadge");
-
-const startCameraBtn =
-    document.getElementById("startCameraBtn");
-
-const stopCameraBtn =
-    document.getElementById("stopCameraBtn");
-
-const switchCameraBtn =
-    document.getElementById("switchCameraBtn");
-
-const torchBtn =
-    document.getElementById("torchBtn");
-
-const analyzeBtn =
-    document.getElementById("analyzeBtn");
-
-const continuousBtn =
-    document.getElementById("continuousBtn");
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-async function startCamera() {
-
-    try {
-
-        stopCamera();
-
-        const constraints = {
-
-            audio: false,
-
-            video: {
-
-                facingMode: {
-                    ideal: state.facingMode
-                },
-
-                width: {
-                    ideal: 1280
-                },
-
-                height: {
-                    ideal: 720
-                }
-            }
-
-        };
-
-        state.stream =
-            await navigator.mediaDevices
-                .getUserMedia(constraints);
-
-        video.srcObject = state.stream;
-
-        await video.play();
-
-        statusDot.classList.add("active");
-
-        cameraStatus.textContent =
-            "Camera Active";
-
-        startCameraBtn.disabled = true;
-
-        stopCameraBtn.disabled = false;
-
-        switchCameraBtn.disabled = false;
-
-        analyzeBtn.disabled = false;
-
-        continuousBtn.disabled = false;
-
-        setupTorch();
-
-        await waitForVideo();
-
-        analyzeFrame();
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to access the camera.\n\n" +
-            "Make sure you allowed camera permission and " +
-            "are using HTTPS."
-        );
-
-    }
-
+  while ($("eventLog").children.length > 120) {
+    $("eventLog").lastElementChild.remove();
+  }
 }
 
+function updateConnection() {
+  const online = navigator.onLine;
 
-function waitForVideo() {
+  $("onlineValue").textContent = online ? "ONLINE" : "OFFLINE";
+  $("onlineValue").className = "value " + (online ? "green" : "red");
+  $("onlineMeter").style.width = online ? "100%" : "0%";
+  $("statusDot").classList.toggle("off", !online);
+  $("statusText").textContent = online ? "BROWSER ONLINE" : "BROWSER OFFLINE";
+  $("visibility").textContent = document.hidden ? "Background" : "Visible";
 
-    return new Promise(resolve => {
+  $("apiSupport").textContent = connection ? "Available" : "Unavailable";
+  $("effectiveType").textContent =
+    connection?.effectiveType || connection?.type || "Not exposed";
 
-        if (video.readyState >= 2) {
-            resolve();
-            return;
-        }
+  $("downlinkValue").textContent =
+    connection?.downlink != null ? fmt(connection.downlink,2) : "—";
 
-        video.onloadeddata = () => resolve();
+  $("rttValue").textContent =
+    connection?.rtt != null ? fmt(connection.rtt,0) : "—";
 
+  $("saveValue").textContent =
+    connection?.saveData == null ? "Unknown" :
+    connection.saveData ? "Enabled" : "Disabled";
+}
+
+function successfulSamples() {
+  return state.samples.filter(s => Number.isFinite(s.ms));
+}
+
+function getStatistics() {
+  const a = successfulSamples().map(s => s.ms);
+  const m = mean(a);
+  const med = median(a);
+  const mad = median(a.map(v=>Math.abs(v-med)));
+  const variance = a.length
+    ? mean(a.map(v=>(v-m)**2)) : NaN;
+  const sorted = [...a].sort((x,y)=>x-y);
+
+  return {
+    count:a.length,
+    mean:m,
+    median:med,
+    mad,
+    std:Math.sqrt(variance),
+    min:a.length ? Math.min(...a) : NaN,
+    max:a.length ? Math.max(...a) : NaN,
+    p95:sorted.length ? sorted[Math.min(
+      sorted.length-1,Math.ceil(sorted.length*.95)-1
+    )] : NaN
+  };
+}
+
+function anomalyFor(ms) {
+  const values = successfulSamples().slice(-30,-1).map(s=>s.ms);
+  if (values.length < 8) {
+    return {anomaly:false, baseline:median(values), score:0, reason:"Building baseline"};
+  }
+
+  const med = median(values);
+  const mad = median(values.map(v=>Math.abs(v-med)));
+
+  // MAD is robust to isolated extreme observations.
+  // The 1 ms floor avoids division by zero on stable connections.
+  const robustScale = Math.max(1,1.4826*mad);
+  const score = Math.abs(ms-med)/robustScale;
+
+  return {
+    anomaly:score >= state.threshold,
+    baseline:med,
+    score,
+    reason:score >= state.threshold
+      ? "Unusual response time"
+      : "Within expected range"
+  };
+}
+
+function addSample(sample) {
+  state.samples.push(sample);
+
+  if (state.samples.length > state.maxSamples) {
+    state.samples.splice(0,state.samples.length-state.maxSamples);
+  }
+
+  render();
+}
+
+async function takeSample() {
+  if (state.inFlight) return;
+  state.inFlight = true;
+  $("sampleBtn").disabled = true;
+
+  const start = performance.now();
+  let ms = NaN;
+  let ok = false;
+  let error = "";
+
+  try {
+    if (!navigator.onLine) throw new Error("Browser reports offline");
+
+    // Opaque cross-origin response is sufficient for elapsed-time measurement.
+    // It does not reveal the server response body or server-side processing time.
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(),8000);
+
+    try {
+      await fetch(state.endpoint+"?t="+Date.now(),{
+        method:"GET",
+        mode:"no-cors",
+        cache:"no-store",
+        signal:controller.signal
+      });
+      ms = performance.now()-start;
+      ok = true;
+    } finally {
+      clearTimeout(timeout);
+    }
+  } catch (e) {
+    error = e.name === "AbortError" ? "Request timed out" : e.message;
+  }
+
+  const now = new Date();
+  let jitter = NaN;
+
+  if (ok) {
+    state.successes++;
+
+    if (Number.isFinite(state.lastLatency)) {
+      jitter = Math.abs(ms-state.lastLatency);
+    }
+
+    const detection = anomalyFor(ms);
+
+    if (detection.anomaly) {
+      state.anomalies++;
+      log("Latency anomaly: "+fmt(ms)+" ms; baseline "+fmt(detection.baseline)+" ms");
+    }
+
+    state.lastLatency = ms;
+    state.lastSampleTime = now.toISOString();
+
+    addSample({
+      time:now.toISOString(),
+      ms,
+      jitter,
+      ok:true,
+      anomaly:detection.anomaly,
+      baseline:detection.baseline,
+      score:detection.score,
+      condition:state.experiment?.condition || "",
+      experiment:state.experiment?.name || "",
+      notes:state.experiment?.notes || ""
     });
 
+    $("latencyValue").innerHTML = fmt(ms)+' <span class="unit">ms</span>';
+    $("latencyMeter").style.width = Math.min(100,ms/10)+"%";
+    $("lastResult").textContent = "Success";
+  } else {
+    state.failures++;
+
+    addSample({
+      time:now.toISOString(),
+      ms:NaN,
+      jitter:NaN,
+      ok:false,
+      anomaly:false,
+      baseline:NaN,
+      score:NaN,
+      condition:state.experiment?.condition || "",
+      experiment:state.experiment?.name || "",
+      notes:state.experiment?.notes || "",
+      error
+    });
+
+    $("lastResult").textContent = error || "Failed";
+    log("Request failed: "+error);
+  }
+
+  state.inFlight = false;
+  $("sampleBtn").disabled = false;
+  render();
 }
 
+function drawLineChart(canvas,values,options={}) {
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio||1,2);
 
-function stopCamera() {
+  if (!rect.width) return;
 
-    stopContinuousScan();
+  canvas.width = Math.round(rect.width*dpr);
+  canvas.height = Math.round(rect.height*dpr);
 
-    if (state.stream) {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#0a101d";
+  ctx.fillRect(0,0,w,h);
 
-        state.stream
-            .getTracks()
-            .forEach(track => track.stop());
+  const pad=36*dpr;
+  const right=w-12*dpr;
+  const top=13*dpr;
+  const bottom=h-25*dpr;
+  const gw=right-pad;
+  const gh=bottom-top;
 
-        state.stream = null;
+  ctx.font=`${10*dpr}px system-ui`;
+  ctx.strokeStyle="#233149";
+  ctx.fillStyle="#8999b6";
+  ctx.lineWidth=1*dpr;
 
+  const valid=values.filter(v=>Number.isFinite(v.value));
+  const max=Math.max(10,...valid.map(v=>v.value))*1.12;
+
+  for(let i=0;i<=4;i++) {
+    const y=top+gh*i/4;
+    ctx.beginPath();
+    ctx.moveTo(pad,y);
+    ctx.lineTo(right,y);
+    ctx.stroke();
+    ctx.fillText((max*(1-i/4)).toFixed(0),2*dpr,y+3*dpr);
+  }
+
+  if(!values.length) {
+    ctx.fillText("Waiting for measurements",pad+10*dpr,h/2);
+    return;
+  }
+
+  let previous=null;
+
+  values.forEach((v,i)=>{
+    if(!Number.isFinite(v.value)) {
+      previous=null;
+      return;
     }
 
-    video.srcObject = null;
+    const x=pad+(values.length===1?gw/2:i*gw/(values.length-1));
+    const y=bottom-(v.value/max)*gh;
 
-    statusDot.classList.remove("active");
+    if(previous) {
+      ctx.strokeStyle=v.anomaly?"#ff637e":"#43f5df";
+      ctx.lineWidth=1.8*dpr;
+      ctx.beginPath();
+      ctx.moveTo(previous.x,previous.y);
+      ctx.lineTo(x,y);
+      ctx.stroke();
+    }
 
-    cameraStatus.textContent =
-        "Camera Off";
+    ctx.fillStyle=v.anomaly?"#ff637e":
+      options.color || "#43f5df";
+    ctx.beginPath();
+    ctx.arc(x,y,2.5*dpr,0,Math.PI*2);
+    ctx.fill();
 
-    startCameraBtn.disabled = false;
-
-    stopCameraBtn.disabled = true;
-
-    switchCameraBtn.disabled = true;
-
-    torchBtn.disabled = true;
-
-    analyzeBtn.disabled = true;
-
-    continuousBtn.disabled = true;
-
+    previous={x,y};
+  });
 }
 
+function renderCharts() {
+  const all=state.samples;
+  const recent=all.slice(-80);
 
-async function switchCamera() {
+  drawLineChart($("latencyChart"),recent.map(s=>({
+    value:s.ms, anomaly:s.anomaly
+  })));
 
-    if (!state.stream) return;
+  const variation=[];
+  for(let i=1;i<recent.length;i++) {
+    const a=recent[i-1].ms,b=recent[i].ms;
+    variation.push({
+      value:Number.isFinite(a)&&Number.isFinite(b)?Math.abs(b-a):NaN,
+      anomaly:recent[i].anomaly
+    });
+  }
 
-    state.facingMode =
-        state.facingMode === "environment"
-            ? "user"
-            : "environment";
+  drawLineChart($("variationChart"),variation,{color:"#729bff"});
 
-    await startCamera();
+  const timeline=all.slice(-80).map(s=>({
+    value:s.ms,
+    anomaly:s.anomaly
+  }));
 
+  drawLineChart($("timelineChart"),timeline);
 }
 
+function renderTable() {
+  const body=$("historyTable");
+  body.replaceChildren();
 
-function setupTorch() {
+  const recent=state.samples.slice(-30).reverse();
 
-    torchBtn.disabled = true;
+  if(!recent.length) {
+    const tr=document.createElement("tr");
+    const td=document.createElement("td");
+    td.colSpan=6;
+    td.className="empty";
+    td.textContent="No measurements yet. Start monitoring.";
+    tr.append(td);
+    body.append(tr);
+    return;
+  }
 
-    if (!state.stream) return;
+  for(const s of recent) {
+    const tr=document.createElement("tr");
+    const vals=[
+      new Date(s.time).toLocaleTimeString(),
+      Number.isFinite(s.ms)?fmt(s.ms)+" ms":"Failed",
+      Number.isFinite(s.jitter)?fmt(s.jitter)+" ms":"—",
+      !s.ok?"Failed":s.anomaly?"Anomaly":"Normal",
+      s.condition||"—",
+      s.notes||s.error||"—"
+    ];
 
-    const track =
-        state.stream.getVideoTracks()[0];
+    vals.forEach((value,i)=>{
+      const td=document.createElement("td");
+      td.textContent=value;
+      if(i===3) td.className=!s.ok||s.anomaly?"red":"green";
+      tr.append(td);
+    });
 
-    if (!track) return;
-
-    const capabilities =
-        track.getCapabilities
-            ? track.getCapabilities()
-            : {};
-
-    if (capabilities.torch) {
-
-        torchBtn.disabled = false;
-
-        torchBtn.textContent =
-            state.torch
-                ? "🔦 Torch ON"
-                : "🔦 Flashlight";
-
-    }
-
+    body.append(tr);
+  }
 }
 
+function render() {
+  const stats=getStatistics();
+  const samples=state.samples;
+  const total=state.successes+state.failures;
 
-async function toggleTorch() {
+  $("successValue").textContent=state.successes;
+  $("failureValue").textContent=state.failures;
+  $("sampleCount").textContent=samples.length;
+  $("chartCount").textContent=samples.length+" samples";
 
-    if (!state.stream) return;
+  $("jitterValue").innerHTML =
+    fmt(mean(samples.map(s=>s.jitter).filter(Number.isFinite)))+
+    ' <span class="unit">ms</span>';
 
-    const track =
-        state.stream.getVideoTracks()[0];
+  $("meanValue").textContent=fmt(stats.mean)+" ms";
+  $("medianValue").textContent=fmt(stats.median)+" ms";
+  $("p95Value").textContent=fmt(stats.p95)+" ms";
 
-    if (!track) return;
+  $("minValue").textContent=fmt(stats.min)+" ms";
+  $("maxValue").textContent=fmt(stats.max)+" ms";
+  $("stdValue").textContent=fmt(stats.std)+" ms";
+  $("madValue").textContent=fmt(stats.mad)+" ms";
+  $("successRate").textContent=total
+    ? (100*state.successes/total).toFixed(1)+"%" : "—";
 
-    const capabilities =
-        track.getCapabilities
-            ? track.getCapabilities()
-            : {};
+  const values=successfulSamples().slice(-30,-1).map(s=>s.ms);
+  const base=median(values);
 
-    if (!capabilities.torch) {
+  $("baselineValue").textContent=Number.isFinite(base)?fmt(base)+" ms":"—";
 
-        alert(
-            "Your browser does not expose flashlight control."
-        );
+  const recentAnomaly=samples.slice(-30).filter(s=>s.anomaly).length;
+  $("anomalyCount").textContent=state.anomalies;
 
-        return;
+  if(values.length<8) {
+    $("anomalyValue").textContent="CALIBRATING";
+    $("anomalyDescription").textContent="Need at least 8 previous successful samples";
+    $("anomalyMeter").style.width="10%";
+  } else {
+    $("anomalyValue").textContent=recentAnomaly?"ACTIVITY":"STABLE";
+    $("anomalyValue").className="value "+(recentAnomaly?"yellow":"green");
+    $("anomalyDescription").textContent=recentAnomaly
+      ?recentAnomaly+" unusual latency sample(s) in recent history"
+      :"No recent latency anomalies";
+    $("anomalyMeter").style.width=Math.min(100,recentAnomaly*15)+"%";
+  }
 
-    }
-
-    state.torch = !state.torch;
-
-    try {
-
-        await track.applyConstraints({
-            advanced: [
-                {
-                    torch: state.torch
-                }
-            ]
-        });
-
-        torchBtn.textContent =
-            state.torch
-                ? "🔦 Torch ON"
-                : "🔦 Flashlight";
-
-    } catch (error) {
-
-        console.error(error);
-
-        state.torch = false;
-
-    }
-
+  renderCharts();
+  renderTable();
+  updateConnection();
+  updateDurations();
 }
 
-
-/* =========================================================
-   OPTICAL SCANNER
-========================================================= */
-
-function analyzeFrame() {
-
-    if (!state.stream ||
-        video.readyState < 2) {
-
-        return;
-
-    }
-
-    const width = 640;
-
-    const ratio =
-        video.videoHeight /
-        video.videoWidth;
-
-    const height =
-        Math.max(
-            360,
-            Math.floor(width * ratio)
-        );
-
-    canvas.width = width;
-    canvas.height = height;
-
-    ctx.drawImage(
-        video,
-        0,
-        0,
-        width,
-        height
-    );
-
-    const image =
-        ctx.getImageData(
-            0,
-            0,
-            width,
-            height
-        );
-
-    const data = image.data;
-
-    const points = [];
-
-    const step = 3;
-
-    /*
-       Look for very bright pixels whose
-       surrounding pixels are significantly darker.
-    */
-
-    for (
-        let y = 5;
-        y < height - 5;
-        y += step
-    ) {
-
-        for (
-            let x = 5;
-            x < width - 5;
-            x += step
-        ) {
-
-            const i =
-                (y * width + x) * 4;
-
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-
-            const brightness =
-                0.299 * r +
-                0.587 * g +
-                0.114 * b;
-
-            if (brightness < 235) {
-                continue;
-            }
-
-            let surrounding = 0;
-            let count = 0;
-
-            for (
-                let oy = -4;
-                oy <= 4;
-                oy += 2
-            ) {
-
-                for (
-                    let ox = -4;
-                    ox <= 4;
-                    ox += 2
-                ) {
-
-                    if (ox === 0 && oy === 0)
-                        continue;
-
-                    const nx = x + ox;
-                    const ny = y + oy;
-
-                    const ni =
-                        (ny * width + nx) * 4;
-
-                    const nr = data[ni];
-                    const ng = data[ni + 1];
-                    const nb = data[ni + 2];
-
-                    surrounding +=
-                        0.299 * nr +
-                        0.587 * ng +
-                        0.114 * nb;
-
-                    count++;
-
-                }
-
-            }
-
-            surrounding /=
-                count || 1;
-
-            const contrast =
-                brightness -
-                surrounding;
-
-            if (contrast > 70) {
-
-                points.push({
-
-                    x,
-                    y,
-
-                    brightness,
-
-                    contrast
-
-                });
-
-            }
-
-        }
-
-    }
-
-
-    const clustered =
-        clusterPoints(points);
-
-    state.candidates =
-        clustered.slice(0, 30);
-
-    /*
-       Stability:
-       Compare current points with previous
-       frame's candidate locations.
-    */
-
-    const stable = [];
-
-    for (const point of state.candidates) {
-
-        const found =
-            state.stableCandidates.some(old => {
-
-                const dx =
-                    old.x - point.x;
-
-                const dy =
-                    old.y - point.y;
-
-                return Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                ) < 35;
-
-            });
-
-        if (found) {
-            stable.push(point);
-        }
-
-    }
-
-    state.stableCandidates =
-        state.candidates;
-
-    const peak =
-        state.candidates.length
-            ? Math.max(
-                ...state.candidates
-                    .map(p => p.brightness)
-              )
-            : 0;
-
-    /*
-       Heuristic scoring.
-    */
-
-    let score = 0;
-
-    score +=
-        Math.min(
-            45,
-            state.candidates.length * 7
-        );
-
-    score +=
-        Math.min(
-            30,
-            stable.length * 10
-        );
-
-    if (peak > 250) {
-        score += 15;
-    }
-
-    score = Math.min(100, score);
-
-    state.opticalScore = score;
-
-    updateOpticalUI(
-        state.candidates.length,
-        stable.length,
-        peak,
-        score
-    );
-
-    updateOverall();
-
+function updateDurations() {
+  const elapsed=state.startedAt?Date.now()-state.startedAt:0;
+  $("sessionDuration").textContent=formatDuration(elapsed);
+
+  const exElapsed=state.experiment?Date.now()-state.experiment.started:0;
+  $("experimentDuration").textContent=formatDuration(exElapsed);
 }
 
+function formatDuration(ms) {
+  const total=Math.floor(ms/1000);
+  const h=Math.floor(total/3600);
+  const m=Math.floor((total%3600)/60);
+  const s=total%60;
 
-function clusterPoints(points) {
-
-    const clusters = [];
-
-    for (const point of points) {
-
-        let cluster = null;
-
-        for (const existing of clusters) {
-
-            const dx =
-                existing.x -
-                point.x;
-
-            const dy =
-                existing.y -
-                point.y;
-
-            const distance =
-                Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                );
-
-            if (distance < 18) {
-
-                cluster = existing;
-
-                break;
-
-            }
-
-        }
-
-        if (!cluster) {
-
-            clusters.push({
-                x: point.x,
-                y: point.y,
-                brightness: point.brightness,
-                contrast: point.contrast,
-                count: 1
-            });
-
-        } else {
-
-            cluster.x =
-                (cluster.x * cluster.count +
-                 point.x) /
-                (cluster.count + 1);
-
-            cluster.y =
-                (cluster.y * cluster.count +
-                 point.y) /
-                (cluster.count + 1);
-
-            cluster.brightness =
-                Math.max(
-                    cluster.brightness,
-                    point.brightness
-                );
-
-            cluster.contrast =
-                Math.max(
-                    cluster.contrast,
-                    point.contrast
-                );
-
-            cluster.count++;
-
-        }
-
-    }
-
-    return clusters
-        .sort(
-            (a, b) =>
-                (b.brightness + b.contrast) -
-                (a.brightness + a.contrast)
-        );
-
+  return h
+    ?String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")
+    :String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
 }
 
+function startMonitoring() {
+  if(state.running) {
+    stopMonitoring();
+    return;
+  }
 
-function updateOpticalUI(
-    count,
-    stable,
-    peak,
-    score
-) {
+  state.running=true;
+  if(!state.startedAt) state.startedAt=Date.now();
 
-    document.getElementById(
-        "candidateCount"
-    ).textContent = count;
+  $("startBtn").textContent="■ Stop Monitoring";
+  $("startBtn").classList.remove("primary");
+  log("Monitoring started; interval "+state.interval+" ms");
 
-    document.getElementById(
-        "stableCount"
-    ).textContent = stable;
-
-    document.getElementById(
-        "peakBrightness"
-    ).textContent =
-        Math.round(peak);
-
-    candidateBadge.textContent =
-        `${count} point${count === 1 ? "" : "s"}`;
-
-    document.getElementById(
-        "opticalScore"
-    ).textContent = score;
-
-    document.getElementById(
-        "opticalProgress"
-    ).style.width =
-        score + "%";
-
-    const result =
-        document.getElementById(
-            "opticalResult"
-        );
-
-    if (score >= 70) {
-
-        result.className =
-            "result danger";
-
-        result.innerHTML = `
-            <div class="result-title">
-                Strong optical anomaly
-            </div>
-
-            <div class="result-text">
-                Multiple unusually bright points were detected.
-                Inspect these locations physically and repeat the
-                scan from another angle.
-            </div>
-        `;
-
-    } else if (score >= 35) {
-
-        result.className =
-            "result warning";
-
-        result.innerHTML = `
-            <div class="result-title">
-                Possible optical anomaly
-            </div>
-
-            <div class="result-text">
-                Some unusually bright points were detected.
-                These can also be reflections, LEDs or normal
-                light sources.
-            </div>
-        `;
-
-    } else {
-
-        result.className =
-            "result good";
-
-        result.innerHTML = `
-            <div class="result-title">
-                No strong optical signal
-            </div>
-
-            <div class="result-text">
-                No strong concentrated bright-point pattern was
-                detected in the current frame.
-            </div>
-        `;
-
-    }
-
+  takeSample();
+  state.timer=setInterval(takeSample,state.interval);
 }
 
-
-/* =========================================================
-   CONTINUOUS SCANNING
-========================================================= */
-
-function startContinuousScan() {
-
-    if (state.continuous) {
-
-        stopContinuousScan();
-
-        return;
-
-    }
-
-    state.continuous = true;
-
-    continuousBtn.textContent =
-        "⏹ Stop Continuous";
-
-    state.scanTimer =
-        setInterval(
-            analyzeFrame,
-            350
-        );
-
+function stopMonitoring() {
+  state.running=false;
+  clearInterval(state.timer);
+  state.timer=null;
+  $("startBtn").textContent="▶ Start Monitoring";
+  $("startBtn").classList.add("primary");
+  log("Monitoring stopped");
 }
 
+function recordEvent(label,details={}) {
+  const event={
+    time:new Date().toISOString(),
+    label,
+    condition:details.condition||"",
+    notes:details.notes||""
+  };
 
-function stopContinuousScan() {
-
-    state.continuous = false;
-
-    if (state.scanTimer) {
-
-        clearInterval(
-            state.scanTimer
-        );
-
-        state.scanTimer = null;
-
-    }
-
-    continuousBtn.textContent =
-        "▶ Continuous Scan";
-
+  state.events.push(event);
+  log("Event: "+label+(event.notes?" — "+event.notes:""));
+  render();
 }
 
+function beginExperiment() {
+  if(state.experiment) {
+    log("An experiment is already running");
+    return;
+  }
 
-/* =========================================================
-   MAGNETOMETER
-========================================================= */
+  state.experiment={
+    name:$("experimentName").value.trim()||"Untitled experiment",
+    condition:$("condition").value,
+    notes:$("experimentNotes").value.trim(),
+    started:Date.now(),
+    startISO:new Date().toISOString()
+  };
 
-async function startMagneticScan() {
+  $("experimentStatus").textContent="Recording";
+  $("beginExperiment").disabled=true;
+  $("endExperiment").disabled=false;
 
-    if (!("DeviceMotionEvent" in window)) {
+  recordEvent("Experiment started",{
+    condition:state.experiment.condition,
+    notes:state.experiment.name
+  });
 
-        alert(
-            "This browser does not expose motion sensors."
-        );
-
-        return;
-
-    }
-
-    /*
-       iOS requires permission for motion sensors.
-    */
-
-    if (
-        typeof DeviceMotionEvent.requestPermission ===
-        "function"
-    ) {
-
-        try {
-
-            const permission =
-                await DeviceMotionEvent
-                    .requestPermission();
-
-            if (permission !== "granted") {
-
-                alert(
-                    "Motion sensor permission was not granted."
-                );
-
-                return;
-
-            }
-
-        } catch (error) {
-
-            console.error(error);
-
-            return;
-
-        }
-
-    }
-
-    state.magneticRunning = true;
-
-    window.addEventListener(
-        "devicemotion",
-        handleMotion
-    );
-
-    document.getElementById(
-        "magneticStartBtn"
-    ).textContent =
-        "🧲 Magnetic Scan Active";
-
+  if(!state.running) startMonitoring();
 }
 
+function changeCondition() {
+  if(!state.experiment) {
+    log("Start an experiment before recording experimental conditions");
+    return;
+  }
 
-function handleMotion(event) {
+  state.experiment.condition=$("condition").value;
+  state.experiment.notes=$("experimentNotes").value.trim();
 
-    /*
-       DeviceMotionEvent does not expose a
-       guaranteed calibrated magnetic field
-       measurement on every browser.
-
-       Some browsers may expose magnetic field
-       through DeviceOrientationEvent instead.
-
-       We therefore use available acceleration/
-       rotation data as a motion/anomaly proxy
-       rather than pretending it is an RF detector.
-    */
-
-    const a =
-        event.accelerationIncludingGravity;
-
-    if (!a) return;
-
-    const x = a.x || 0;
-    const y = a.y || 0;
-    const z = a.z || 0;
-
-    const magnitude =
-        Math.sqrt(
-            x * x +
-            y * y +
-            z * z
-        );
-
-    state.magneticHistory.push(
-        magnitude
-    );
-
-    if (
-        state.magneticHistory.length > 30
-    ) {
-
-        state.magneticHistory.shift();
-
-    }
-
-    /*
-       Approximate sensor variation.
-       This is NOT a direct magnetic-field
-       measurement.
-    */
-
-    const average =
-        state.magneticHistory.reduce(
-            (a, b) => a + b,
-            0
-        ) /
-        state.magneticHistory.length;
-
-    const deviation =
-        Math.abs(
-            magnitude - average
-        );
-
-    const score =
-        Math.min(
-            100,
-            Math.round(
-                deviation * 12
-            )
-        );
-
-    state.magneticScore =
-        score;
-
-    /*
-       Display a clearly labelled
-       sensor-related value.
-    */
-
-    document.getElementById(
-        "magneticValue"
-    ).textContent =
-        magnitude.toFixed(2);
-
-    document.getElementById(
-        "magneticScore"
-    ).textContent =
-        score;
-
-    document.getElementById(
-        "magneticProgress"
-    ).style.width =
-        score + "%";
-
-    updateMagneticUI(score);
-
-    updateOverall();
-
+  recordEvent("Condition changed",{
+    condition:state.experiment.condition,
+    notes:state.experiment.notes
+  });
 }
 
+function endExperiment() {
+  if(!state.experiment) return;
 
-function updateMagneticUI(score) {
+  recordEvent("Experiment finished",{
+    condition:state.experiment.condition,
+    notes:state.experiment.name
+  });
 
-    const result =
-        document.getElementById(
-            "magneticResult"
-        );
-
-    if (score >= 70) {
-
-        result.className =
-            "result warning";
-
-        result.innerHTML = `
-            <div class="result-title">
-                Strong sensor variation
-            </div>
-
-            <div class="result-text">
-                The phone's motion sensors changed significantly.
-                This is not proof of a magnetic anomaly or camera.
-            </div>
-        `;
-
-    } else {
-
-        result.className =
-            "result good";
-
-        result.innerHTML = `
-            <div class="result-title">
-                Normal sensor variation
-            </div>
-
-            <div class="result-text">
-                No unusually large sensor variation is currently
-                visible.
-            </div>
-        `;
-
-    }
-
+  state.experiment=null;
+  $("experimentStatus").textContent="Finished";
+  $("beginExperiment").disabled=false;
+  $("endExperiment").disabled=true;
+  log("Experiment completed");
 }
 
-
-/* =========================================================
-   NETWORK
-========================================================= */
-
-async function scanNetwork() {
-
-    /*
-       Browser security intentionally prevents
-       unrestricted LAN port/device scanning.
-
-       We can still expose connection information
-       that the browser makes available.
-    */
-
-    const connection =
-        navigator.connection ||
-        navigator.mozConnection ||
-        navigator.webkitConnection;
-
-    let connectionType = "?";
-
-    if (connection) {
-
-        connectionType =
-            connection.effectiveType ||
-            connection.type ||
-            "?";
-
-    }
-
-    document.getElementById(
-        "connectionType"
-    ).textContent =
-        connectionType;
-
-    /*
-       We create a transparent "browser-visible"
-       device entry rather than falsely claiming
-       that we discovered LAN devices.
-    */
-
-    const list =
-        document.getElementById(
-            "networkList"
-        );
-
-    list.innerHTML = "";
-
-    const device = document.createElement(
-        "div"
-    );
-
-    device.className = "device";
-
-    device.innerHTML = `
-        <div class="device-name">
-            📱 Current browser
-        </div>
-
-        <div class="device-detail">
-            Connection: ${connectionType}
-        </div>
-    `;
-
-    list.appendChild(device);
-
-    document.getElementById(
-        "networkDeviceCount"
-    ).textContent = "1";
-
-    document.getElementById(
-        "networkSuspicious"
-    ).textContent = "0";
-
-    state.networkScore = 0;
-
-    document.getElementById(
-        "networkScore"
-    ).textContent = "0";
-
-    document.getElementById(
-        "networkProgress"
-    ).style.width = "0%";
-
-    updateOverall();
-
+function download(filename,content,type) {
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
+function exportCSV() {
+  const rows=[
+    ["timestamp","latency_ms","jitter_ms","success","anomaly",
+     "baseline_ms","anomaly_score","condition","experiment","notes","error"]
+  ];
 
-function createNetworkScannerExplanation() {
+  state.samples.forEach(s=>rows.push([
+    s.time,s.ms,s.jitter,s.ok,s.anomaly,s.baseline,s.score,
+    s.condition,s.experiment,s.notes,s.error||""
+  ]));
 
-    const list =
-        document.getElementById(
-            "networkList"
-        );
+  state.events.forEach(e=>rows.push([
+    e.time,"","","","EVENT","","",e.condition,"",e.notes,e.label
+  ]));
 
-    const info =
-        document.createElement(
-            "div"
-        );
+  const csv=rows.map(row=>row.map(v=>{
+    let s=String(v??"");
+    // Protect spreadsheet software against formula injection.
+    if(/^[=+\-@\t\r]/.test(s)) s="'"+s;
+    return '"'+s.replace(/"/g,'""')+'"';
+  }).join(",")).join("\r\n");
 
-    info.className =
-        "notice";
-
-    info.style.marginTop =
-        "10px";
-
-    info.innerHTML = `
-        <strong>Why are there no LAN devices?</strong><br><br>
-        Safari and modern browsers isolate web pages from
-        unrestricted local-network scanning. This protects
-        users from malicious websites scanning their home
-        network.
-        <br><br>
-        A native iOS application has different APIs and
-        permissions, but even native iOS apps cannot simply
-        perform unrestricted packet/RF scanning.
-    `;
-
-    list.appendChild(info);
-
+  download("wave-lab-"+Date.now()+".csv",csv,"text/csv;charset=utf-8");
+  log("CSV exported");
 }
 
+function exportJSON() {
+  const data={
+    app:"WAVE//LAB",
+    version:"2.0",
+    exportedAt:new Date().toISOString(),
+    environment:{
+      browserOnline:navigator.onLine,
+      connectionType:connection?.effectiveType||null,
+      downlinkMbps:connection?.downlink??null,
+      reportedRttMs:connection?.rtt??null
+    },
+    settings:{
+      intervalMs:state.interval,
+      maxSamples:state.maxSamples,
+      anomalyThreshold:state.threshold
+    },
+    summary:getStatistics(),
+    samples:state.samples,
+    events:state.events,
+    logs:state.logs
+  };
 
-/* =========================================================
-   COMBINED SCORE
-========================================================= */
-
-function updateOverall() {
-
-    /*
-       Optical gets the strongest weight because
-       this application can actually analyze the
-       camera image.
-
-       Network and magnetic values are deliberately
-       weighted conservatively.
-    */
-
-    const overall =
-        Math.round(
-            state.opticalScore * 0.65 +
-            state.networkScore * 0.15 +
-            state.magneticScore * 0.20
-        );
-
-    state.overallScore =
-        Math.min(
-            100,
-            overall
-        );
-
-    document.getElementById(
-        "overallScore"
-    ).textContent =
-        state.overallScore;
-
-    document.getElementById(
-        "overallProgress"
-    ).style.width =
-        state.overallScore + "%";
-
-    const result =
-        document.getElementById(
-            "overallResult"
-        );
-
-    if (state.overallScore >= 70) {
-
-        result.className =
-            "result danger";
-
-        result.innerHTML = `
-            <div class="result-title">
-                Investigate this area
-            </div>
-
-            <div class="result-text">
-                Multiple signals currently indicate that
-                further physical inspection may be useful.
-                This score does not confirm a hidden camera.
-            </div>
-        `;
-
-    } else if (state.overallScore >= 35) {
-
-        result.className =
-            "result warning";
-
-        result.innerHTML = `
-            <div class="result-title">
-                Some unusual signals detected
-            </div>
-
-            <div class="result-text">
-                Repeat the scan from different angles and
-                physically inspect unusual objects or light
-                sources.
-            </div>
-        `;
-
-    } else {
-
-        result.className =
-            "result good";
-
-        result.innerHTML = `
-            <div class="result-title">
-                No strong combined signal
-            </div>
-
-            <div class="result-text">
-                No strong combination of available signals has
-                been detected.
-            </div>
-        `;
-
-    }
-
+  download("wave-lab-"+Date.now()+".json",
+    JSON.stringify(data,null,2),"application/json");
+  log("JSON exported");
 }
 
+$("startBtn").addEventListener("click",startMonitoring);
+$("sampleBtn").addEventListener("click",takeSample);
+$("markBtn").addEventListener("click",()=>{
+  const label=prompt("Describe the event:");
+  if(label!==null&&label.trim()) recordEvent(label.trim(),{
+    condition:$("condition").value,
+    notes:$("experimentNotes").value.trim()
+  });
+});
 
-/* =========================================================
-   MODE SWITCHING
-========================================================= */
+$("settingsBtn").addEventListener("click",()=>{
+  $("settingsPanel").hidden=!$("settingsPanel").hidden;
+});
 
-const opticalMode =
-    document.getElementById(
-        "opticalMode"
-    );
+$("applySettings").addEventListener("click",()=>{
+  state.interval=Number($("intervalInput").value);
+  state.maxSamples=Number($("maxInput").value);
+  state.threshold=Number($("thresholdInput").value);
 
-const networkMode =
-    document.getElementById(
-        "networkMode"
-    );
+  if(state.samples.length>state.maxSamples) {
+    state.samples=state.samples.slice(-state.maxSamples);
+  }
 
-const magneticMode =
-    document.getElementById(
-        "magneticMode"
-    );
+  if(state.running) {
+    clearInterval(state.timer);
+    state.timer=setInterval(takeSample,state.interval);
+  }
 
-const opticalPanel =
-    document.getElementById(
-        "opticalPanel"
-    );
+  log("Settings applied");
+  render();
+});
 
-const networkPanel =
-    document.getElementById(
-        "networkPanel"
-    );
+$("beginExperiment").addEventListener("click",beginExperiment);
+$("recordCondition").addEventListener("click",changeCondition);
+$("endExperiment").addEventListener("click",endExperiment);
+$("exportBtn").addEventListener("click",exportCSV);
+$("jsonBtn").addEventListener("click",exportJSON);
+$("clearLog").addEventListener("click",()=>{
+  state.logs=[];
+  $("eventLog").replaceChildren();
+});
 
-const magneticPanel =
-    document.getElementById(
-        "magneticPanel"
-    );
+$("resetStats").addEventListener("click",()=>{
+  if(!confirm("Clear all measurements and reset session statistics?")) return;
 
+  stopMonitoring();
+  state.samples=[];
+  state.events=[];
+  state.successes=0;
+  state.failures=0;
+  state.anomalies=0;
+  state.lastLatency=null;
+  state.startedAt=Date.now();
+  state.experiment=null;
 
-function selectMode(mode) {
+  $("experimentStatus").textContent="Idle";
+  $("beginExperiment").disabled=false;
+  $("endExperiment").disabled=true;
 
-    opticalMode.classList.remove("active");
-    networkMode.classList.remove("active");
-    magneticMode.classList.remove("active");
+  log("Session reset");
+  render();
+});
 
-    opticalPanel.classList.add("hidden");
-    networkPanel.classList.add("hidden");
-    magneticPanel.classList.add("hidden");
+window.addEventListener("online",()=>{
+  updateConnection();
+  log("Browser reports online");
+});
 
-    if (mode === "optical") {
+window.addEventListener("offline",()=>{
+  updateConnection();
+  log("Browser reports offline");
+});
 
-        opticalMode.classList.add("active");
+document.addEventListener("visibilitychange",()=>{
+  updateConnection();
+  log(document.hidden
+    ?"Page hidden; browser may throttle monitoring"
+    :"Page visible");
+});
 
-        opticalPanel.classList.remove(
-            "hidden"
-        );
-
-    }
-
-    if (mode === "network") {
-
-        networkMode.classList.add("active");
-
-        networkPanel.classList.remove(
-            "hidden"
-        );
-
-        scanNetwork();
-
-        createNetworkScannerExplanation();
-
-    }
-
-    if (mode === "magnetic") {
-
-        magneticMode.classList.add("active");
-
-        magneticPanel.classList.remove(
-            "hidden"
-        );
-
-    }
-
+if(connection?.addEventListener) {
+  connection.addEventListener("change",()=>{
+    updateConnection();
+    log("Browser network information changed");
+  });
 }
 
-
-opticalMode.onclick = () =>
-    selectMode("optical");
-
-networkMode.onclick = () =>
-    selectMode("network");
-
-magneticMode.onclick = () =>
-    selectMode("magnetic");
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-function saveScan() {
-
-    const item = {
-
-        time:
-            new Date()
-                .toLocaleTimeString(),
-
-        optical:
-            state.opticalScore,
-
-        network:
-            state.networkScore,
-
-        magnetic:
-            state.magneticScore,
-
-        overall:
-            state.overallScore
-
-    };
-
-    state.history.unshift(item);
-
-    state.history =
-        state.history.slice(0, 20);
-
-    localStorage.setItem(
-        "nightwatch_history",
-        JSON.stringify(
-            state.history
-        )
-    );
-
-    renderHistory();
-
-}
-
-
-function loadHistory() {
-
-    try {
-
-        state.history =
-            JSON.parse(
-                localStorage.getItem(
-                    "nightwatch_history"
-                ) || "[]"
-            );
-
-    } catch {
-
-        state.history = [];
-
-    }
-
-    renderHistory();
-
-}
-
-
-function renderHistory() {
-
-    const container =
-        document.getElementById(
-            "history"
-        );
-
-    if (!state.history.length) {
-
-        container.innerHTML = `
-            <div class="notice">
-                No scans yet.
-            </div>
-        `;
-
-        return;
-
-    }
-
-    container.innerHTML =
-        state.history
-            .map(item => `
-
-                <div class="history-item">
-
-                    <div>
-                        ${item.time}<br>
-                        <span style="color:#8198a3">
-                            Optical ${item.optical}
-                            • Network ${item.network}
-                            • Magnetic ${item.magnetic}
-                        </span>
-                    </div>
-
-                    <div class="history-score">
-                        ${item.overall}/100
-                    </div>
-
-                </div>
-
-            `)
-            .join("");
-
-}
-
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-startCameraBtn.onclick =
-    startCamera;
-
-stopCameraBtn.onclick =
-    stopCamera;
-
-switchCameraBtn.onclick =
-    switchCamera;
-
-torchBtn.onclick =
-    toggleTorch;
-
-analyzeBtn.onclick = () => {
-
-    analyzeFrame();
-
-    saveScan();
-
-};
-
-continuousBtn.onclick =
-    startContinuousScan;
-
-document.getElementById(
-    "magneticStartBtn"
-).onclick =
-    startMagneticScan;
-
-document.getElementById(
-    "clearHistoryBtn"
-).onclick = () => {
-
-    state.history = [];
-
-    localStorage.removeItem(
-        "nightwatch_history"
-    );
-
-    renderHistory();
-
-};
-
-
-/* =========================================================
-   CLEANUP
-========================================================= */
-
-window.addEventListener(
-    "pagehide",
-    () => {
-
-        stopCamera();
-
-        if (state.magneticRunning) {
-
-            window.removeEventListener(
-                "devicemotion",
-                handleMotion
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   INIT
-========================================================= */
-
-loadHistory();
-
+window.addEventListener("resize",renderCharts);
+
+setInterval(updateDurations,1000);
+
+updateConnection();
+render();
+log("WAVE//LAB initialized");
+log("Radio-level measurements are unavailable in browser-only mode");
+})();
 </script>
-
 </body>
 </html>
